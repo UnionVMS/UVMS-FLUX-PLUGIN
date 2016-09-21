@@ -21,7 +21,7 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <connector-bridge.client.version>1.0.2</connector-bridge.client.version>
         <bridge-connector.client.version>1.0.2</bridge-connector.client.version>
-        <flux.movement.client.version>1.0.0</flux.movement.client.version>
+        <flux.movement.client.version>2.0.0</flux.movement.client.version>
         <jodatime.version>2.9.1</jodatime.version>
         <release.branch.name>uvms-2.0.6-kili</release.branch.name>
         <project.scm.id>github</project.scm.id>

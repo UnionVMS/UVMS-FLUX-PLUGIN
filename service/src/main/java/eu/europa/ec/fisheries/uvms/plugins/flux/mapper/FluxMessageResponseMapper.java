@@ -1,13 +1,13 @@
 /*
-﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
-© European Union, 2015-2016.
+ ﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
+ © European Union, 2015-2016.
 
-This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
-redistribute it and/or modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
-the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
-copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+ This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
+ redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
+ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
+ copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.mapper;
 
@@ -17,48 +17,60 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementComChannelType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.BasicAttribute;
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.ExchangeDocumentInfoType;
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.FLUXGeographicalCoordinateType;
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.IDType;
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.VesselIdentificationType;
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.VesselPositionType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessageType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselGeographicalCoordinateType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselPositionEventType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselTransportMeansType;
+import un.unece.uncefact.data.standard.unqualifieddatatype._18.IDType;
+import xeu.bridge_connector.v1.RequestType;
 
-/**
- **/
 public class FluxMessageResponseMapper {
 
-    private static Logger LOG = LoggerFactory.getLogger(FluxMessageResponseMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FluxMessageResponseMapper.class);
 
-    public static BasicAttribute extractBasicAttribute(Element elmnt) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(BasicAttribute.class);
+    private static final String ASSET_EXT_MARKING_CODE = "EXT_MARKING";
+    private static final String ASSET_IRCS_CODE = "IRCS";
+    private static final String ASSET_UVI_CODE = "UVI";
+    private static final String ASSET_CFR_CODE = "CFR";
+
+    private static final String MOVEMENTTYPE_POS = "POS";
+    private static final String MOVEMENTTYPE_EXI = "EXI";
+    private static final String MOVEMENTTYPE_ENT = "ENT";
+    private static final String MOVEMENTTYPE_MAN = "MAN";
+
+    private static FLUXVesselPositionMessageType extractVesselPositionMessage(Element any) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessageType.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        BasicAttribute xmlMessage = (BasicAttribute) unmarshaller.unmarshal(elmnt);
+        FLUXVesselPositionMessageType xmlMessage = (FLUXVesselPositionMessageType) unmarshaller.unmarshal(any);
         return xmlMessage;
     }
 
-    public static ExchangeDocumentInfoType extractMovement(BasicAttribute attribute) throws PluginException {
+    private static VesselTransportMeansType extractMovement(FLUXVesselPositionMessageType attribute) throws PluginException {
         try {
             if (attribute != null) {
-                return attribute.getExchangeDocumentInfo();
+                return attribute.getVesselTransportMeans();
             } else {
                 throw new PluginException("Error when extracting ExchangeDocumentInfoType ( Movement ): BasicAttribute is null");
             }
@@ -68,10 +80,10 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    public static String extractCorrelationId(BasicAttribute attribute) throws PluginException {
+    private static String extractCorrelationId(FLUXVesselPositionMessageType attribute) throws PluginException {
         try {
             if (attribute != null) {
-                IDType messageID = attribute.getMessageID();
+                IDType messageID = attribute.getFLUXReportDocument().getReferencedID();
                 return messageID.getValue();
             } else {
                 throw new PluginException("Error when extracting Correlation ID: BasicAttribute is null");
@@ -82,42 +94,81 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    public static List<SetReportMovementType> mapToMovementType(ExchangeDocumentInfoType movement, String pluginName) throws JAXBException, PluginException {
+    public static List<SetReportMovementType> mapToMovementType(RequestType rt, String registerClassName) throws JAXBException, PluginException {
 
+        FLUXVesselPositionMessageType extractVesselPositionMessage = extractVesselPositionMessage(rt.getAny());
+        VesselTransportMeansType positionReport = extractMovement(extractVesselPositionMessage);
         List<SetReportMovementType> movementList = new ArrayList<>();
 
-        for (VesselPositionType col : movement.getVesselPositions()) {
+        for (VesselPositionEventType col : positionReport.getSpecifiedVesselPositionEvent()) {
             SetReportMovementType movementType = new SetReportMovementType();
-            movementType.setMovement(mapResponse(col, movement.getVesselID()));
+            movementType.setMovement(mapResponse(col, positionReport));
             movementType.setPluginType(PluginType.FLUX);
-            movementType.setPluginName(pluginName);
+            movementType.setPluginName(registerClassName);
             movementType.setTimestamp(DateUtil.createXMLGregorianCalendar(new Date()));
             movementList.add(movementType);
         }
 
         return movementList;
+
     }
 
-    public static MovementBaseType mapResponse(VesselPositionType response, VesselIdentificationType vesselId) throws JAXBException, PluginException {
+    private static MovementBaseType mapResponse(VesselPositionEventType response, VesselTransportMeansType report) throws JAXBException, PluginException {
         try {
             MovementBaseType movement = new MovementBaseType();
-            movement.setAssetId(mapToAssetId(vesselId));
-            movement.setPosition(mapToMovementPoint(response.getPosition()));
-            movement.setPositionTime(response.getObtained());
 
-            if (response.getCourse() != null) {
-                if (response.getCourse().getValue() != null) {
-                    movement.setReportedCourse(response.getCourse().getValue().doubleValue());
+            HashMap<String, String> extractAssetIds = extractAssetIds(report.getID());
+            movement.setAssetId(mapToAssetId(extractAssetIds));
+
+            movement.setExternalMarking(extractAssetIds.get(ASSET_EXT_MARKING_CODE));
+            movement.setIrcs(extractAssetIds.get(ASSET_IRCS_CODE));
+
+            try {
+                switch (response.getTypeCode().getValue()) {
+                    case MOVEMENTTYPE_POS:
+                        movement.setMovementType(MovementTypeType.POS);
+                        break;
+                    case MOVEMENTTYPE_EXI:
+                        movement.setMovementType(MovementTypeType.EXI);
+                        break;
+                    case MOVEMENTTYPE_ENT:
+                        movement.setMovementType(MovementTypeType.ENT);
+                        break;
+                    case MOVEMENTTYPE_MAN:
+                        movement.setMovementType(MovementTypeType.MAN);
+                        break;
+                    default:
+                        throw new AssertionError();
+
+                }
+            } catch (NullPointerException e) {
+                LOG.error("Nullpointer when mapping movementType from typecode in report from FLUX, setting movementtype to POS");
+                movement.setMovementType(MovementTypeType.POS);
+            }
+
+            try {
+                movement.setFlagState(report.getRegistrationVesselCountry().getID().getValue());
+            } catch (NullPointerException e) {
+                LOG.error("Nullpointer when mapping flagstate in position report from FLUX");
+            }
+
+            movement.setPosition(mapToMovementPoint(response.getSpecifiedVesselGeographicalCoordinate()));
+            movement.setPositionTime(response.getObtainedOccurrenceDateTime().getDateTime());
+
+            if (response.getCourseValueMeasure() != null) {
+                if (response.getCourseValueMeasure().getValue() != null) {
+                    movement.setReportedCourse(response.getCourseValueMeasure().getValue().doubleValue());
                 }
             }
 
-            if (response.getSpeed() != null) {
-                if (response.getSpeed().getValue() != null) {
-                    movement.setReportedSpeed(response.getSpeed().getValue().doubleValue());
+            if (response.getSpeedValueMeasure() != null) {
+                if (response.getSpeedValueMeasure().getValue() != null) {
+                    movement.setReportedSpeed(response.getSpeedValueMeasure().getValue().doubleValue());
                 }
             }
 
             movement.setComChannelType(MovementComChannelType.FLUX);
+            movement.setSource(MovementSourceType.OTHER);
             return movement;
         } catch (NullPointerException ex) {
             LOG.error("Nullpointer when mapping to response");
@@ -125,7 +176,7 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    public static MovementPoint mapToMovementPoint(FLUXGeographicalCoordinateType coordinate) throws PluginException {
+    private static MovementPoint mapToMovementPoint(VesselGeographicalCoordinateType coordinate) throws PluginException {
         try {
             MovementPoint point = new MovementPoint();
 
@@ -141,6 +192,12 @@ public class FluxMessageResponseMapper {
                 }
             }
 
+            if (coordinate.getAltitudeMeasure() != null) {
+                if (coordinate.getAltitudeMeasure().getValue() != null) {
+                    point.setAltitude(coordinate.getAltitudeMeasure().getValue().doubleValue());
+                }
+            }
+
             return point;
         } catch (NullPointerException ex) {
             LOG.error("Nullpointer when mapping to Movement point");
@@ -148,28 +205,33 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    public static AssetId mapToAssetId(VesselIdentificationType vesselId) throws PluginException {
+    private static HashMap<String, String> extractAssetIds(List<IDType> vesselIds) {
+        HashMap<String, String> ids = new HashMap<>();
+        for (IDType vesselId : vesselIds) {
+            ids.put(vesselId.getSchemeID(), vesselId.getValue());
+        }
+        return ids;
+    }
+
+    private static AssetId mapToAssetId(Map<String, String> vesselIds) throws PluginException {
         try {
             AssetId idType = new AssetId();
-
-            if (vesselId.getRadioCallSign() != null) {
-                if (vesselId.getRadioCallSign().getValue() != null) {
-                    AssetIdList ircs = new AssetIdList();
-                    ircs.setIdType(AssetIdType.IRCS);
-                    ircs.setValue(vesselId.getRadioCallSign().getValue());
-                    idType.getAssetIdList().add(ircs);
+            for (Entry<String, String> vesselId : vesselIds.entrySet()) {
+                switch (vesselId.getKey()) {
+                    case ASSET_IRCS_CODE:
+                        idType.getAssetIdList().add(mapToVesselId(AssetIdType.IRCS, vesselId.getValue()));
+                        break;
+                    case ASSET_CFR_CODE:
+                        idType.getAssetIdList().add(mapToVesselId(AssetIdType.CFR, vesselId.getValue()));
+                        break;
+                    case ASSET_UVI_CODE:
+                        idType.getAssetIdList().add(mapToVesselId(AssetIdType.IMO, vesselId.getValue()));
+                        break;
+                    default:
+                        LOG.error("VesselId type not mapped {}", vesselId.getKey());
+                        break;
                 }
             }
-
-            if (vesselId.getUVI() != null) {
-                if (vesselId.getUVI().getValue() != null) {
-                    AssetIdList mmsi = new AssetIdList();
-                    mmsi.setIdType(AssetIdType.MMSI);
-                    mmsi.setValue(vesselId.getUVI().getValue());
-                    idType.getAssetIdList().add(mmsi);
-                }
-            }
-
             return idType;
         } catch (NullPointerException ex) {
             LOG.error("Nullpointer when mapping to AssetId");
@@ -177,7 +239,7 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    public static BigDecimal convertStringToBigDecimal(String value) throws PluginException {
+    private static BigDecimal convertStringToBigDecimal(String value) throws PluginException {
         try {
             Double parsedDouble = Double.parseDouble(value);
             BigDecimal parsedBigDecimal = BigDecimal.valueOf(parsedDouble);
@@ -188,7 +250,7 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    public static boolean convertYNToBoolean(String data) throws PluginException {
+    private static boolean convertYNToBoolean(String data) throws PluginException {
         try {
             if (data != null && !data.isEmpty()) {
                 if (data.equalsIgnoreCase("Y")) {
@@ -205,6 +267,13 @@ public class FluxMessageResponseMapper {
             LOG.error("[ Error when converting string to boolean. ] {}", e.getMessage());
             throw new PluginException("Error when converting Y N to boolean: " + e.getMessage());
         }
+    }
+
+    private static AssetIdList mapToVesselId(AssetIdType assetIdType, String value) {
+        AssetIdList assetId = new AssetIdList();
+        assetId.setIdType(assetIdType);
+        assetId.setValue(value);
+        return assetId;
     }
 
 }

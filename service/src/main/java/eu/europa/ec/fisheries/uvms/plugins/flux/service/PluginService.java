@@ -1,13 +1,13 @@
 /*
-﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
-© European Union, 2015-2016.
+ ﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
+ © European Union, 2015-2016.
 
-This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
-redistribute it and/or modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
-the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
-copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+ This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
+ redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
+ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
+ copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.service;
 
@@ -24,21 +24,19 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.message.FluxMessageSenderBean;
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.ExchangeDocumentInfoType;
 import java.util.UUID;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import eu.europa.ec.fisheries.uvms.service.client.flux.movement.contract.ExchangeDocumentInfoType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- **/
+ *
+ */
 @LocalBean
 @Stateless
 public class PluginService {
@@ -63,6 +61,7 @@ public class PluginService {
         MovementType movement = report.getMovement();
         if (movement != null && ReportTypeType.MOVEMENT.equals(report.getType())) {
             try {
+
                 MovementPoint pos = movement.getPosition();
                 if (pos != null) {
                     LOG.info("lon: " + pos.getLongitude());
@@ -71,14 +70,13 @@ public class PluginService {
 
                 String editorType = startupBean.getSetting("EDITOR_TYPE");
                 String actionReason = startupBean.getSetting("ACTION_REASON");
-                ExchangeDocumentInfoType fluxMovement = FluxMessageRequestMapper.mapToExchangeDocumentInfoType(movement, editorType, actionReason);
-
                 String messageId = UUID.randomUUID().toString();
+
                 if (movement.getGuid() != null) {
                     messageId = movement.getGuid();
                 }
 
-                sender.sendMovement(fluxMovement, messageId);
+                sender.sendMovement(movement, messageId);
 
             } catch (PluginException ex) {
                 LOG.debug("Error when setting report");
