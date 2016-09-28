@@ -91,7 +91,7 @@ public class FluxMessageResponseMapper {
             movementType.setMovement(mapResponse(col, movement.getVesselID()));
             movementType.setPluginType(PluginType.FLUX);
             movementType.setPluginName(pluginName);
-            movementType.setTimestamp(DateUtil.createXMLGregorianCalendar(new Date()));
+            movementType.setTimestamp(new Date());
             movementList.add(movementType);
         }
 
@@ -103,7 +103,7 @@ public class FluxMessageResponseMapper {
             MovementBaseType movement = new MovementBaseType();
             movement.setAssetId(mapToAssetId(vesselId));
             movement.setPosition(mapToMovementPoint(response.getPosition()));
-            movement.setPositionTime(response.getObtained());
+            movement.setPositionTime(DateUtil.getDate(response.getObtained()));
 
             if (response.getCourse() != null) {
                 if (response.getCourse().getValue() != null) {

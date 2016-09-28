@@ -36,7 +36,7 @@ public class MovementMapper {
             movementType.setMovement(FluxMessageResponseMapper.mapResponse(col, movement.getVesselID()));
             movementType.setPluginType(PluginType.FLUX);
             movementType.setPluginName(null);
-            movementType.setTimestamp(DateUtil.createXMLGregorianCalendar(new Date()));
+            movementType.setTimestamp(new Date());
             
             movementList.add(movementType);
         }

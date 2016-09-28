@@ -122,7 +122,7 @@ public class FluxMessageRequestMapper {
         if (movement != null) {
             type.setCourse(mapToMeasurType(movement.getReportedCourse()));
             type.setSpeed(mapToMeasurType(movement.getReportedSpeed()));
-            type.setObtained(movement.getPositionTime().normalize());
+            type.setObtained(DateUtil.createXMLGregorianCalendar(movement.getPositionTime()).normalize());
             type.setPosition(mapToFLUXGeographicalCoordinateType(movement.getPosition()));
             if (movement.getMovementType() != null) {
                 type.setType(mapToCodeType(movement.getMovementType().name()));
