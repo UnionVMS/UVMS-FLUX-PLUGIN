@@ -22,11 +22,11 @@
         <connector-bridge.client.version>1.0.4</connector-bridge.client.version>
         <bridge-connector.client.version>1.0.4</bridge-connector.client.version>
         <flux.movement.client.version>1.0.0</flux.movement.client.version>
-        <audit.model.version>2.1.0-SNAPSHOT</audit.model.version>
-        <exchange.model.version>2.1.0-SNAPSHOT</exchange.model.version>
+        <audit.model.version>2.1.0</audit.model.version>
+        <exchange.model.version>2.1.0</exchange.model.version>
         <date.classifier>date</date.classifier>
 
-        <release.branch.name>uvms-2.0.6-kili</release.branch.name>
+        <release.branch.name>uvms-2.1.0-jessamine-boffin</release.branch.name>
         <project.scm.id>github</project.scm.id>
         <maven-release-plugin>2.5.3</maven-release-plugin>
     </properties>
