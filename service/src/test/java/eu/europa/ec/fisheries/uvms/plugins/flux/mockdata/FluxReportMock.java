@@ -56,7 +56,7 @@ public class FluxReportMock {
 
     private static FLUXReportDocumentType mapToFluxDocumentType() {
         FLUXReportDocumentType message = new FLUXReportDocumentType();
-        message.getID().add(mapToIDType(MockConstants.GUID_ID));
+        message.getIDS().add(mapToIDType(MockConstants.GUID_ID));
         message.setCreationDateTime(mepToDateTimeTypeNow());
         message.setPurposeCode(mapToCodeType(MockConstants.PURPOSE_CODE));
         message.setOwnerFLUXParty(mapToOwnerFluxParty());
@@ -66,10 +66,10 @@ public class FluxReportMock {
     private static VesselTransportMeansType mapToVesselTransportMeans() {
         VesselTransportMeansType movement = new VesselTransportMeansType();
         movement.setRegistrationVesselCountry(mapToVesselCountry());
-        movement.getID().add(mapToIDType(MockConstants.ASSET_CFR, MockConstants.ASSET_CFR));
-        movement.getID().add(mapToIDType(MockConstants.ASSET_IRCS, MockConstants.ASSET_IRCS));
-        movement.getID().add(mapToIDType(MockConstants.ASSET_EXT_MARKING, MockConstants.ASSET_EXT_MARKING));
-        movement.getSpecifiedVesselPositionEvent().add(mapToVesselPostionType());
+        movement.getIDS().add(mapToIDType(MockConstants.ASSET_CFR, MockConstants.ASSET_CFR));
+        movement.getIDS().add(mapToIDType(MockConstants.ASSET_IRCS, MockConstants.ASSET_IRCS));
+        movement.getIDS().add(mapToIDType(MockConstants.ASSET_EXT_MARKING, MockConstants.ASSET_EXT_MARKING));
+        movement.getSpecifiedVesselPositionEvents().add(mapToVesselPostionType());
         return movement;
     }
 
@@ -117,7 +117,7 @@ public class FluxReportMock {
 
     private static FLUXPartyType mapToOwnerFluxParty() {
         FLUXPartyType party = new FLUXPartyType();
-        party.getName().add(mapToTextType());
+        party.getNames().add(mapToTextType());
         return party;
     }
 

@@ -40,7 +40,7 @@ public class MovementTypeMock {
         type.setSource(MovementSourceType.INMARSAT_C);
         type.setExternalMarking(MockConstants.ASSET_EXT_MARKING);
         type.setIrcs(MockConstants.ASSET_IRCS);
-        type.setPositionTime(MockConstants.NOW_DATE_GREGORIAN);
+        type.setPositionTime(MockConstants.NOW_DATE);
         return type;
 
     }

@@ -15,12 +15,13 @@
         <sl4j.version>1.7.7</sl4j.version>
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
-        <exchange.model.version>2.0.7</exchange.model.version>
+        <exchange.model.version>2.1.1</exchange.model.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <connector-bridge.client.version>1.0.4</connector-bridge.client.version>
         <bridge-connector.client.version>1.0.4</bridge-connector.client.version>
         <flux.movement.client.version>2.0.0</flux.movement.client.version>
+        <exchange.classifier>date</exchange.classifier>
         <jodatime.version>2.9.1</jodatime.version>
         <release.branch.name>uvms-2.0.6-kili</release.branch.name>
         <project.scm.id>github</project.scm.id>
@@ -65,6 +66,7 @@
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
+            <classifier>${exchange.classifier}</classifier>
         </dependency>
     </dependencies>
 
@@ -72,10 +74,10 @@
         <repository>
             <id>focus-repo</id>
             <name>Focus nexus repository</name>
-            <url>http://nexus.focus.fish/</url>
+            <url>http://nexus.focus.fish/nexus/</url>
         </repository>
     </repositories>
-
+    
     <distributionManagement> 
         <repository>
             <id>focus-releases</id>

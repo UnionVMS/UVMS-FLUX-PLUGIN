@@ -15,8 +15,10 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
+import eu.europa.ec.fisheries.uvms.plugins.flux.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -91,9 +93,8 @@ public class FluxMessageRequestMapper {
         //message.setAR(false);
         //message.setTS(true);
         FLUXVesselPositionMessageType attr = mapToFluxMovement(movement, settings.getSetting("FLUX_AD"));
-        
+
         ObjectFactory fact = new ObjectFactory();
-        
 
         JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessageType.class);
         Marshaller marshaller = context.createMarshaller();
@@ -124,7 +125,7 @@ public class FluxMessageRequestMapper {
 
     private FLUXPartyType mapToFluxPartyType(String ad) {
         FLUXPartyType partyType = new FLUXPartyType();
-        partyType.getID().add(mapToIdType(ad));
+        partyType.getIDS().add(mapToIdType(ad));
         return partyType;
     }
 
@@ -165,20 +166,20 @@ public class FluxMessageRequestMapper {
         }
 
         if (movement.getIrcs() != null) {
-            retVal.getID().add(mapToVesselIDType(VESSEL_ID_TYPE.IRCS, movement.getIrcs()));
+            retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.IRCS, movement.getIrcs()));
         }
 
         if (movement.getExternalMarking() != null) {
-            retVal.getID().add(mapToVesselIDType(VESSEL_ID_TYPE.EXT_MARKING, movement.getExternalMarking()));
+            retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.EXT_MARKING, movement.getExternalMarking()));
         }
 
         if (ids.containsKey(AssetIdType.CFR.name())) {
-            retVal.getID().add(mapToVesselIDType(VESSEL_ID_TYPE.CFR, ids.get(AssetIdType.CFR.name())));
+            retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.CFR, ids.get(AssetIdType.CFR.name())));
         }
         //End handle Asset Id
 
         retVal.setRegistrationVesselCountry(mapToVesselCountry(movement.getFlagState()));
-        retVal.getSpecifiedVesselPositionEvent().add(mapToVesselPosition(movement));
+        retVal.getSpecifiedVesselPositionEvents().add(mapToVesselPosition(movement));
 
         return retVal;
     }
@@ -216,7 +217,7 @@ public class FluxMessageRequestMapper {
 
     private VesselPositionEventType mapToVesselPosition(MovementType movement) {
         VesselPositionEventType position = new VesselPositionEventType();
-        position.setObtainedOccurrenceDateTime(mapToDateTime(movement.getPositionTime()));
+        position.setObtainedOccurrenceDateTime(DateUtil.mapToDateTime(movement.getPositionTime()));
         position.setCourseValueMeasure(mapToMeasureType(movement.getReportedCourse()));
         position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed()));
         position.setTypeCode(mapToCodeType(movement.getMovementType().name()));
@@ -228,12 +229,6 @@ public class FluxMessageRequestMapper {
         MeasureType measureType = new MeasureType();
         measureType.setValue(BigDecimal.valueOf(measuredSpeed));
         return measureType;
-    }
-
-    private DateTimeType mapToDateTime(XMLGregorianCalendar positionTime) {
-        DateTimeType date = new DateTimeType();
-        date.setDateTime(positionTime);
-        return date;
     }
 
     private DateTimeType mapToNowDateTime() {

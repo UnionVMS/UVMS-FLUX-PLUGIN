@@ -100,12 +100,12 @@ public class FluxMessageResponseMapper {
         VesselTransportMeansType positionReport = extractMovement(extractVesselPositionMessage);
         List<SetReportMovementType> movementList = new ArrayList<>();
 
-        for (VesselPositionEventType col : positionReport.getSpecifiedVesselPositionEvent()) {
+        for (VesselPositionEventType col : positionReport.getSpecifiedVesselPositionEvents()) {
             SetReportMovementType movementType = new SetReportMovementType();
             movementType.setMovement(mapResponse(col, positionReport));
             movementType.setPluginType(PluginType.FLUX);
             movementType.setPluginName(registerClassName);
-            movementType.setTimestamp(DateUtil.createXMLGregorianCalendar(new Date()));
+            movementType.setTimestamp(DateUtil.createNowDate());
             movementList.add(movementType);
         }
 
@@ -117,7 +117,7 @@ public class FluxMessageResponseMapper {
         try {
             MovementBaseType movement = new MovementBaseType();
 
-            HashMap<String, String> extractAssetIds = extractAssetIds(report.getID());
+            HashMap<String, String> extractAssetIds = extractAssetIds(report.getIDS());
             movement.setAssetId(mapToAssetId(extractAssetIds));
 
             movement.setExternalMarking(extractAssetIds.get(ASSET_EXT_MARKING_CODE));
@@ -153,7 +153,7 @@ public class FluxMessageResponseMapper {
             }
 
             movement.setPosition(mapToMovementPoint(response.getSpecifiedVesselGeographicalCoordinate()));
-            movement.setPositionTime(response.getObtainedOccurrenceDateTime().getDateTime());
+            movement.setPositionTime(DateUtil.getDate(response.getObtainedOccurrenceDateTime().getDateTime()));
 
             if (response.getCourseValueMeasure() != null) {
                 if (response.getCourseValueMeasure().getValue() != null) {

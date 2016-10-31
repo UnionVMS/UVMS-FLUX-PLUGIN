@@ -96,7 +96,7 @@ public class FluxMessageRequestMapperTest {
         assertFLUXVesselPositionMessage(extractVesselPositionMessage);
         assertFluxReportDocument(extractVesselPositionMessage.getFLUXReportDocument());
         assertFluxVesselTransportMeans(extractVesselPositionMessage.getVesselTransportMeans());
-        assertSpecifiedVesselPositionEvent(extractVesselPositionMessage.getVesselTransportMeans().getSpecifiedVesselPositionEvent());
+        assertSpecifiedVesselPositionEvent(extractVesselPositionMessage.getVesselTransportMeans().getSpecifiedVesselPositionEvents());
     }
 
     private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessageType message) {
@@ -110,17 +110,17 @@ public class FluxMessageRequestMapperTest {
         Assert.assertTrue("Reference id is not a UUID", fluxReportDocument.getReferencedID().getValue().matches(MockConstants.UUID_REGEX));
         Assert.assertNotNull("DateTime is null", fluxReportDocument.getCreationDateTime().getDateTime());
 
-        Assert.assertNotNull("Owner Flux party list size should be 1", fluxReportDocument.getOwnerFLUXParty().getID().size() == 1);
-        Assert.assertEquals(MockConstants.FLUX_OWNER, fluxReportDocument.getOwnerFLUXParty().getID().get(0).getValue());
+        Assert.assertNotNull("Owner Flux party list size should be 1", fluxReportDocument.getOwnerFLUXParty().getIDS().size() == 1);
+        Assert.assertEquals(MockConstants.FLUX_OWNER, fluxReportDocument.getOwnerFLUXParty().getIDS().get(0).getValue());
     }
 
     private void assertFluxVesselTransportMeans(VesselTransportMeansType vesselTransportMeans) {
         Assert.assertNotNull("VesselTransportMeansType is NULL", vesselTransportMeans);
 
-        Assert.assertEquals("VesselTransportMeansType id list should be of size 3", 3, vesselTransportMeans.getID().size());
+        Assert.assertEquals("VesselTransportMeansType id list should be of size 3", 3, vesselTransportMeans.getIDS().size());
 
         Map<String, String> data = new HashMap<>();
-        for (IDType col : vesselTransportMeans.getID()) {
+        for (IDType col : vesselTransportMeans.getIDS()) {
             data.put(col.getSchemeID(), col.getValue());
         }
 

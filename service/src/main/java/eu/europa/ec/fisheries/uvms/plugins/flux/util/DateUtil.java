@@ -1,16 +1,17 @@
 /*
-﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
-© European Union, 2015-2016.
+ ﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
+ © European Union, 2015-2016.
 
-This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
-redistribute it and/or modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
-the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
-copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+ This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
+ redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
+ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
+ copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.util;
 
+import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -26,6 +27,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
 
 public class DateUtil {
 
@@ -37,6 +39,19 @@ public class DateUtil {
 
     final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
     TimeZone CET_FORMAT = TimeZone.getTimeZone("UTC");
+
+    public static DateTimeType mapToDateTime(XMLGregorianCalendar positionTime) {
+        DateTimeType date = new DateTimeType();
+        date.setDateTime(positionTime);
+        return date;
+    }
+
+    public static DateTimeType mapToDateTime(Date positionTime) {
+        DateTimeType date = new DateTimeType();
+        XMLGregorianCalendar dateToXmlGregorian = DateUtils.dateToXmlGregorian(positionTime);
+        date.setDateTime(dateToXmlGregorian);
+        return date;
+    }
 
     static {
         try {
@@ -76,6 +91,7 @@ public class DateUtil {
         }
         return date;
     }
+    
 
     public static Date getDate(final XMLGregorianCalendar inDate, final XMLGregorianCalendar inTime) {
         Date date = getDate(inDate);
@@ -99,7 +115,23 @@ public class DateUtil {
         return cal.getTime();
     }
 
-    public static XMLGregorianCalendar createXMLGregorianCalendar(final Date date) {
+    /**
+     * method intended for overloading when building project with different
+     * classifiers that changes date type
+     *
+     * @return
+     */
+    public static Date createNowDate() {
+        return new Date();
+    }
+
+    /**
+     * method intended for overloading when building project with different
+     * classifiers that changes date type
+     *
+     * @return
+     */
+    public static XMLGregorianCalendar createNowDate(final Date date) {
         return createXMLGregorianCalendar(date, TimeZone.getDefault());
     }
 

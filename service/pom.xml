@@ -26,13 +26,7 @@
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>  <!-- declare the exclusion here -->
-                    <groupId>eu.europa.ec.fisheries.uvms.audit</groupId>
-                    <artifactId>audit-model</artifactId>
-                </exclusion>
-            </exclusions> 
+            <classifier>${exchange.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.service.client.flux</groupId>
