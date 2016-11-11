@@ -23,7 +23,7 @@
         <flux.movement.client.version>2.0.0</flux.movement.client.version>
         <exchange.classifier>date</exchange.classifier>
         <jodatime.version>2.9.1</jodatime.version>
-        <release.branch.name>uvms-2.0.6-kili</release.branch.name>
+        <release.branch.name>release-2.1.2-legolas</release.branch.name>
         <project.scm.id>github</project.scm.id>
         <maven-release-plugin>2.5.3</maven-release-plugin>
     </properties>
