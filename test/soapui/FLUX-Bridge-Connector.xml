@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="9bbee5dd-52c2-47f3-90fb-a7822f390a61" activeEnvironment="Default" name="FLUX - Bridge -> Connector" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="4ecc8642-0a91-49ad-8151-8ea52d0c1912" wsaVersion="NONE" name="BridgeConnectorSOAP11Binding" type="wsdl" bindingName="{urn:xeu:bridge-connector:wsdl:v1}BridgeConnectorSOAP11Binding" soapVersion="1_1" anonymous="optional" definition="file:/C:/Projekt/dev/uvms-github/Exchange/UVMS-ExchangeModule-JAXB-CLIENT/flux-message-reciever/src/main/resources/contract/bridge-connector.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-JAXB-CLIENT\flux-message-reciever\src\main\resources\contract\bridge-connector.wsdl"><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-JAXB-CLIENT\flux-message-reciever\src\main\resources\contract\bridge-connector.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="connector" targetNamespace="urn:xeu:bridge-connector:wsdl:v1" xmlns:tns="urn:xeu:bridge-connector:wsdl:v1" xmlns:connector="urn:xeu:bridge-connector:v1" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>Version: 1.0 RC 20130606</wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema>
+      <xsd:import namespace="urn:xeu:bridge-connector:v1" schemaLocation="bridge-connector-payload.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="postRequest">
+    <wsdl:part name="parameter" element="connector:Connector2BridgeRequest"/>
+  </wsdl:message>
+  <wsdl:message name="postResponse">
+    <wsdl:part name="output" element="connector:Connector2BridgeResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="BridgeConnectorPortType">
+    <wsdl:operation name="post">
+      <wsdl:input message="tns:postRequest"/>
+      <wsdl:output message="tns:postResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BridgeConnectorSOAP11Binding" type="tns:BridgeConnectorPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="post">
+      <soap:operation soapAction="urn:xeu:bridge-connector:wsdl:v1:post"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BridgeConnectorService">
+    <wsdl:port name="BridgeConnectorSOAP11Port" binding="tns:BridgeConnectorSOAP11Binding">
+      <soap:address location="http://localhost/connector"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-JAXB-CLIENT\flux-message-reciever\src\main\resources\contract\bridge-connector-payload.xsd</con:url><con:content><![CDATA[<!--Connector Bridge Payload 20130606-->
+<xsd:schema targetNamespace="urn:xeu:bridge-connector:v1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:connector="urn:xeu:bridge-connector:v1">
+  <xsd:include schemaLocation="bridge-connector-payload-codes.xsd"/>
+  <xsd:element name="Connector2BridgeRequest" type="connector:RequestType"/>
+  <xsd:element name="Connector2BridgeResponse" type="connector:ResponseType"/>
+  <xsd:complexType name="RequestType">
+    <xsd:annotation>
+      <xsd:documentation>The top level Connector Bridge Envelope.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##other" processContents="skip">
+        <xsd:annotation>
+          <xsd:documentation>Any Business Message. Nodes never validate this. Endpoint can only validate it asynchronously. Must specify its own XML Namespace using an xmlns attribute. those businesses using a Request-Response Messaging Pattern must have provisions for correlating their Business Responses and Business Requests, e.g. by embedding a GUID somewhere inside the business payload.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:any>
+    </xsd:sequence>
+    <xsd:attribute name="ON" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>FLUX Transport Return Status code, a 3-digit integer value in ranges 1xx (Ongoing), 201-299 (OK), 400-499 (Client Error) or 500-599 (Server Error). Nodes relay back only ACK synchronous responses where RS value is in range 400-499, 201 (only when MSG@AOR="true") or when giving up transmission. All asynchronous Status (STAT) Envelopes are relayed irrespective of the ACK@RS value inside.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="AD" type="connector:AddressType" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Envelope Destination. In a Message (POSTMSG) Envelope it holds the destination Endpoint (the ISO Alpha-3 top-level domain Country or International Organization code). Together with the DF value, it specifies the precise destination Endpoint for the Envelope.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="TODT" type="xsd:dateTime">
+      <xsd:annotation>
+        <xsd:documentation>UTC Business Time Out Date and Time of the Message (MSG) Envelope. Set by the Business Message  Envelope originator Endpoint. FLUX will abort transmission and inform Business Contacts if the Envelope cannot be delivered before this date/time.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="DF" type="connector:DataflowType" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Dataflow name of the Business Payload in the Envelope. Destination Endpoint can use this value to dispatch the Business Message among several Busines Processes</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="AR" type="xsd:boolean">
+      <xsd:annotation>
+        <xsd:documentation>Acknowledge Of Receipt flag: specifies whether a synchronous response with ACK@201 must be relayed back to the Message (MSG) Envelope originator Endpoint or not in case of a successful delivery. Note that FLUX errors are always notified to the Message Envelope originator irrespective of this flag.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="TO" type="connector:SyncTimeoutType">
+      <xsd:annotation>
+        <xsd:documentation>Optional synchronous timeout value in seconds, how long a Node or Endpoint must wait for a synchronous response while transmitting this Envelope. Can be set by the Message (MSG) Envelope originator Endpoint to any positive integer value number in the range 1 to 500, although values below 30 should better be avoided. Copied from the Message Envelope to its Status (STAT) Envelope. A Message Envelope is considered expired at TODT-TO. Defaults to 60. Maximum is 600.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="CT" type="connector:EmailListType">
+      <xsd:annotation>
+        <xsd:documentation>Optional space-delimited list of Business Contacts Email addresses. If supplied, each Email address in the list will be notified if the Envelope cannot be delivered before TODT.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="VB" type="connector:VerbosityType">
+      <xsd:annotation>
+        <xsd:documentation>Optional Verbosity Level of Node operations, either "error" (Nodes only report permanent errors), "warn" (Nodes also send INFO Envelopes on transient errors), "info" (Nodes also send INFO Envelopes when they do anything), "debug" (Nodes send Emails to notify about everything they do) or "none" (Nodes don't send emails). Copied from the Message (MSG) Envelope to its corresponding Status (STAT) Envelope. Defaults to "error".</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:anyAttribute namespace="##any" processContents="lax"/>
+  </xsd:complexType>
+  <xsd:complexType name="ResponseType">
+    <xsd:annotation>
+      <xsd:documentation>Synchronous response wrapper.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Status" minOccurs="1" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-JAXB-CLIENT\flux-message-reciever\src\main\resources\contract\bridge-connector-payload-codes.xsd</con:url><con:content><![CDATA[<!--Bridge Connector Payload 20130615-->
+<xsd:schema targetNamespace="urn:xeu:bridge-connector:v1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:simpleType name="AddressType">
+    <xsd:annotation>
+      <xsd:documentation>Endpoint Address, either a Hierarchical Fully Qualified FLUX Address or a simple 3-letter ISO alpha-3 Country or International Organisation code from ISO 3166-1.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:minLength value="3"/>
+      <xsd:maxLength value="64"/>
+      <!--xs:pattern value="[A-Z]{3}(:[^:]+)*" /-->
+      <!--First 3 letters are listed in MDR: FLUX Address-->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="EmailListType">
+    <xsd:annotation>
+      <xsd:documentation>List of Email addresses.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:list itemType="xsd:token"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="DataflowType">
+    <xsd:annotation>
+      <xsd:documentation>FLUX Dataflow name, usually the XML Namespace of the business payload. Possible values are agreed between Endpoints.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="255"/>
+      <!--Possible values are agreed between Endpoints-->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="OperationNumberType">
+    <xsd:annotation>
+      <xsd:documentation>Serial number of the message on the Originator Endpoint. Together with MSG@FR it uniquely identifies an Envelope in the whole network. Format is XXXXXXYYYYMMDD999999 where XXXXXX is the originator Endpoint-wide unique seqence counter identifier, followed by numbers that uniquely identify the business message tagged by this sequence counter on that Endpoint. These numbers may correspond to either the current year followed by a sequence reset every year, or the year then the month and then a sequence number reset every month, or the full date followed by a counter reset everyday.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:length value="20"/>
+      <!--Uncomment this pattern if you can afford checking it in the synchronous loop: xsd:pattern value="[A-Z0-9]{6}[0-9]{14}"/-->
+      <!--Too restrictive alternative pattern enforcing a daily message counter: value="[A-Z]{3}[A-Z0-9]{3}(\d{4}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01]))[0-9]{6}"/-->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="VerbosityType">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="error"/>
+      <xsd:enumeration value="warn"/>
+      <xsd:enumeration value="info"/>
+      <xsd:enumeration value="debug"/>
+      <xsd:enumeration value="none"/>
+      <!--xs:length value="6" /-->
+      <!--Code values are listed in MDR: FLUX Verbosity-->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="SyncTimeoutType">
+    <xsd:annotation>
+      <xsd:documentation>Synchronous timeout value in seconds, how long a Node can wait for a synchronous response while trying to forward an Envelope.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:int">
+      <xsd:minInclusive value="10"/>
+      <xsd:maxInclusive value="300"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost/connector</con:endpoint></con:endpoints><con:operation id="c85f5309-11cc-47b4-8c65-75669680909a" isOneWay="false" action="urn:xeu:bridge-connector:wsdl:v1:post" name="post" bindingOperationName="post" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="447d51d5-579d-49ab-a419-56f37a70e070" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost/connector</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:Connector2BridgeRequest ON="?" AD="?" TODT="?" DF="?" AR="?" TO="?" CT="?" VB="?">\r
+         <!--You may enter ANY elements at this point-->\r
+      </urn:Connector2BridgeRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:xeu:bridge-connector:wsdl:v1:post"/></con:call></con:operation></con:interface><con:testSuite id="bd51da45-dc70-45db-a428-d8bd352fea5e" name="Bridge -> Connector TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="3489f9c5-d45a-486b-949e-749e74f0a5ab" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="post TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="b192023a-0c18-4fa2-b45f-21e9b442c8ff" name="post"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>BridgeConnectorSOAP11Binding</con:interface><con:operation>post</con:operation><con:request name="post" id="c127b741-7413-4c24-a877-0068d22ba9b5"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost/connector</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:Connector2BridgeRequest ON="?" AD="?" TODT="?" DF="?" AR="?" TO="?" CT="?" VB="?">\r
+         <!--You may enter ANY elements at this point-->\r
+      </urn:Connector2BridgeRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:wsaConfig action="urn:xeu:bridge-connector:wsdl:v1:post"/></con:request></con:config></con:testStep><con:testStep type="mockresponse" name="BridgeWebApp" id="374b68d5-4707-41a2-9213-d5720f6c2592"><con:settings/><con:config xsi:type="con:MockResponseStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>BridgeConnectorSOAP11Binding</con:interface><con:operation>post</con:operation><con:path>/BridgeWebApp/connector</con:path><con:port>8181</con:port><con:response id="966f1d51-a013-446e-8b67-e84357933cac"><con:settings/><con:responseContent/><con:wsaConfig mustUnderstand="NONE" version="200508"/></con:response><con:response><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:Connector2BridgeResponse>
+         <urn:Status>?</urn:Status>
+      </urn:Connector2BridgeResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent></con:response></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:mockService id="9a1b0658-4f01-4559-9807-d94f406d9ff7" port="8181" path="/BridgeWebApp/connector" host="Negods-Laptop" name="Bridge -> Connector" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="post" id="6b693b35-b3db-431a-8d9c-6886658f00d0" interface="BridgeConnectorSOAP11Binding" operation="post"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="0a23df7a-2dea-4321-b1fa-2cbec40c8c6a" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:Connector2BridgeResponse>
+         <urn:Status>OK</urn:Status>
+      </urn:Connector2BridgeResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:xeu:bridge-connector:wsdl:v1:post"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>

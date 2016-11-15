@@ -1,0 +1,1030 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="44e6d783-4dcb-45c5-a94c-95c6ac1710a2" activeEnvironment="Default" name="Project 1" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="ProjectSettings@hermesConfig">C:\.hermes</con:setting></con:settings><con:interface xsi:type="con:WsdlInterface" id="6df1d4b5-43ae-4291-825e-c2edb647dca3" wsaVersion="NONE" name="ExchangeModuleSoapBinding" type="wsdl" bindingName="{urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1}ExchangeModuleSoapBinding" soapVersion="1_1" anonymous="optional" definition="file:/C:/Projekt/dev/uvms-github/Exchange/UVMS-ExchangeModule-MODEL/src/main/resources/contract/ExchangePluginService.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/C:/Projekt/dev/uvms-github/Exchange/UVMS-ExchangeModule-MODEL/src/main/resources/contract/ExchangePluginService.wsdl"><con:part><con:url>file:/C:/Projekt/dev/uvms-github/Exchange/UVMS-ExchangeModule-MODEL/src/main/resources/contract/ExchangePluginService.wsdl</con:url><con:content><![CDATA[<definitions name="ExchangeModuleService" targetNamespace="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:plugin="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:service="urn:service.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:types="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:common="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema targetNamespace="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">
+      <xsd:import namespace="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="ExchangeCommon.xsd"/>
+      <xsd:import namespace="urn:exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Exchange.xsd"/>
+      <xsd:import namespace="urn:service.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Service.xsd"/>
+      <xsd:import namespace="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Plugin.xsd"/>
+      <xsd:simpleType name="ExchangePluginMethod">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="SET_CONFIG"/>
+          <xsd:enumeration value="SET_COMMAND"/>
+          <xsd:enumeration value="SET_REPORT"/>
+          <xsd:enumeration value="START"/>
+          <xsd:enumeration value="STOP"/>
+          <xsd:enumeration value="PING"/>
+          <xsd:enumeration value="SET_MDR_REQUEST"/>
+          <xsd:enumeration value="SET_FLUX_RESPONSE"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="PluginBaseRequest" abstract="true">
+        <xsd:sequence>
+          <xsd:element name="method" type="plugin:ExchangePluginMethod"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PluginBaseResponse" abstract="true">
+        <xsd:sequence>
+          <xsd:element name="method" type="plugin:ExchangePluginMethod"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="SetMdrPluginRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest">
+              <xsd:sequence>
+                <xsd:element name="request" type="xsd:string"/>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="AcknowledgeResponse">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseResponse">
+              <xsd:sequence>
+                <xsd:element name="serviceClassName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="response" type="common:AcknowledgeType"/>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetConfigRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest">
+              <xsd:sequence>
+                <xsd:sequence>
+                  <xsd:element name="configurations" type="service:SettingListType" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetFLUXFAResponseRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest">
+              <xsd:sequence>
+                <xsd:sequence>
+                  <xsd:element name="response" type="xsd:string"/>
+                </xsd:sequence>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetCommandRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest">
+              <xsd:sequence>
+                <xsd:element name="command" type="common:CommandType"/>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetReportRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest">
+              <xsd:sequence>
+                <xsd:element name="report" type="common:ReportType"/>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="StartRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest"></xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="StopRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest"></xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Ping request-->
+      <xsd:element name="PingRequest">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest"/>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="PingResponse">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="plugin:PluginBaseRequest">
+              <xsd:sequence>
+                <xsd:element name="response" type="xsd:string"/>
+                <xsd:element name="registered" type="xsd:boolean"/>
+                <xsd:element name="enabled" type="xsd:boolean"/>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="PluginFault">
+    <part name="body" element="types:PluginFault"/>
+  </message>
+  <message name="SetConfigRequest">
+    <part name="body" element="plugin:SetConfigRequest"/>
+  </message>
+  <message name="SetConfigResponse">
+    <part name="body" element="plugin:AcknowledgeResponse"/>
+  </message>
+  <message name="SetCommandRequest">
+    <part name="body" element="plugin:SetCommandRequest"/>
+  </message>
+  <message name="SetCommandResponse">
+    <part name="body" element="plugin:AcknowledgeResponse"/>
+  </message>
+  <message name="SetReportRequest">
+    <part name="body" element="plugin:SetReportRequest"/>
+  </message>
+  <message name="SetReportResponse">
+    <part name="body" element="plugin:AcknowledgeResponse"/>
+  </message>
+  <message name="StartRequest">
+    <part name="body" element="plugin:StartRequest"/>
+  </message>
+  <message name="StartResponse">
+    <part name="body" element="plugin:AcknowledgeResponse"/>
+  </message>
+  <message name="StopRequest">
+    <part name="body" element="plugin:StopRequest"/>
+  </message>
+  <message name="StopResponse">
+    <part name="body" element="plugin:AcknowledgeResponse"/>
+  </message>
+  <message name="PingRequest">
+    <part name="body" element="plugin:PingRequest"/>
+  </message>
+  <message name="PingResponse">
+    <part name="body" element="plugin:PingResponse"/>
+  </message>
+  <portType name="ExchangeModulePortType">
+    <operation name="SetConfig">
+      <input message="plugin:SetConfigRequest"/>
+      <output message="plugin:SetConfigResponse"/>
+      <fault name="PluginFault" message="plugin:PluginFault"/>
+    </operation>
+    <operation name="SetCommand">
+      <input message="plugin:SetCommandRequest"/>
+      <output message="plugin:SetCommandResponse"/>
+      <fault name="PluginFault" message="plugin:PluginFault"/>
+    </operation>
+    <operation name="SetReport">
+      <input message="plugin:SetReportRequest"/>
+      <output message="plugin:SetReportRequest"/>
+      <fault name="PluginFault" message="plugin:PluginFault"/>
+    </operation>
+    <operation name="Start">
+      <input message="plugin:StartRequest"/>
+      <output message="plugin:StartResponse"/>
+      <fault name="PluginFault" message="plugin:PluginFault"/>
+    </operation>
+    <operation name="Stop">
+      <input message="plugin:StopRequest"/>
+      <output message="plugin:StopResponse"/>
+      <fault name="PluginFault" message="plugin:PluginFault"/>
+    </operation>
+    <operation name="Ping">
+      <input message="plugin:PingRequest"/>
+      <output message="plugin:PingResponse"/>
+    </operation>
+  </portType>
+  <binding name="ExchangeModuleSoapBinding" type="plugin:ExchangeModulePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="SetConfig">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="PluginFault">
+        <soap:fault name="PluginFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="SetCommand">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="PluginFault">
+        <soap:fault name="PluginFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="SetReport">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="PluginFault">
+        <soap:fault name="PluginFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="Start">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="PluginFault">
+        <soap:fault name="PluginFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="Stop">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="PluginFault">
+        <soap:fault name="PluginFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="Ping">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="ExchangeModuleService">
+    <port name="ExchangeModulePortType" binding="plugin:ExchangeModuleSoapBinding">
+      <soap:address location="http://REPLACE_ME"/>
+    </port>
+  </service>
+</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\ExchangeCommon.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:common="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:movement="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:plugin="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:exchange="urn:exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:import namespace="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Movement.xsd"/>
+  <xsd:import namespace="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Plugin.xsd"/>
+  <xsd:import namespace="urn:exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Exchange.xsd"/>
+  <xsd:element name="exchangeFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="code" type="xsd:int"/>
+        <xsd:element name="message" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="keyValueType">
+    <xsd:sequence>
+      <xsd:element name="key" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="AcknowledgeTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="OK"/>
+      <xsd:enumeration value="NOK"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AcknowledgeType">
+    <xsd:sequence>
+      <xsd:element name="messageId" type="xsd:string"/>
+      <xsd:element name="message" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="type" type="common:AcknowledgeTypeType"/>
+      <xsd:element name="pollStatus" type="common:PollStatusAcknowledgeType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="unsentMessageGuid" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PollStatusAcknowledgeType">
+    <xsd:sequence>
+      <xsd:element name="status" type="exchange:ExchangeLogStatusTypeType"/>
+      <xsd:element name="pollId" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="CommandType">
+    <xsd:sequence>
+      <xsd:element name="pluginName" type="xsd:string"/>
+      <xsd:element name="command" type="common:CommandTypeType"/>
+      <xsd:element name="timestamp" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+      <xsd:choice>
+        <xsd:element name="poll" type="plugin:PollType"/>
+        <xsd:element name="email" type="plugin:EmailType"/>
+      </xsd:choice>
+      <xsd:element name="unsentMessageGuid" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="fwdRule" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="CommandTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="POLL"/>
+      <xsd:enumeration value="EMAIL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="ReportType">
+    <xsd:sequence>
+      <xsd:element name="type" type="common:ReportTypeType"/>
+      <!--<xsd:element name="version" type="xsd:string"/>-->
+      <xsd:element name="recipient" type="xsd:string"/>
+      <xsd:element name="recipientInfo" type="movement:RecipientInfoType" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="timestamp" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+      <xsd:choice>
+        <xsd:element name="movement" type="movement:MovementType"/>
+        <!--<xsd:element name="elog" type="xsd:string"/>-->
+      </xsd:choice>
+      <xsd:element name="unsentMessageGuid" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="ReportTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="MOVEMENT"/>
+      <!--<xsd:enumeration value="ELOG"/>-->
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Movement.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:movement="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:asset="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:mobterm="urn:mobileterminal.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:plugin="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:import namespace="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Asset.xsd"/>
+  <xsd:import namespace="urn:mobileterminal.movement.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="MobileTerminal.xsd"/>
+  <xsd:import namespace="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Plugin.xsd"/>
+  <xsd:complexType name="ReportMovementType" abstract="true">
+    <xsd:sequence>
+      <xsd:element name="pluginName" type="xsd:string"/>
+      <xsd:element name="pluginType" type="plugin:PluginType"/>
+      <!--<xsd:element name="version" type="xsd:string" minOccurs="1" maxOccurs="1"/>-->
+      <xsd:element name="timestamp" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SetReportMovementType">
+    <xsd:complexContent>
+      <xsd:extension base="movement:ReportMovementType">
+        <xsd:sequence>
+          <xsd:element name="movement" type="movement:MovementBaseType"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="MovementRefType">
+    <xsd:sequence>
+      <xsd:element name="movementRefGuid" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="type" type="movement:MovementRefTypeType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="ackResponseMessageID" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="MovementRefTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="MOVEMENT"/>
+      <xsd:enumeration value="ALARM"/>
+      <!--(holding table)-->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="SendMovementToPluginType">
+    <xsd:complexContent>
+      <xsd:extension base="movement:ReportMovementType">
+        <xsd:sequence>
+          <xsd:element name="fwdRule" type="xsd:string"/>
+          <xsd:element name="fwdDate" type="xsd:dateTime"/>
+          <xsd:element name="recipient" type="xsd:string"/>
+          <xsd:element name="recipientInfo" type="movement:RecipientInfoType" minOccurs="1" maxOccurs="unbounded"/>
+          <xsd:element name="movement" type="movement:MovementType"/>
+          <xsd:element name="assetName" type="xsd:string"/>
+          <xsd:element name="ircs" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RecipientInfoType">
+    <xsd:sequence>
+      <xsd:element name="key" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--Type received in UNIONVMS-->
+  <xsd:complexType name="MovementBaseType">
+    <xsd:sequence>
+      <xsd:element name="assetId" type="asset:AssetId"/>
+      <xsd:element name="mobileTerminalId" type="mobterm:MobileTerminalId"/>
+      <xsd:element name="comChannelType" type="movement:MovementComChannelType"/>
+      <xsd:element name="source" type="movement:MovementSourceType"/>
+      <xsd:element name="position" type="movement:MovementPoint"/>
+      <xsd:element name="positionTime" type="xsd:dateTime"/>
+      <xsd:element name="status" type="xsd:string"/>
+      <xsd:element name="reportedSpeed" type="xsd:double" nillable="true"/>
+      <xsd:element name="reportedCourse" type="xsd:double" nillable="true"/>
+      <xsd:element name="movementType" type="movement:MovementTypeType"/>
+      <xsd:element name="activity" type="movement:MovementActivityType"/>
+      <xsd:element name="assetName" type="xsd:string"/>
+      <xsd:element name="flagState" type="xsd:string"/>
+      <xsd:element name="externalMarking" type="xsd:string"/>
+      <xsd:element name="ircs" type="xsd:string"/>
+      <xsd:element name="mmsi" type="xsd:string"/>
+      <xsd:element name="tripNumber" type="xsd:double" nillable="true"/>
+      <xsd:element name="internalReferenceNumber" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MovementPoint">
+    <xsd:sequence>
+      <xsd:element name="longitude" type="xsd:double" nillable="true"/>
+      <xsd:element name="latitude" type="xsd:double" nillable="true"/>
+      <xsd:element name="altitude" type="xsd:double" nillable="true"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--Plugin type-->
+  <xsd:simpleType name="MovementComChannelType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="FLUX"/>
+      <xsd:enumeration value="MANUAL"/>
+      <xsd:enumeration value="NAF"/>
+      <xsd:enumeration value="MOBILE_TERMINAL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="MovementTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="POS"/>
+      <xsd:enumeration value="ENT"/>
+      <xsd:enumeration value="EXI"/>
+      <xsd:enumeration value="MAN"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <!--LES (eg. InmarsatC EIK), ev. free text field-->
+  <xsd:simpleType name="MovementSourceType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="INMARSAT_C"/>
+      <xsd:enumeration value="IRIDIUM"/>
+      <xsd:enumeration value="AIS"/>
+      <xsd:enumeration value="MANUAL"/>
+      <xsd:enumeration value="OTHER"/>
+      <xsd:enumeration value="NAF"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="MovementActivityTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="COE"/>
+      <xsd:enumeration value="COX"/>
+      <xsd:enumeration value="TRA"/>
+      <xsd:enumeration value="POR"/>
+      <xsd:enumeration value="CAN"/>
+      <xsd:enumeration value="NOT"/>
+      <xsd:enumeration value="AUT"/>
+      <xsd:enumeration value="SUS"/>
+      <xsd:enumeration value="COB"/>
+      <xsd:enumeration value="CAT"/>
+      <xsd:enumeration value="RET"/>
+      <xsd:enumeration value="OBR"/>
+      <xsd:enumeration value="ANC"/>
+      <xsd:enumeration value="DRI"/>
+      <xsd:enumeration value="FIS"/>
+      <xsd:enumeration value="HAU"/>
+      <xsd:enumeration value="PRO"/>
+      <xsd:enumeration value="STE"/>
+      <xsd:enumeration value="TRX"/>
+      <xsd:enumeration value="OTH"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <!--type sent to FLUX-->
+  <xsd:complexType name="MovementType">
+    <xsd:complexContent>
+      <xsd:extension base="movement:MovementBaseType">
+        <xsd:sequence>
+          <xsd:element name="guid" type="xsd:string"/>
+          <!--unionvms specific-->
+          <xsd:element name="connectId" type="xsd:string"/>
+          <!--unionvms specific-->
+          <xsd:element name="calculatedCourse" type="xsd:double" nillable="true"/>
+          <xsd:element name="measuredSpeed" type="xsd:double" nillable="true"/>
+          <xsd:element name="calculatedSpeed" type="xsd:double" nillable="true"/>
+          <xsd:element name="segmentIds" type="xsd:string" minOccurs="1" maxOccurs="2"/>
+          <xsd:element name="metaData" type="movement:MovementMetaData"/>
+          <xsd:element name="wkt" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="MovementMetaData">
+    <xsd:sequence>
+      <xsd:element name="closestPort" type="xsd:string"/>
+      <xsd:element name="distanceToClosestPort" type="xsd:double" nillable="true"/>
+      <xsd:element name="closestCountryCoast" type="xsd:string"/>
+      <xsd:element name="distanceToCountryCoast" type="xsd:double" nillable="true"/>
+      <xsd:element name="areas" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MovementActivityType">
+    <xsd:sequence>
+      <xsd:element name="messageType" type="movement:MovementActivityTypeType"/>
+      <xsd:element name="messageId" type="xsd:string"/>
+      <xsd:element name="callback" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Asset.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:asset="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:complexType name="AssetId">
+    <xsd:sequence>
+      <xsd:element name="assetType" type="asset:AssetType"/>
+      <xsd:element name="assetIdList" type="asset:AssetIdList" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="AssetType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="VESSEL"/>
+      <xsd:enumeration value="AIR"/>
+      <xsd:enumeration value="VEHICLE"/>
+      <xsd:enumeration value="OTHER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AssetIdList">
+    <xsd:sequence>
+      <xsd:element name="idType" type="asset:AssetIdType"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="AssetIdType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ID"/>
+      <xsd:enumeration value="CFR"/>
+      <xsd:enumeration value="IRCS"/>
+      <xsd:enumeration value="IMO"/>
+      <xsd:enumeration value="MMSI"/>
+      <xsd:enumeration value="GUID"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\MobileTerminal.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:mobileterminal.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:mobterm="urn:mobileterminal.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:complexType name="MobileTerminalId">
+    <xsd:sequence>
+      <xsd:element name="guid" type="xsd:string"/>
+      <!--unionvms specific-->
+      <xsd:element name="connectId" type="xsd:string"/>
+      <!--unionvms specific-->
+      <xsd:element name="mobileTerminalIdList" type="mobterm:IdList" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="IdType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SERIAL_NUMBER"/>
+      <xsd:enumeration value="LES"/>
+      <xsd:enumeration value="DNID"/>
+      <xsd:enumeration value="MEMBER_NUMBER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="IdList">
+    <xsd:sequence>
+      <xsd:element name="type" type="mobterm:IdType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Plugin.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:plugin="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:common="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:import namespace="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="ExchangeCommon.xsd"/>
+  <xsd:simpleType name="PluginType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="EMAIL"/>
+      <xsd:enumeration value="SATELLITE_RECEIVER"/>
+      <xsd:enumeration value="FLUX"/>
+      <xsd:enumeration value="MANUAL"/>
+      <xsd:enumeration value="OTHER"/>
+      <xsd:enumeration value="NAF"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="PollTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="CONFIG"/>
+      <xsd:enumeration value="SAMPLING"/>
+      <xsd:enumeration value="POLL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:element name="PluginFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="code" type="xsd:int"/>
+        <xsd:element name="message" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="PollType">
+    <xsd:sequence>
+      <xsd:element name="pollId" type="xsd:string"/>
+      <xsd:element name="pollTypeType" type="plugin:PollTypeType"/>
+      <xsd:element name="message" type="xsd:string"/>
+      <!--comment from GUI sender-->
+      <xsd:element name="pollReceiver" type="common:keyValueType" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="pollPayload" type="common:keyValueType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="EmailType">
+    <xsd:sequence>
+      <xsd:element name="to" type="xsd:string"/>
+      <xsd:element name="from" type="xsd:string"/>
+      <xsd:element name="cc" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="subject" type="xsd:string"/>
+      <xsd:element name="body" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Exchange.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:exchange.schema.fisheries.ec.europa.eu:v1" xmlns:exchange="urn:exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:complexType name="ExchangeLogType" abstract="true">
+    <xsd:sequence>
+      <xsd:element name="guid" type="xsd:string"/>
+      <xsd:element name="senderReceiver" type="xsd:string"/>
+      <xsd:element name="dateRecieved" type="xsd:dateTime"/>
+      <xsd:element name="type" type="exchange:LogType"/>
+      <xsd:element name="incoming" type="xsd:boolean"/>
+      <xsd:element name="typeRef" type="exchange:LogRefType"/>
+      <xsd:element name="status" type="exchange:ExchangeLogStatusTypeType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="LogType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="RECEIVE_MOVEMENT"/>
+      <xsd:enumeration value="SEND_MOVEMENT"/>
+      <xsd:enumeration value="SEND_EMAIL"/>
+      <xsd:enumeration value="SEND_POLL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="LogRefType">
+    <xsd:sequence>
+      <xsd:element name="refGuid" type="xsd:string"/>
+      <xsd:element name="type" type="exchange:TypeRefType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="TypeRefType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="MOVEMENT"/>
+      <xsd:enumeration value="POLL"/>
+      <xsd:enumeration value="ALARM"/>
+      <xsd:enumeration value="UNKNOWN"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="ReceiveMovementType">
+    <xsd:complexContent>
+      <xsd:extension base="exchange:ExchangeLogType">
+        <xsd:sequence>
+          <xsd:element name="source" type="xsd:string"/>
+          <xsd:element name="recipient" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="SendMovementType">
+    <xsd:complexContent>
+      <xsd:extension base="exchange:ExchangeLogType">
+        <xsd:sequence>
+          <xsd:element name="fwdRule" type="xsd:string"/>
+          <xsd:element name="recipient" type="xsd:string"/>
+          <xsd:element name="fwdDate" type="xsd:dateTime"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="SendEmailType">
+    <xsd:complexContent>
+      <xsd:extension base="exchange:ExchangeLogType">
+        <xsd:sequence>
+          <xsd:element name="fwdRule" type="xsd:string"/>
+          <xsd:element name="recipient" type="xsd:string"/>
+          <xsd:element name="fwdDate" type="xsd:dateTime"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="SendPollType">
+    <xsd:complexContent>
+      <xsd:extension base="exchange:ExchangeLogType">
+        <xsd:sequence>
+          <xsd:element name="fwdRule" type="xsd:string"/>
+          <xsd:element name="recipient" type="xsd:string"/>
+          <xsd:element name="fwdDate" type="xsd:dateTime"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ExchangeLogStatusType">
+    <xsd:sequence>
+      <xsd:element name="guid" type="xsd:string"/>
+      <xsd:element name="typeRef" type="exchange:LogRefType"/>
+      <xsd:element name="history" type="exchange:ExchangeLogStatusHistoryType" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="identifier" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ExchangeLogStatusHistoryType">
+    <xsd:sequence>
+      <xsd:element name="timestamp" type="xsd:dateTime"/>
+      <xsd:element name="status" type="exchange:ExchangeLogStatusTypeType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="ExchangeLogStatusTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ISSUED"/>
+      <!--For poll-->
+      <xsd:enumeration value="PENDING"/>
+      <xsd:enumeration value="PROBABLY_TRANSMITTED"/>
+      <xsd:enumeration value="FAILED"/>
+      <xsd:enumeration value="SUCCESSFUL"/>
+      <xsd:enumeration value="UNKNOWN"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="SearchField">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="TRANSFER_INCOMING"/>
+      <xsd:enumeration value="DATE_RECEIVED_FROM"/>
+      <xsd:enumeration value="DATE_RECEIVED_TO"/>
+      <xsd:enumeration value="SENDER_RECEIVER"/>
+      <xsd:enumeration value="RECIPIENT"/>
+      <xsd:enumeration value="TYPE"/>
+      <xsd:enumeration value="STATUS"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="UnsentMessageTypePropertyKey">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="EMAIL"/>
+      <xsd:enumeration value="ASSET_NAME"/>
+      <xsd:enumeration value="IRCS"/>
+      <xsd:enumeration value="LONGITUDE"/>
+      <xsd:enumeration value="LATITUDE"/>
+      <xsd:enumeration value="POLL_TYPE"/>
+      <xsd:enumeration value="POSITION_TIME"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="ExchangeHistoryListQuery">
+    <xsd:sequence>
+      <xsd:element name="type" type="exchange:TypeRefType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="status" type="exchange:ExchangeLogStatusTypeType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="typeRefDateFrom" type="xsd:dateTime" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="typeRefDateTo" type="xsd:dateTime" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ExchangeListQuery">
+    <xsd:sequence>
+      <xsd:element name="pagination" type="exchange:ExchangeListPagination" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="exchangeSearchCriteria" type="exchange:ExchangeListCriteria" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ExchangeListCriteria">
+    <xsd:sequence>
+      <xsd:element name="isDynamic" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="criterias" type="exchange:ExchangeListCriteriaPair" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ExchangeListPagination">
+    <xsd:sequence>
+      <xsd:element name="page" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="listSize" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ExchangeListCriteriaPair">
+    <xsd:sequence>
+      <xsd:element name="key" type="exchange:SearchField"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="UnsentMessageType">
+    <xsd:sequence>
+      <xsd:element name="messageId" type="xsd:string"/>
+      <xsd:element name="dateReceived" type="xsd:dateTime"/>
+      <xsd:element name="senderReceiver" type="xsd:string"/>
+      <xsd:element name="recipient" type="xsd:string"/>
+      <xsd:element name="message" type="xsd:string"/>
+      <xsd:element name="properties" type="exchange:UnsentMessageTypeProperty" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="UnsentMessageTypeProperty">
+    <xsd:sequence>
+      <xsd:element name="key" type="exchange:UnsentMessageTypePropertyKey"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PollStatus">
+    <xsd:sequence>
+      <xsd:element name="pollGuid" type="xsd:string"/>
+      <xsd:element name="exchangeLogGuid" type="xsd:string"/>
+      <xsd:element name="status" type="exchange:ExchangeLogStatusTypeType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Service.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:service.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:service="urn:service.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:plugin="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:common="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:import namespace="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Plugin.xsd"/>
+  <xsd:import namespace="urn:common.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="ExchangeCommon.xsd"/>
+  <xsd:complexType name="ServiceType">
+    <xsd:sequence>
+      <xsd:element name="serviceResponseMessageName" type="xsd:string"/>
+      <xsd:element name="serviceClassName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="description" type="xsd:string"/>
+      <xsd:element name="pluginType" type="plugin:PluginType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="satelliteType" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ServiceResponseType">
+    <xsd:complexContent>
+      <xsd:extension base="service:ServiceType">
+        <xsd:sequence>
+          <xsd:element name="settingList" type="service:SettingListType" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="capabilityList" type="service:CapabilityListType" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="status" type="service:StatusType" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="active" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:simpleType name="StatusType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="UNKNOWN"/>
+      <xsd:enumeration value="STARTED"/>
+      <xsd:enumeration value="STOPPED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="SettingType">
+    <xsd:complexContent>
+      <xsd:extension base="common:keyValueType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="SettingListType">
+    <xsd:sequence>
+      <xsd:element name="setting" type="service:SettingType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="CapabilityTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="POLLABLE"/>
+      <xsd:enumeration value="ONLY_SINGLE_OCEAN"/>
+      <xsd:enumeration value="MULTIPLE_OCEAN"/>
+      <xsd:enumeration value="CONFIGURABLE"/>
+      <xsd:enumeration value="SAMPLING"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="CapabilityType">
+    <xsd:sequence>
+      <xsd:element name="type" type="service:CapabilityTypeType"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="CapabilityListType">
+    <xsd:sequence>
+      <xsd:element name="capability" type="service:CapabilityType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://REPLACE_ME</con:endpoint><con:endpoint>jms://activeMQsession::queue_UVMSAssetModel::topic_TestQ1</con:endpoint><con:endpoint>jms://activeMQsession::queue_UVMSExchangeEvent</con:endpoint><con:endpoint>jms://activeMQsession::queue_UVMSExchangeEvent::topic_TestQ1</con:endpoint></con:endpoints><con:operation id="e4cb4788-7ab1-411f-a1e0-e9b8ca4e0f52" isOneWay="false" action="" name="Ping" bindingOperationName="Ping" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="896fb265-fe99-4bf8-b77d-2451224b97af" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>jms://activeMQsession::queue_UVMSExchangeEvent::topic_TestQ1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:PingRequest>\r
+         <method>PING</method>\r
+      </urn:PingRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>NTLM</con:addedBasicAuthenticationTypes><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1/ExchangeModulePortType/PingRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="b38a1ede-e500-4c9f-ba9d-ea2ba6cd37d1" isOneWay="false" action="" name="SetCommand" bindingOperationName="SetCommand" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a8606cf9-6ba4-4230-864d-9bfa2c421bbd" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://REPLACE_ME</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:SetCommandRequest>\r
+         <method>?</method>\r
+         <command>\r
+            <pluginName>?</pluginName>\r
+            <command>?</command>\r
+            <timestamp>?</timestamp>\r
+            <!--You have a CHOICE of the next 2 items at this level-->\r
+            <poll>\r
+               <pollId>?</pollId>\r
+               <pollTypeType>?</pollTypeType>\r
+               <message>?</message>\r
+               <!--1 or more repetitions:-->\r
+               <pollReceiver>\r
+                  <key>?</key>\r
+                  <value>?</value>\r
+               </pollReceiver>\r
+               <!--Zero or more repetitions:-->\r
+               <pollPayload>\r
+                  <key>?</key>\r
+                  <value>?</value>\r
+               </pollPayload>\r
+            </poll>\r
+            <email>\r
+               <to>?</to>\r
+               <from>?</from>\r
+               <!--1 or more repetitions:-->\r
+               <cc>?</cc>\r
+               <subject>?</subject>\r
+               <body>?</body>\r
+            </email>\r
+            <unsentMessageGuid>?</unsentMessageGuid>\r
+            <fwdRule>?</fwdRule>\r
+         </command>\r
+      </urn:SetCommandRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1/ExchangeModulePortType/SetCommandRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="2ce8a90c-3d21-4ac8-af25-0e7aa306e933" isOneWay="false" action="" name="SetConfig" bindingOperationName="SetConfig" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="34a70bda-4725-42ce-a1b5-a6be729b53eb" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://REPLACE_ME</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:SetConfigRequest>\r
+         <method>?</method>\r
+         <configurations>\r
+            <!--Zero or more repetitions:-->\r
+            <setting>\r
+               <key>?</key>\r
+               <value>?</value>\r
+            </setting>\r
+         </configurations>\r
+      </urn:SetConfigRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1/ExchangeModulePortType/SetConfigRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="2123a3be-44fa-49c2-bd8c-c823c72c7948" isOneWay="false" action="" name="SetReport" bindingOperationName="SetReport" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="e35e2abf-8dfd-4dfe-bffd-d3281e90e9fe" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://REPLACE_ME</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:SetReportRequest>\r
+         <method>?</method>\r
+         <report>\r
+            <type>?</type>\r
+            <recipient>?</recipient>\r
+            <!--1 or more repetitions:-->\r
+            <recipientInfo>\r
+               <key>?</key>\r
+               <value>?</value>\r
+            </recipientInfo>\r
+            <timestamp>?</timestamp>\r
+            <movement>\r
+               <assetId>\r
+                  <assetType>?</assetType>\r
+                  <!--1 or more repetitions:-->\r
+                  <assetIdList>\r
+                     <idType>?</idType>\r
+                     <value>?</value>\r
+                  </assetIdList>\r
+               </assetId>\r
+               <mobileTerminalId>\r
+                  <guid>?</guid>\r
+                  <connectId>?</connectId>\r
+                  <!--Zero or more repetitions:-->\r
+                  <mobileTerminalIdList>\r
+                     <type>?</type>\r
+                     <value>?</value>\r
+                  </mobileTerminalIdList>\r
+               </mobileTerminalId>\r
+               <comChannelType>?</comChannelType>\r
+               <source>?</source>\r
+               <position>\r
+                  <longitude>?</longitude>\r
+                  <latitude>?</latitude>\r
+                  <altitude>?</altitude>\r
+               </position>\r
+               <positionTime>?</positionTime>\r
+               <status>?</status>\r
+               <reportedSpeed>?</reportedSpeed>\r
+               <reportedCourse>?</reportedCourse>\r
+               <movementType>?</movementType>\r
+               <activity>\r
+                  <messageType>?</messageType>\r
+                  <messageId>?</messageId>\r
+                  <callback>?</callback>\r
+               </activity>\r
+               <assetName>?</assetName>\r
+               <flagState>?</flagState>\r
+               <externalMarking>?</externalMarking>\r
+               <ircs>?</ircs>\r
+               <mmsi>?</mmsi>\r
+               <tripNumber>?</tripNumber>\r
+               <internalReferenceNumber>?</internalReferenceNumber>\r
+               <guid>?</guid>\r
+               <connectId>?</connectId>\r
+               <calculatedCourse>?</calculatedCourse>\r
+               <measuredSpeed>?</measuredSpeed>\r
+               <calculatedSpeed>?</calculatedSpeed>\r
+               <!--1 to 2 repetitions:-->\r
+               <segmentIds>?</segmentIds>\r
+               <metaData>\r
+                  <closestPort>?</closestPort>\r
+                  <distanceToClosestPort>?</distanceToClosestPort>\r
+                  <closestCountryCoast>?</closestCountryCoast>\r
+                  <distanceToCountryCoast>?</distanceToCountryCoast>\r
+                  <!--1 or more repetitions:-->\r
+                  <areas>?</areas>\r
+               </metaData>\r
+               <wkt>?</wkt>\r
+            </movement>\r
+            <unsentMessageGuid>?</unsentMessageGuid>\r
+         </report>\r
+      </urn:SetReportRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1/ExchangeModulePortType/SetReportRequest"/></con:call></con:operation><con:operation id="94d954b8-e456-4313-8502-d9354a61a7b3" isOneWay="false" action="" name="Start" bindingOperationName="Start" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="dac3a9eb-b4da-4ab6-9560-8df12f03b945" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://REPLACE_ME</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:StartRequest>\r
+         <method>?</method>\r
+      </urn:StartRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1/ExchangeModulePortType/StartRequest"/></con:call></con:operation><con:operation id="25596d38-9c72-4a01-864e-ca01230aa0f3" isOneWay="false" action="" name="Stop" bindingOperationName="Stop" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="43c12ad7-45a5-44c4-ae71-2601b60cdd6e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://REPLACE_ME</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:StopRequest>\r
+         <method>?</method>\r
+      </urn:StopRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1/ExchangeModulePortType/StopRequest"/></con:call><con:call id="49ab42a7-b874-45cb-9379-6a32b9974962" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://REPLACE_ME</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <urn:StopRequest>\r
+         <method>?</method>\r
+      </urn:StopRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1/ExchangeModulePortType/StopRequest"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>

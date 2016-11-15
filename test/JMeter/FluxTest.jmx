@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.9" jmeter="3.0 r1743807">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Flux plugin" enabled="true">
+      <stringProp name="TestPlan.comments">Integration tests of the FLUX plugin
+</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="FluxPlugin Ping" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1478596676000</longProp>
+        <longProp name="ThreadGroup.end_time">1478596676000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">Testing of the plugin ping method</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="JMS Publisher" enabled="true">
+          <stringProp name="jms.jndi_properties">false</stringProp>
+          <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
+          <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
+          <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
+          <stringProp name="jms.topic">dynamicTopics/EventBus</stringProp>
+          <stringProp name="jms.expiration">1</stringProp>
+          <stringProp name="jms.priority">0</stringProp>
+          <stringProp name="jms.security_principle">admin</stringProp>
+          <stringProp name="jms.security_credentials">admin</stringProp>
+          <stringProp name="jms.text_message">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;ns2:PingRequest xmlns:ns2=&quot;urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1&quot;&gt;
+    &lt;method&gt;PING&lt;/method&gt;
+&lt;/ns2:PingRequest&gt;</stringProp>
+          <stringProp name="jms.input_file"></stringProp>
+          <stringProp name="jms.random_path"></stringProp>
+          <stringProp name="jms.config_choice">jms_use_text</stringProp>
+          <stringProp name="jms.config_msg_type">jms_text_message</stringProp>
+          <stringProp name="jms.iterations">1</stringProp>
+          <boolProp name="jms.authenticate">true</boolProp>
+          <elementProp name="jms.jmsProperties" elementType="JMSProperties">
+            <collectionProp name="JMSProperties.properties">
+              <elementProp name="" elementType="JMSProperty">
+                <stringProp name="JMSProperty.name">ServiceName</stringProp>
+                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.flux</stringProp>
+                <stringProp name="JMSProperty.type">java.lang.String</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="JMSProperty">
+                <stringProp name="JMSProperty.name">JMSReplyTo</stringProp>
+                <stringProp name="JMSProperty.value">UVMSExchange</stringProp>
+                <stringProp name="JMSProperty.type">java.lang.String</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <boolProp name="jms.non_persistent">true</boolProp>
+        </PublisherSampler>
+        <hashTree/>
+        <SubscriberSampler guiclass="JMSSubscriberGui" testclass="SubscriberSampler" testname="JMS Subscriber" enabled="true">
+          <stringProp name="jms.jndi_properties">false</stringProp>
+          <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
+          <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
+          <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
+          <stringProp name="jms.topic">dynamicQueues/UVMSExchange</stringProp>
+          <stringProp name="jms.security_principle">admin</stringProp>
+          <stringProp name="jms.security_credentials">admin</stringProp>
+          <boolProp name="jms.authenticate">true</boolProp>
+          <stringProp name="jms.iterations">1</stringProp>
+          <stringProp name="jms.read_response">true</stringProp>
+          <stringProp name="jms.client_choice">jms_subscriber_receive</stringProp>
+          <stringProp name="jms.timeout">1000</stringProp>
+          <boolProp name="jms.destination_static">false</boolProp>
+        </SubscriberSampler>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="FluxPlugin SetConfig" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1478596676000</longProp>
+        <longProp name="ThreadGroup.end_time">1478596676000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">Testing of the plugin ping method</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="JMS Publisher" enabled="true">
+          <stringProp name="jms.jndi_properties">false</stringProp>
+          <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
+          <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
+          <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
+          <stringProp name="jms.topic">dynamicTopics/EventBus</stringProp>
+          <stringProp name="jms.expiration">1</stringProp>
+          <stringProp name="jms.priority"></stringProp>
+          <stringProp name="jms.security_principle">admin</stringProp>
+          <stringProp name="jms.security_credentials">admin</stringProp>
+          <stringProp name="jms.text_message">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;ns2:SetConfigRequest xmlns:ns2=&quot;urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1&quot;&gt;
+    &lt;method&gt;SET_CONFIG&lt;/method&gt;
+    &lt;configurations&gt;
+        &lt;setting&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.CLIENT_CERT_HEADER&lt;/key&gt;
+            &lt;value&gt;Client-Cert&lt;/value&gt;
+        &lt;/setting&gt;
+        &lt;setting&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.CLIENT_CERT_USER&lt;/key&gt;
+            &lt;value&gt;UVMS_TEST&lt;/value&gt;
+        &lt;/setting&gt;
+        &lt;setting&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_AD&lt;/key&gt;
+            &lt;value&gt;XEU&lt;/value&gt;
+        &lt;/setting&gt;
+        &lt;setting&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_DATAFLOW&lt;/key&gt;
+            &lt;value&gt;urn:un:unece:uncefact:data:standard:FLUXVesselPositionMessage:4&lt;/value&gt;
+        &lt;/setting&gt;
+        &lt;setting&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.ACTION_REASON&lt;/key&gt;
+            &lt;value&gt;UNIONVMS POC version 1.0&lt;/value&gt;
+        &lt;/setting&gt;
+        &lt;setting&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.LOCAL_ENDPOINT&lt;/key&gt;
+            &lt;value&gt;http://localhost:8088/flux&lt;/value&gt;
+        &lt;/setting&gt;
+        &lt;setting&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_ENDPOINT&lt;/key&gt;
+            &lt;value&gt;http://livm58t:8080/BridgeWebApp/connector&lt;/value&gt;
+        &lt;/setting&gt;
+    &lt;/configurations&gt;
+&lt;/ns2:SetConfigRequest&gt;</stringProp>
+          <stringProp name="jms.input_file"></stringProp>
+          <stringProp name="jms.random_path"></stringProp>
+          <stringProp name="jms.config_choice">jms_use_text</stringProp>
+          <stringProp name="jms.config_msg_type">jms_text_message</stringProp>
+          <stringProp name="jms.iterations">1</stringProp>
+          <boolProp name="jms.authenticate">true</boolProp>
+          <elementProp name="jms.jmsProperties" elementType="JMSProperties">
+            <collectionProp name="JMSProperties.properties">
+              <elementProp name="" elementType="JMSProperty">
+                <stringProp name="JMSProperty.name">ServiceName</stringProp>
+                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.flux</stringProp>
+                <stringProp name="JMSProperty.type">java.lang.String</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="JMSProperty">
+                <stringProp name="JMSProperty.name">JMSReplyTo</stringProp>
+                <stringProp name="JMSProperty.value">UVMSExchange</stringProp>
+                <stringProp name="JMSProperty.type">java.lang.String</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </PublisherSampler>
+        <hashTree/>
+        <SubscriberSampler guiclass="JMSSubscriberGui" testclass="SubscriberSampler" testname="JMS Subscriber" enabled="true">
+          <stringProp name="jms.jndi_properties">false</stringProp>
+          <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
+          <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
+          <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
+          <stringProp name="jms.topic">dynamicQueues/UVMSExchange</stringProp>
+          <stringProp name="jms.security_principle">admin</stringProp>
+          <stringProp name="jms.security_credentials">admin</stringProp>
+          <boolProp name="jms.authenticate">true</boolProp>
+          <stringProp name="jms.iterations">1</stringProp>
+          <stringProp name="jms.read_response">true</stringProp>
+          <stringProp name="jms.client_choice">jms_subscriber_receive</stringProp>
+          <stringProp name="jms.timeout">1000</stringProp>
+        </SubscriberSampler>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="FluxPlugin SetReport" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1478596676000</longProp>
+        <longProp name="ThreadGroup.end_time">1478596676000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">Testing of the plugin ping method</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="JMS Publisher" enabled="true">
+          <stringProp name="jms.jndi_properties">false</stringProp>
+          <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
+          <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
+          <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
+          <stringProp name="jms.topic">dynamicTopics/EventBus</stringProp>
+          <stringProp name="jms.expiration">1</stringProp>
+          <stringProp name="jms.priority"></stringProp>
+          <stringProp name="jms.security_principle">admin</stringProp>
+          <stringProp name="jms.security_credentials">admin</stringProp>
+          <stringProp name="jms.text_message">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;ns2:SetReportRequest xmlns:ns2=&quot;urn:plugin.exchange.schema.fisheries.ec.europa.eu:v1&quot;&gt;
+    &lt;method&gt;SET_REPORT&lt;/method&gt;
+    &lt;report&gt;
+        &lt;type&gt;MOVEMENT&lt;/type&gt;
+        &lt;recipient&gt;NOR&lt;/recipient&gt;
+        &lt;timestamp&gt;2016-11-10T17:28:18.829+01:00&lt;/timestamp&gt;
+        &lt;movement&gt;
+            &lt;assetId&gt;
+                &lt;assetType&gt;VESSEL&lt;/assetType&gt;
+                &lt;assetIdList&gt;
+                    &lt;idType&gt;GUID&lt;/idType&gt;
+                    &lt;value&gt;56b65ee3-031b-4482-bd0f-560b6a66f285&lt;/value&gt;
+                &lt;/assetIdList&gt;
+                &lt;assetIdList&gt;
+                    &lt;idType&gt;CFR&lt;/idType&gt;
+                    &lt;value&gt;CFR&lt;/value&gt;
+                &lt;/assetIdList&gt;
+                &lt;assetIdList&gt;
+                    &lt;idType&gt;ID&lt;/idType&gt;
+                    &lt;value&gt;1234&lt;/value&gt;
+                &lt;/assetIdList&gt;
+                &lt;assetIdList&gt;
+                    &lt;idType&gt;IMO&lt;/idType&gt;
+                    &lt;value&gt;IMO&lt;/value&gt;
+                &lt;/assetIdList&gt;
+                &lt;assetIdList&gt;
+                    &lt;idType&gt;IRCS&lt;/idType&gt;
+                    &lt;value&gt;IRCS&lt;/value&gt;
+                &lt;/assetIdList&gt;
+                &lt;assetIdList&gt;
+                    &lt;idType&gt;MMSI&lt;/idType&gt;
+                    &lt;value&gt;MMSI&lt;/value&gt;
+                &lt;/assetIdList&gt;
+            &lt;/assetId&gt;
+            &lt;comChannelType&gt;FLUX&lt;/comChannelType&gt;
+            &lt;source&gt;INMARSAT_C&lt;/source&gt;
+            &lt;position&gt;
+                &lt;longitude&gt;3.3&lt;/longitude&gt;
+                &lt;latitude&gt;5.3&lt;/latitude&gt;
+                &lt;altitude xsi:nil=&quot;true&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;/&gt;
+            &lt;/position&gt;
+            &lt;positionTime&gt;2016-11-10T17:28:18.998+01:00&lt;/positionTime&gt;
+            &lt;reportedSpeed&gt;3.2&lt;/reportedSpeed&gt;
+            &lt;reportedCourse&gt;75.3&lt;/reportedCourse&gt;
+            &lt;movementType&gt;POS&lt;/movementType&gt;
+            &lt;activity&gt;
+                &lt;messageType&gt;CAT&lt;/messageType&gt;
+                &lt;messageId&gt;4f46027c-57bf-4148-af88-317353b5bb73&lt;/messageId&gt;
+                &lt;callback&gt;CALLBACK&lt;/callback&gt;
+            &lt;/activity&gt;
+            &lt;assetName&gt;ASSET_NAME&lt;/assetName&gt;
+            &lt;flagState&gt;SWE&lt;/flagState&gt;
+            &lt;externalMarking&gt;EXT_MARKING&lt;/externalMarking&gt;
+            &lt;ircs&gt;IRCS&lt;/ircs&gt;
+            &lt;mmsi&gt;MMSI&lt;/mmsi&gt;
+            &lt;tripNumber xsi:nil=&quot;true&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;/&gt;
+            &lt;internalReferenceNumber&gt;afda38cf-caf9-4490-8f1a-47ba75dda3a0&lt;/internalReferenceNumber&gt;
+            &lt;guid&gt;dce28004-7610-4e9d-b62b-2da8ae8504ee&lt;/guid&gt;
+            &lt;connectId&gt;c4ddd99c-b294-4263-bc60-01c6f5f9b03d&lt;/connectId&gt;
+            &lt;calculatedCourse&gt;180.0&lt;/calculatedCourse&gt;
+            &lt;measuredSpeed&gt;2.0&lt;/measuredSpeed&gt;
+            &lt;calculatedSpeed&gt;2.3&lt;/calculatedSpeed&gt;
+        &lt;/movement&gt;
+        &lt;unsentMessageGuid&gt;b053d0b9-1072-4621-acd7-1de47818002a&lt;/unsentMessageGuid&gt;
+    &lt;/report&gt;
+&lt;/ns2:SetReportRequest&gt;</stringProp>
+          <stringProp name="jms.input_file"></stringProp>
+          <stringProp name="jms.random_path"></stringProp>
+          <stringProp name="jms.config_choice">jms_use_text</stringProp>
+          <stringProp name="jms.config_msg_type">jms_text_message</stringProp>
+          <stringProp name="jms.iterations">1</stringProp>
+          <boolProp name="jms.authenticate">true</boolProp>
+          <elementProp name="jms.jmsProperties" elementType="JMSProperties">
+            <collectionProp name="JMSProperties.properties">
+              <elementProp name="" elementType="JMSProperty">
+                <stringProp name="JMSProperty.name">ServiceName</stringProp>
+                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.flux</stringProp>
+                <stringProp name="JMSProperty.type">java.lang.String</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="JMSProperty">
+                <stringProp name="JMSProperty.name">JMSReplyTo</stringProp>
+                <stringProp name="JMSProperty.value">UVMSExchange</stringProp>
+                <stringProp name="JMSProperty.type">java.lang.String</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </PublisherSampler>
+        <hashTree/>
+        <SubscriberSampler guiclass="JMSSubscriberGui" testclass="SubscriberSampler" testname="JMS Subscriber" enabled="true">
+          <stringProp name="jms.jndi_properties">false</stringProp>
+          <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
+          <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
+          <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
+          <stringProp name="jms.topic">dynamicQueues/UVMSExchange</stringProp>
+          <stringProp name="jms.security_principle">admin</stringProp>
+          <stringProp name="jms.security_credentials">admin</stringProp>
+          <boolProp name="jms.authenticate">true</boolProp>
+          <stringProp name="jms.iterations">1</stringProp>
+          <stringProp name="jms.read_response">true</stringProp>
+          <stringProp name="jms.client_choice">jms_subscriber_receive</stringProp>
+          <stringProp name="jms.timeout">2000</stringProp>
+        </SubscriberSampler>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
