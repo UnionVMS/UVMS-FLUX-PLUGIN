@@ -52,6 +52,7 @@ public class MockConstants {
     public static final String FLUX_DATA_FLOW = "http://dataflow";
     public static final String UUID_REGEX = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
     public static final String REGISTER_CLASSNAME = "ec.eu.uvms.classname";
+    public static final String OWNER_FLUX_PARTY = "SWE";
     
 
     private static XMLGregorianCalendar getXmlGregorianTime(Date date) {

@@ -92,7 +92,7 @@ public class FluxMessageRequestMapper {
         //message.setVB(VerbosityType.ERROR);
         //message.setAR(false);
         //message.setTS(true);
-        FLUXVesselPositionMessageType attr = mapToFluxMovement(movement, settings.getSetting("FLUX_AD"));
+        FLUXVesselPositionMessageType attr = mapToFluxMovement(movement, settings.getSetting("FLUX_AD"), settings.getSetting("OWNER_FLUX_PARTY"));
 
         ObjectFactory fact = new ObjectFactory();
 
@@ -107,9 +107,9 @@ public class FluxMessageRequestMapper {
         return message;
     }
 
-    private FLUXVesselPositionMessageType mapToFluxMovement(MovementType movement, String ad) throws MappingException {
+    private FLUXVesselPositionMessageType mapToFluxMovement(MovementType movement, String ad, String fluxOwner) throws MappingException {
         FLUXVesselPositionMessageType msg = new FLUXVesselPositionMessageType();
-        msg.setFLUXReportDocument(mapToReportDocument(ad));
+        msg.setFLUXReportDocument(mapToReportDocument(fluxOwner, movement.getInternalReferenceNumber()));
         msg.setVesselTransportMeans(mapToVesselTransportMeans(movement, ad));
         return msg;
     }
@@ -129,12 +129,18 @@ public class FluxMessageRequestMapper {
         return partyType;
     }
 
-    private FLUXReportDocumentType mapToReportDocument(String ad) {
+    private FLUXReportDocumentType mapToReportDocument(String fluxOwner, String referenceNumber) {
         FLUXReportDocumentType doc = new FLUXReportDocumentType();
-        doc.setReferencedID(mapToGUIDIDType());
+
+        if (referenceNumber == null) {
+            doc.getIDS().add(mapToGUIDIDType());
+        } else {
+            doc.getIDS().add(mapToIdType(referenceNumber));
+        }
+
         doc.setCreationDateTime(mapToNowDateTime());
         doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
-        doc.setOwnerFLUXParty(mapToFluxPartyType(ad));
+        doc.setOwnerFLUXParty(mapToFluxPartyType(fluxOwner));
         return doc;
     }
 
@@ -251,7 +257,7 @@ public class FluxMessageRequestMapper {
         if (point.getAltitude() != null) {
             geoType.setAltitudeMeasure(mapToMeasureType(point.getAltitude()));
         }
-        
+
         return geoType;
 
     }

@@ -11,7 +11,6 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mockdata.MockConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mockdata.MovementTypeMock;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +73,7 @@ public class FluxMessageRequestMapperTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(settings.getSetting("FLUX_AD")).thenReturn(MockConstants.AD);
         Mockito.when(settings.getSetting("FLUX_DATAFLOW")).thenReturn(MockConstants.FLUX_DATA_FLOW);
+        Mockito.when(settings.getSetting("OWNER_FLUX_PARTY")).thenReturn(MockConstants.OWNER_FLUX_PARTY);
     }
 
     @After
@@ -108,11 +108,16 @@ public class FluxMessageRequestMapperTest {
 
     private void assertFluxReportDocument(FLUXReportDocumentType fluxReportDocument) {
         Assert.assertNotNull("FLUXReportDocumentType is NULL", fluxReportDocument);
-        Assert.assertTrue("Reference id is not a UUID", fluxReportDocument.getReferencedID().getValue().matches(MockConstants.UUID_REGEX));
+
+        List<IDType> ids = fluxReportDocument.getIDS();
+        Assert.assertEquals(1, ids.size());
+
+        Assert.assertTrue("Reference id is not a UUID", fluxReportDocument.getIDS().get(0).getValue().matches(MockConstants.UUID_REGEX));
+
         Assert.assertNotNull("DateTime is null", fluxReportDocument.getCreationDateTime().getDateTime());
 
         Assert.assertNotNull("Owner Flux party list size should be 1", fluxReportDocument.getOwnerFLUXParty().getIDS().size() == 1);
-        Assert.assertEquals(MockConstants.FLUX_OWNER, fluxReportDocument.getOwnerFLUXParty().getIDS().get(0).getValue());
+        Assert.assertEquals(MockConstants.OWNER_FLUX_PARTY, fluxReportDocument.getOwnerFLUXParty().getIDS().get(0).getValue());
     }
 
     private void assertFluxVesselTransportMeans(VesselTransportMeansType vesselTransportMeans) {
@@ -170,7 +175,5 @@ public class FluxMessageRequestMapperTest {
         FLUXVesselPositionMessageType xmlMessage = (FLUXVesselPositionMessageType) unmarshaller.unmarshal(any);
         return xmlMessage;
     }
-    
-   
 
 }
