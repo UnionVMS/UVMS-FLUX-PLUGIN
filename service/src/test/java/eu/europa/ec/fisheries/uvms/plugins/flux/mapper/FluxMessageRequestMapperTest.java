@@ -11,6 +11,7 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mockdata.MockConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mockdata.MovementTypeMock;
 
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,5 +170,7 @@ public class FluxMessageRequestMapperTest {
         FLUXVesselPositionMessageType xmlMessage = (FLUXVesselPositionMessageType) unmarshaller.unmarshal(any);
         return xmlMessage;
     }
+    
+   
 
 }

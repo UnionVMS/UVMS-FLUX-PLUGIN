@@ -22,6 +22,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.PortInitiator;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.message.FluxMessageSenderBean;
@@ -46,6 +47,9 @@ public class PluginService {
 
     @EJB
     FluxMessageSenderBean sender;
+
+    @EJB
+    PortInitiator portInintiator;
 
     final static Logger LOG = LoggerFactory.getLogger(PluginService.class);
 
@@ -119,6 +123,7 @@ public class PluginService {
                 LOG.debug("Setting [ " + values.getKey() + " : " + values.getValue() + " ]");
                 startupBean.getSettings().put(values.getKey(), values.getValue());
             }
+            portInintiator.updatePort();
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             LOG.error("Failed to set config in {}", startupBean.getRegisterClassName());

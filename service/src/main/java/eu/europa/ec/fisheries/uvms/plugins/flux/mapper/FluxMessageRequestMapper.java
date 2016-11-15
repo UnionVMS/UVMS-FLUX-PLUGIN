@@ -247,7 +247,11 @@ public class FluxMessageRequestMapper {
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
         geoType.setLatitudeMeasure(mapToMeasureType(point.getLatitude()));
         geoType.setLongitudeMeasure(mapToMeasureType(point.getLongitude()));
-        geoType.setAltitudeMeasure(mapToMeasureType(point.getAltitude()));
+
+        if (point.getAltitude() != null) {
+            geoType.setAltitudeMeasure(mapToMeasureType(point.getAltitude()));
+        }
+        
         return geoType;
 
     }
