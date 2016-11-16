@@ -57,27 +57,26 @@
               </elementProp>
               <elementProp name="" elementType="JMSProperty">
                 <stringProp name="JMSProperty.name">JMSReplyTo</stringProp>
-                <stringProp name="JMSProperty.value">TestResponse</stringProp>
+                <stringProp name="JMSProperty.value">UVMSExchange</stringProp>
                 <stringProp name="JMSProperty.type">java.lang.String</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
         </PublisherSampler>
         <hashTree/>
-        <SubscriberSampler guiclass="JMSSubscriberGui" testclass="SubscriberSampler" testname="JMS Subscriber" enabled="true">
+        <SubscriberSampler guiclass="JMSSubscriberGui" testclass="SubscriberSampler" testname="JMS Subscriber" enabled="false">
           <stringProp name="jms.jndi_properties">false</stringProp>
           <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
           <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
           <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
-          <stringProp name="jms.topic">dynamicQueues/TestResponse</stringProp>
+          <stringProp name="jms.topic">dynamicQueues/UVMSExchange</stringProp>
           <stringProp name="jms.security_principle">admin</stringProp>
           <stringProp name="jms.security_credentials">admin</stringProp>
           <boolProp name="jms.authenticate">true</boolProp>
           <stringProp name="jms.iterations">1</stringProp>
-          <stringProp name="jms.read_response">true</stringProp>
+          <stringProp name="jms.read_response">false</stringProp>
           <stringProp name="jms.client_choice">jms_subscriber_receive</stringProp>
           <stringProp name="jms.timeout">1000</stringProp>
-          <boolProp name="jms.destination_static">false</boolProp>
         </SubscriberSampler>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -225,7 +224,7 @@
         &lt;/setting&gt;
         &lt;setting&gt;
             &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_AD&lt;/key&gt;
-            &lt;value&gt;XEU&lt;/value&gt;
+            &lt;value&gt;SWE&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
             &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_DATAFLOW&lt;/key&gt;
@@ -245,7 +244,7 @@
         &lt;/setting&gt;
         &lt;setting&gt;
             &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_ENDPOINT&lt;/key&gt;
-            &lt;value&gt;http://192.168.100.155:8181/BridgeWebApp/connector&lt;/value&gt;
+            &lt;value&gt;http://192.168.2.103:8181/BridgeWebApp/connector&lt;/value&gt;
         &lt;/setting&gt;
     &lt;/configurations&gt;
 &lt;/ns2:SetConfigRequest&gt;</stringProp>
@@ -283,7 +282,7 @@
           <stringProp name="jms.iterations">1</stringProp>
           <stringProp name="jms.read_response">true</stringProp>
           <stringProp name="jms.client_choice">jms_subscriber_receive</stringProp>
-          <stringProp name="jms.timeout">1000</stringProp>
+          <stringProp name="jms.timeout">5000</stringProp>
         </SubscriberSampler>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -507,7 +506,7 @@
           <stringProp name="JMSSampler.ReceiveQueue"></stringProp>
           <boolProp name="JMSSampler.isFireAndForget">true</boolProp>
           <boolProp name="JMSSampler.isNonPersistent">false</boolProp>
-          <boolProp name="JMSSampler.useReqMsgIdAsCorrelId">true</boolProp>
+          <boolProp name="JMSSampler.useReqMsgIdAsCorrelId">false</boolProp>
           <stringProp name="JMSSampler.timeout">2000</stringProp>
           <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
 &lt;ns2:SendMovementToPluginRequest xmlns:ns2=&quot;urn:module.exchange.schema.fisheries.ec.europa.eu:v1&quot;&gt;

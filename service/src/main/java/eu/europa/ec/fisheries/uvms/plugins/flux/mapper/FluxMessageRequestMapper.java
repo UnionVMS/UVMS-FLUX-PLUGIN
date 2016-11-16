@@ -15,7 +15,6 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.util.DateUtil;
@@ -43,10 +42,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
-import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessageType;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXGeographicalCoordinateType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXPartyType;
@@ -92,11 +90,11 @@ public class FluxMessageRequestMapper {
         //message.setVB(VerbosityType.ERROR);
         //message.setAR(false);
         //message.setTS(true);
-        FLUXVesselPositionMessageType attr = mapToFluxMovement(movement, settings.getSetting("FLUX_AD"), settings.getSetting("OWNER_FLUX_PARTY"));
+        FLUXVesselPositionMessage attr = mapToFluxMovement(movement, settings.getSetting("FLUX_AD"), settings.getSetting("OWNER_FLUX_PARTY"));
 
         ObjectFactory fact = new ObjectFactory();
 
-        JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessageType.class);
+        JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Marshaller marshaller = context.createMarshaller();
         DOMResult res = new DOMResult();
         marshaller.marshal(attr, res);
@@ -107,8 +105,8 @@ public class FluxMessageRequestMapper {
         return message;
     }
 
-    private FLUXVesselPositionMessageType mapToFluxMovement(MovementType movement, String ad, String fluxOwner) throws MappingException {
-        FLUXVesselPositionMessageType msg = new FLUXVesselPositionMessageType();
+    private FLUXVesselPositionMessage mapToFluxMovement(MovementType movement, String ad, String fluxOwner) throws MappingException {
+        FLUXVesselPositionMessage msg = new FLUXVesselPositionMessage();
         msg.setFLUXReportDocument(mapToReportDocument(fluxOwner, movement.getInternalReferenceNumber()));
         msg.setVesselTransportMeans(mapToVesselTransportMeans(movement, ad));
         return msg;

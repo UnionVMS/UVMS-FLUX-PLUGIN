@@ -12,7 +12,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessageType;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXPartyType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXReportDocumentType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselCountryType;
@@ -39,16 +39,16 @@ public class FluxReportMock {
     }
 
     private static Element mapToElement() throws JAXBException {
-        FLUXVesselPositionMessageType attr = mapToFLUXReportDocumentType();
-        JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessageType.class);
+        FLUXVesselPositionMessage attr = mapToFLUXReportDocumentType();
+        JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Marshaller marshaller = context.createMarshaller();
         DOMResult res = new DOMResult();
         marshaller.marshal(attr, res);
         return ((Document) res.getNode()).getDocumentElement();
     }
 
-    private static FLUXVesselPositionMessageType mapToFLUXReportDocumentType() {
-        FLUXVesselPositionMessageType message = new FLUXVesselPositionMessageType();
+    private static FLUXVesselPositionMessage mapToFLUXReportDocumentType() {
+        FLUXVesselPositionMessage message = new FLUXVesselPositionMessage();
         message.setFLUXReportDocument(mapToFluxDocumentType());
         message.setVesselTransportMeans(mapToVesselTransportMeans());
         return message;

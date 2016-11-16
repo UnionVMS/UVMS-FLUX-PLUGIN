@@ -26,7 +26,6 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
-import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessageType;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselGeographicalCoordinateType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselPositionEventType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselTransportMeansType;
@@ -60,14 +59,14 @@ public class FluxMessageResponseMapper {
     private static final String MOVEMENTTYPE_ENT = "ENT";
     private static final String MOVEMENTTYPE_MAN = "MAN";
 
-    private static FLUXVesselPositionMessageType extractVesselPositionMessage(Element any) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessageType.class);
+    private static FLUXVesselPositionMessage extractVesselPositionMessage(Element any) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        FLUXVesselPositionMessageType xmlMessage = (FLUXVesselPositionMessageType) unmarshaller.unmarshal(any);
+        FLUXVesselPositionMessage xmlMessage = (FLUXVesselPositionMessage) unmarshaller.unmarshal(any);
         return xmlMessage;
     }
 
-    private static VesselTransportMeansType extractMovement(FLUXVesselPositionMessageType attribute) throws PluginException {
+    private static VesselTransportMeansType extractMovement(FLUXVesselPositionMessage attribute) throws PluginException {
         try {
             if (attribute != null) {
                 return attribute.getVesselTransportMeans();
@@ -80,7 +79,7 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    private static String extractCorrelationId(FLUXVesselPositionMessageType attribute) throws PluginException {
+    private static String extractCorrelationId(FLUXVesselPositionMessage attribute) throws PluginException {
         try {
             if (attribute != null) {
                 IDType messageID = attribute.getFLUXReportDocument().getReferencedID();
@@ -96,7 +95,7 @@ public class FluxMessageResponseMapper {
 
     public static List<SetReportMovementType> mapToMovementType(RequestType rt, String registerClassName) throws JAXBException, PluginException {
 
-        FLUXVesselPositionMessageType extractVesselPositionMessage = extractVesselPositionMessage(rt.getAny());
+        FLUXVesselPositionMessage extractVesselPositionMessage = extractVesselPositionMessage(rt.getAny());
         VesselTransportMeansType positionReport = extractMovement(extractVesselPositionMessage);
         List<SetReportMovementType> movementList = new ArrayList<>();
 

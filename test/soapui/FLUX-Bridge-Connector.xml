@@ -160,14 +160,45 @@
       <xsd:maxInclusive value="300"/>
     </xsd:restriction>
   </xsd:simpleType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost/connector</con:endpoint></con:endpoints><con:operation id="c85f5309-11cc-47b4-8c65-75669680909a" isOneWay="false" action="urn:xeu:bridge-connector:wsdl:v1:post" name="post" bindingOperationName="post" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="447d51d5-579d-49ab-a419-56f37a70e070" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost/connector</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">\r
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://192.168.56.1:8080/flux-service-2.0.8-SNAPSHOT/MovementService/FluxMessageReceiverBean</con:endpoint></con:endpoints><con:operation id="c85f5309-11cc-47b4-8c65-75669680909a" isOneWay="false" action="urn:xeu:bridge-connector:wsdl:v1:post" name="post" bindingOperationName="post" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="447d51d5-579d-49ab-a419-56f37a70e070" name="MovementToFluxPlugin"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.56.1:8080/flux-service-2.0.8-SNAPSHOT/MovementService/FluxMessageReceiverBean</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
-      <urn:Connector2BridgeRequest ON="?" AD="?" TODT="?" DF="?" AR="?" TO="?" CT="?" VB="?">\r
-         <!--You may enter ANY elements at this point-->\r
+      <!--urn:Connector2BridgeRequest ON="?" AD="?" TODT="?" DF="?" AR="?" TO="?" CT="?" VB="?"-->\r
+      <urn:Connector2BridgeRequest AD="SWE" DF="urn:un:unece:uncefact:data:standard:FLUXVesselPositionMessage:4">\r
+         <ns3:FLUXVesselPositionMessage xmlns:ns3="urn:un:unece:uncefact:data:standard:FLUXVesselPositionMessage:4" xmlns="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:18" xmlns:ns2="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:18">\r
+            <ns3:FLUXReportDocument>\r
+               <ID>afda38cf-caf9-4490-8f1a-47ba75dda3a0</ID>\r
+               <CreationDateTime>\r
+                  <ns2:DateTime>2016-11-12T19:15:01.913Z</ns2:DateTime>\r
+               </CreationDateTime>\r
+               <PurposeCode>9</PurposeCode>\r
+               <OwnerFLUXParty>\r
+                  <ID>SWE</ID>\r
+               </OwnerFLUXParty>\r
+            </ns3:FLUXReportDocument>\r
+            <ns3:VesselTransportMeans>\r
+               <ID schemeID="IRCS">OZGH</ID>\r               
+               <ID schemeID="CFR">SWE000007170</ID>\r
+               <RegistrationVesselCountry>\r
+                  <ID>SWE</ID>\r
+               </RegistrationVesselCountry>\r
+               <SpecifiedVesselPositionEvent>\r
+                  <ObtainedOccurrenceDateTime>\r
+                     <ns2:DateTime>2016-11-10T16:28:18.998Z</ns2:DateTime>\r
+                  </ObtainedOccurrenceDateTime>\r
+                  <TypeCode>POS</TypeCode>\r
+                  <SpeedValueMeasure>3.2</SpeedValueMeasure>\r
+                  <CourseValueMeasure>75.3</CourseValueMeasure>\r
+                  <SpecifiedVesselGeographicalCoordinate>\r
+                     <LatitudeMeasure>5.3</LatitudeMeasure>\r
+                     <LongitudeMeasure>3.3</LongitudeMeasure>\r
+                  </SpecifiedVesselGeographicalCoordinate>\r
+               </SpecifiedVesselPositionEvent>\r
+            </ns3:VesselTransportMeans>\r
+         </ns3:FLUXVesselPositionMessage>\r
       </urn:Connector2BridgeRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:xeu:bridge-connector:wsdl:v1:post"/></con:call></con:operation></con:interface><con:testSuite id="bd51da45-dc70-45db-a428-d8bd352fea5e" name="Bridge -> Connector TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="3489f9c5-d45a-486b-949e-749e74f0a5ab" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="post TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="b192023a-0c18-4fa2-b45f-21e9b442c8ff" name="post"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>BridgeConnectorSOAP11Binding</con:interface><con:operation>post</con:operation><con:request name="post" id="c127b741-7413-4c24-a877-0068d22ba9b5"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost/connector</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:xeu:bridge-connector:wsdl:v1:post"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:testSuite id="bd51da45-dc70-45db-a428-d8bd352fea5e" name="Bridge -> Connector TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="3489f9c5-d45a-486b-949e-749e74f0a5ab" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="post TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="b192023a-0c18-4fa2-b45f-21e9b442c8ff" name="post"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>BridgeConnectorSOAP11Binding</con:interface><con:operation>post</con:operation><con:request name="post" id="c127b741-7413-4c24-a877-0068d22ba9b5"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.56.1:8080/flux-service-2.0.8-SNAPSHOT/MovementService/FluxMessageReceiverBean</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:xeu:bridge-connector:v1">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:Connector2BridgeRequest ON="?" AD="?" TODT="?" DF="?" AR="?" TO="?" CT="?" VB="?">\r

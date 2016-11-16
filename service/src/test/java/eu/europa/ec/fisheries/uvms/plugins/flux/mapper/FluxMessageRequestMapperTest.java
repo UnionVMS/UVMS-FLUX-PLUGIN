@@ -34,7 +34,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3c.dom.Element;
 
-import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessageType;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXReportDocumentType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselPositionEventType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselTransportMeansType;
@@ -93,14 +93,14 @@ public class FluxMessageRequestMapperTest {
 
         Assert.assertNotNull(mapToRequest);
 
-        FLUXVesselPositionMessageType extractVesselPositionMessage = extractVesselPositionMessage(mapToRequest.getAny());
+        FLUXVesselPositionMessage extractVesselPositionMessage = extractVesselPositionMessage(mapToRequest.getAny());
         assertFLUXVesselPositionMessage(extractVesselPositionMessage);
         assertFluxReportDocument(extractVesselPositionMessage.getFLUXReportDocument());
         assertFluxVesselTransportMeans(extractVesselPositionMessage.getVesselTransportMeans());
         assertSpecifiedVesselPositionEvent(extractVesselPositionMessage.getVesselTransportMeans().getSpecifiedVesselPositionEvents());
     }
 
-    private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessageType message) {
+    private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessage message) {
         Assert.assertNotNull("FLUXVesselPositionMessage is NULL", message);
         Assert.assertNotNull("FLUXReportDocumentType is NULL", message.getFLUXReportDocument());
         Assert.assertNotNull("VesselTransportMeansType is NULL", message.getVesselTransportMeans());
@@ -169,10 +169,10 @@ public class FluxMessageRequestMapperTest {
 
     }
 
-    private static FLUXVesselPositionMessageType extractVesselPositionMessage(Element any) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessageType.class);
+    private static FLUXVesselPositionMessage extractVesselPositionMessage(Element any) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        FLUXVesselPositionMessageType xmlMessage = (FLUXVesselPositionMessageType) unmarshaller.unmarshal(any);
+        FLUXVesselPositionMessage xmlMessage = (FLUXVesselPositionMessage) unmarshaller.unmarshal(any);
         return xmlMessage;
     }
 
