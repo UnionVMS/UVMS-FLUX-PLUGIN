@@ -130,7 +130,7 @@
         <stringProp name="TestPlan.comments">Testing of the plugin ping method</stringProp>
       </ThreadGroup>
       <hashTree>
-        <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="JMS Publisher - Correct URL" enabled="false">
+        <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="JMS Publisher - Correct URL" enabled="true">
           <stringProp name="jms.jndi_properties">false</stringProp>
           <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
           <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>
@@ -154,7 +154,7 @@
         &lt;/setting&gt;
         &lt;setting&gt;
             &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_AD&lt;/key&gt;
-            &lt;value&gt;XEU&lt;/value&gt;
+            &lt;value&gt;SWE&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
             &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_DATAFLOW&lt;/key&gt;
@@ -200,7 +200,7 @@
           </elementProp>
         </PublisherSampler>
         <hashTree/>
-        <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="JMS Publisher - Local SoapUI" enabled="true">
+        <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="JMS Publisher - Local SoapUI" enabled="false">
           <stringProp name="jms.jndi_properties">false</stringProp>
           <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
           <stringProp name="jms.provider_url">tcp://localhost:61616</stringProp>

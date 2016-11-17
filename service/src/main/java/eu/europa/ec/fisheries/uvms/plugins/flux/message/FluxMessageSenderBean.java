@@ -49,7 +49,7 @@ public class FluxMessageSenderBean {
 
     private static Logger LOG = LoggerFactory.getLogger(FluxMessageSenderBean.class);
 
-    public String sendMovement(MovementType movement, String messageId) throws PluginException {
+    public String sendMovement(MovementType movement, String messageId, String recipient) throws PluginException {
         try {
 
             LOG.info("Sending message to EU [ {} ] with messageID: {} ", messageId);
@@ -65,13 +65,13 @@ public class FluxMessageSenderBean {
             headerValues.put(headerKey, headerValue);
             mapper.addHeaderValueToRequest(portType, headerValues);
 
-            PostMsgType request = mapper.mapToRequest(movement, messageId);
+            PostMsgType request = mapper.mapToRequest(movement, messageId, recipient);
             PostMsgOutType resp = portType.post(request);
 
             if (resp.getAssignedON() == null) {
-                LOG.info("Failed to send to flux ", messageId);
+                LOG.info("Failed to send to flux Recipient {}, Mesageid {} Should corralate with Movement GUID", recipient, messageId);
             } else {
-                LOG.info("Success when sending to flux ", messageId);
+                LOG.info("Success when sending to flux MessageId {} ( Should corralate with Movement GUID ) Recipient {} ", messageId, recipient);
             }
 
             if (request.getID() != null && !request.getID().isEmpty()) {

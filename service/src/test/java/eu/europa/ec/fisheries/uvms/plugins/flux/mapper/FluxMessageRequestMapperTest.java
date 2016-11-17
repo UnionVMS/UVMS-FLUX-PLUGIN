@@ -71,7 +71,7 @@ public class FluxMessageRequestMapperTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(settings.getSetting("FLUX_AD")).thenReturn(MockConstants.AD);
+        Mockito.when(settings.getSetting("FLUX_DEFAULT_AD")).thenReturn(MockConstants.AD);
         Mockito.when(settings.getSetting("FLUX_DATAFLOW")).thenReturn(MockConstants.FLUX_DATA_FLOW);
         Mockito.when(settings.getSetting("OWNER_FLUX_PARTY")).thenReturn(MockConstants.OWNER_FLUX_PARTY);
     }
@@ -89,15 +89,25 @@ public class FluxMessageRequestMapperTest {
     public void testMapToRequest() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
 
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, MockConstants.RECIPIENT);
 
         Assert.assertNotNull(mapToRequest);
+
+        Assert.assertEquals(MockConstants.RECIPIENT, mapToRequest.getAD());
 
         FLUXVesselPositionMessage extractVesselPositionMessage = extractVesselPositionMessage(mapToRequest.getAny());
         assertFLUXVesselPositionMessage(extractVesselPositionMessage);
         assertFluxReportDocument(extractVesselPositionMessage.getFLUXReportDocument());
         assertFluxVesselTransportMeans(extractVesselPositionMessage.getVesselTransportMeans());
         assertSpecifiedVesselPositionEvent(extractVesselPositionMessage.getVesselTransportMeans().getSpecifiedVesselPositionEvents());
+    }
+
+    @Test
+    public void testMapToRequestRecipientNull() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null);
+        Assert.assertNotNull(mapToRequest);
+        Assert.assertEquals(MockConstants.AD, mapToRequest.getAD());
     }
 
     private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessage message) {

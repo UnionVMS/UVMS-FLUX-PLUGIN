@@ -27,6 +27,7 @@ public class MockConstants {
     public static final String ACTIVITY_CALLBACK = "TestCallback";
     public static final String AD = "GER";
     public static final String PURPOSE_CODE = "9";
+    public static final String RECIPIENT = "SWE";
 
     public static final String ASSET_IRCS = "IRCS";
     public static final String ASSET_CFR = "CFR";

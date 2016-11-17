@@ -74,10 +74,16 @@ public class FluxMessageRequestMapper {
     @EJB
     StartupBean settings;
 
-    public PostMsgType mapToRequest(MovementType movement, String messageId) throws JAXBException, MappingException {
+    public PostMsgType mapToRequest(MovementType movement, String messageId, String recipient) throws JAXBException, MappingException {
 
         PostMsgType message = new PostMsgType();
-        message.setAD(settings.getSetting("FLUX_AD"));
+
+        if (recipient == null || recipient.isEmpty()) {
+            message.setAD(settings.getSetting("FLUX_DEFAULT_AD"));
+        } else {
+            message.setAD(recipient);
+        }
+
         message.setDF(settings.getSetting("FLUX_DATAFLOW"));
         message.setID(messageId);
 

@@ -74,13 +74,13 @@ public class PluginService {
 
                 String editorType = startupBean.getSetting("EDITOR_TYPE");
                 String actionReason = startupBean.getSetting("ACTION_REASON");
-                String messageId = UUID.randomUUID().toString();
 
+                String messageId = UUID.randomUUID().toString();
                 if (movement.getGuid() != null) {
                     messageId = movement.getGuid();
                 }
 
-                sender.sendMovement(movement, messageId);
+                sender.sendMovement(movement, messageId, report.getRecipient());
 
             } catch (PluginException ex) {
                 LOG.debug("Error when setting report");
