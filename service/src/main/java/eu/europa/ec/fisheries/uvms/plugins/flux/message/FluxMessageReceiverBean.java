@@ -63,7 +63,7 @@ public class FluxMessageReceiverBean implements BridgeConnectorPortType {
             type.setStatus("OK");
             return type;
         } catch (Exception e) {
-            LOG.error("[ Error when receiving data from FLUX. ] {} {}", e.getMessage(), e.getStackTrace());
+            LOG.error("[ Error when receiving data from FLUX. ]", e);
             type.setStatus("NOK");
             return type;
         }
