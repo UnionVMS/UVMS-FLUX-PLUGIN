@@ -13,7 +13,7 @@
     </parent>
 
     <build>
-        <finalName>${project.name}-${project.version}</finalName>
+        <finalName>${project.name}</finalName>
         <plugins>
             <!-- This configuration specifies what ends up in application.xml -->
             <plugin>
