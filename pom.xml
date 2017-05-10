@@ -21,7 +21,7 @@
         <uvms.common.version>2.0.17</uvms.common.version>
         <connector-bridge.client.version>1.0.4</connector-bridge.client.version>
         <bridge-connector.client.version>1.0.4</bridge-connector.client.version>
-        <flux.movement.client.version>2.0.0</flux.movement.client.version>
+        <flux.movement.client.version>2.0.1-SNAPSHOT</flux.movement.client.version>
         <exchange.model.version>3.0.0</exchange.model.version>
         <exchange.classifier>date</exchange.classifier>
 
