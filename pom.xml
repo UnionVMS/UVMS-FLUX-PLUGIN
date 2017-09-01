@@ -20,7 +20,7 @@
         <connector-bridge.client.version>1.0.4</connector-bridge.client.version>
         <bridge-connector.client.version>1.0.4</bridge-connector.client.version>
         <flux.movement.client.version>2.0.1-SNAPSHOT</flux.movement.client.version>
-        <exchange.model.version>3.0.6-SNAPSHOT</exchange.model.version>
+        <exchange.model.version>3.0.7</exchange.model.version>
         <exchange.classifier>date</exchange.classifier>
 
         <jodatime.version>2.9.9</jodatime.version>
