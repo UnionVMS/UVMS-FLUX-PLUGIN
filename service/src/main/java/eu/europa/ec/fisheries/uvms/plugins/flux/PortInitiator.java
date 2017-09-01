@@ -11,14 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux;
 
-import eu.europa.ec.fisheries.uvms.plugins.flux.message.FluxMessageSenderBean;
 import java.util.Map;
+
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.xml.ws.BindingProvider;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorService;
 

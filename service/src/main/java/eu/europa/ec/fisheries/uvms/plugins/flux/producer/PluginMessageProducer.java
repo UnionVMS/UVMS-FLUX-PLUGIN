@@ -11,22 +11,26 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.producer;
 
-import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
-
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.*;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
 
-import eu.europa.ec.fisheries.uvms.message.JMSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
+import eu.europa.ec.fisheries.uvms.message.JMSUtils;
 import eu.europa.ec.fisheries.uvms.plugins.flux.constants.ModuleQueue;
 
 @Stateless
@@ -38,36 +42,21 @@ public class PluginMessageProducer {
 
     private ConnectionFactory connectionFactory;
 
-    private Connection connection = null;
-    private Session session = null;
-
     final static Logger LOG = LoggerFactory.getLogger(PluginMessageProducer.class);
 
     @PostConstruct
     public void resourceLookup() {
-        LOG.debug("Open connection to JMS broker");
-        InitialContext ctx;
-        try {
-            ctx = new InitialContext();
-        } catch (Exception e) {
-            LOG.error("Failed to get InitialContext",e);
-            throw new RuntimeException(e);
-        }
-        connectionFactory = JMSUtils.lookupConnectionFactory(ctx, ExchangeModelConstants.CONNECTION_FACTORY);
-        try {
-            connection = connectionFactory.createConnection();
-            connection.start();
-        } catch (JMSException ex) {
-            LOG.error("Error when open connection to JMS broker");
-        }
-        exchangeQueue = JMSUtils.lookupQueue(ctx, ExchangeModelConstants.EXCHANGE_MESSAGE_IN_QUEUE);
-        eventBus = JMSUtils.lookupTopic(ctx, ExchangeModelConstants.PLUGIN_EVENTBUS);
+        connectionFactory = JMSUtils.lookupConnectionFactory();
+        exchangeQueue = JMSUtils.lookupQueue(ExchangeModelConstants.EXCHANGE_MESSAGE_IN_QUEUE);
+        eventBus = JMSUtils.lookupTopic(ExchangeModelConstants.PLUGIN_EVENTBUS);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessage(String text, TextMessage requestMessage) throws JMSException {
-        try {
-            connectQueue();
+    	Connection connection=null;
+    	try {
+            connection = connectionFactory.createConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
 
             TextMessage message = session.createTextMessage();
             message.setJMSDestination(requestMessage.getJMSReplyTo());
@@ -77,17 +66,19 @@ public class PluginMessageProducer {
             getProducer(session, requestMessage.getJMSReplyTo()).send(message);
 
         } catch (JMSException e) {
-            LOG.error("[ Error when sending jms message. ] {}", e.getMessage());
+            LOG.error("[ Error when sending jms message. {}] {}",text, e.getMessage());
             throw new JMSException(e.getMessage());
         } finally {
-            disconnectQueue();
+            JMSUtils.disconnectQueue(connection);
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws JMSException {
-        try {
-            connectQueue();
+    	Connection connection=null;
+    	try {
+            connection = connectionFactory.createConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
 
             TextMessage message = session.createTextMessage();
             message.setText(text);
@@ -103,17 +94,19 @@ public class PluginMessageProducer {
 
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            LOG.error("[ Error when sending data source message. ] {}", e.getMessage());
+            LOG.error("[ Error when sending data source message. {}] {}",text, e.getMessage());
             throw new JMSException(e.getMessage());
         } finally {
-            disconnectQueue();
+            JMSUtils.disconnectQueue(connection);
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendEventBusMessage(String text, String serviceName) throws JMSException {
-        try {
-            connectQueue();
+    	Connection connection=null;
+    	try {
+            connection = connectionFactory.createConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
 
             TextMessage message = session.createTextMessage();
             message.setText(text);
@@ -123,25 +116,10 @@ public class PluginMessageProducer {
 
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            LOG.error("[ Error when sending message. ] {0}", e.getMessage());
+            LOG.error("[ Error when sending message. {}] {}",text, e.getMessage());
             throw new JMSException(e.getMessage());
         } finally {
-            disconnectQueue();
-        }
-    }
-
-    private void connectQueue() throws JMSException {
-        connection = connectionFactory.createConnection();
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        connection.start();
-    }
-
-    private void disconnectQueue() {
-        try {
-            connection.stop();
-            connection.close();
-        } catch (JMSException e) {
-            LOG.error("[ Error when stopping or closing JMS queue. ] {}", e.getMessage(), e.getStackTrace());
+            JMSUtils.disconnectQueue(connection);
         }
     }
 
