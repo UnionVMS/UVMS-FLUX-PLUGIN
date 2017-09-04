@@ -171,7 +171,7 @@ public class FluxMessageRequestMapper {
 
         if (ids.containsKey(AssetIdType.IRCS.name()) && movement.getIrcs() != null) {
             if (!movement.getIrcs().equals(ids.get(AssetIdType.IRCS.name()))) {
-                throw new MappingException("Asset IRCS does not match when mapping AssetID ( There are 2 ways of getting Ircs in this object! :( and they do not match ) {} {}",movement.getIrcs(),ids.get(AssetIdType.IRCS.name()));
+                throw new MappingException("Asset IRCS does not match when mapping AssetID ( There are 2 ways of getting Ircs in this object! :( and they do not match ) " + movement.getIrcs() + ":" +ids.get(AssetIdType.IRCS.name()));
             }
         }
 
