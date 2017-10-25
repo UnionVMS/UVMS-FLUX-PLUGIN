@@ -5,7 +5,7 @@
 		<groupId>fish.focus.uvms.maven</groupId>
 		<artifactId>uvms-pom</artifactId>
 		<relativePath />
-		<version>1.9</version>
+		<version>1.13</version>
 	</parent>
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
@@ -20,8 +20,7 @@
         <connector-bridge.client.version>2.0.1</connector-bridge.client.version>
         <bridge-connector.client.version>2.0.1</bridge-connector.client.version>
         <flux.movement.client.version>2.0.1</flux.movement.client.version>
-        <exchange.model.version>3.0.7</exchange.model.version>
-        <exchange.classifier>date</exchange.classifier>
+        <exchange.model.version>4.0.3</exchange.model.version>
 
         <jodatime.version>2.9.9</jodatime.version>
         <release.branch.name>release-2.1.2-legolas</release.branch.name>
@@ -38,7 +37,6 @@
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
-            <classifier>${exchange.classifier}</classifier>
         </dependency>
     </dependencies>
 
