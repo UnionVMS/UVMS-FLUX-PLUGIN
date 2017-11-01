@@ -11,29 +11,27 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageResponseMapper;
-import eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService;
-import java.util.List;
 import javax.ejb.EJB;
-
 import javax.ejb.Stateless;
 import javax.jws.WebService;
+import javax.xml.bind.JAXBException;
+import java.util.List;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
+import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageResponseMapper;
+import eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import xeu.bridge_connector.v1.RequestType;
-import xeu.bridge_connector.v1.ResponseType;
-import xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType;
 
 /**
  *
  */
 @Stateless
 @WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
-public class FluxMessageReceiverBean implements BridgeConnectorPortType {
+public class FluxMessageReceiverBean extends AbstractFluxReceiver {
 
     private static Logger LOG = LoggerFactory.getLogger(FluxMessageReceiverBean.class);
 
@@ -43,30 +41,18 @@ public class FluxMessageReceiverBean implements BridgeConnectorPortType {
     @EJB
     StartupBean startupBean;
 
-    @Override
-    public ResponseType post(RequestType rt) {
 
-        ResponseType type = new ResponseType();
-        if (!startupBean.isIsEnabled()) {
-            type.setStatus("NOK");
-            return type;
-        }
+    @Override protected void sendToExchange(RequestType rt) throws JAXBException, PluginException {
 
-        try {
-            LOG.debug("Got positionreport request from FLUX in FLUX plugin");
-            List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToMovementType(rt, startupBean.getRegisterClassName());
+        List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToMovementType(rt, startupBean.getRegisterClassName());
 
-            for (SetReportMovementType movement : movements) {
-                exchange.sendMovementReportToExchange(movement);
-            }
-
-            type.setStatus("OK");
-            return type;
-        } catch (Exception e) {
-            LOG.error("[ Error when receiving data from FLUX. ]", e);
-            type.setStatus("NOK");
-            return type;
+        for (SetReportMovementType movement : movements) {
+            exchange.sendMovementReportToExchange(movement);
         }
     }
 
+
+    @Override protected StartupBean getStartupBean() {
+        return startupBean;
+    }
 }

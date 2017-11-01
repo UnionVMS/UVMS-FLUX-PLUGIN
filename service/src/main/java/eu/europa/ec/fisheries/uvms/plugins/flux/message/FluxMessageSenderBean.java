@@ -11,25 +11,22 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.PortInitiator;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageRequestMapper;
-
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-
-import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
-
 import java.util.HashMap;
 import java.util.Map;
-import javax.ejb.LocalBean;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.flux.PortInitiator;
+import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
+import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageRequestMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xeu.connector_bridge.v1.PostMsgOutType;
 import xeu.connector_bridge.v1.PostMsgType;
+import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
 
 /**
  *

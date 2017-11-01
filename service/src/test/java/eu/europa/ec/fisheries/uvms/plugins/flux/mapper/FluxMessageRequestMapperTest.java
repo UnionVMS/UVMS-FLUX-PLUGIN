@@ -7,7 +7,7 @@ package eu.europa.ec.fisheries.uvms.plugins.flux.mapper;
 
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.flux.service.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mockdata.MockConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mockdata.MovementTypeMock;
 
