@@ -20,9 +20,6 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginFault;
 import eu.europa.ec.fisheries.schema.exchange.registry.v1.ExchangeRegistryBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.registry.v1.RegisterServiceResponse;
@@ -32,6 +29,8 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.PluginService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
     @ActivationConfigProperty(propertyName = "messagingType", propertyValue = ExchangeModelConstants.CONNECTION_TYPE),

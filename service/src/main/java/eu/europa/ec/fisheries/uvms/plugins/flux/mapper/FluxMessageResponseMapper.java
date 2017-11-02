@@ -11,6 +11,16 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.mapper;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
@@ -23,18 +33,6 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.util.DateUtil;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
