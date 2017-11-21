@@ -15,6 +15,10 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.JMSException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.UUID;
 
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -23,13 +27,13 @@ import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMa
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.plugins.flux.producer.PluginMessageProducer;
-import lombok.extern.slf4j.Slf4j;
 
 @LocalBean
 @Stateless
-@Slf4j
 public class ExchangeService {
 
+	private static Logger LOG = LoggerFactory.getLogger(ExchangeService.class);
+	
     @EJB
     private StartupBean startupBean;
 
@@ -42,9 +46,9 @@ public class ExchangeService {
             String messageId = producer.sendModuleMessage(text, ModuleQueue.EXCHANGE);
             startupBean.getCachedMovement().put(messageId, reportType);
         } catch (ExchangeModelMarshallException e) {
-            log.error("Couldn't map movement to setreportmovementtype");
+            LOG.error("Couldn't map movement to setreportmovementtype");
         } catch (JMSException e) {
-            log.error("Couldn't send movement");
+            LOG.error("Couldn't send movement");
             startupBean.getCachedMovement().put(UUID.randomUUID().toString(), reportType);
         }
     }
@@ -53,7 +57,7 @@ public class ExchangeService {
         try {
             producer.sendModuleMessage(fluxFAReportRequest, ModuleQueue.EXCHANGE);
         } catch (JMSException e) {
-            log.error("Couldn't send activity", e);
+            LOG.error("Couldn't send activity", e);
         }
     }
 

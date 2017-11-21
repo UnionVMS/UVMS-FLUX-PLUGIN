@@ -19,6 +19,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -29,15 +33,15 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService;
-import lombok.extern.slf4j.Slf4j;
 import un.unece.uncefact.data.standard.fluxfareportmessage._3.FLUXFAReportMessage;
 import xeu.bridge_connector.v1.RequestType;
 
 @Stateless
 @WebService(serviceName = "FLUXFAReportMessageService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
-@Slf4j
 public class FLUXFAReportMessageReceiver extends AbstractFluxReceiver {
 
+	private static Logger LOG = LoggerFactory.getLogger(FLUXFAReportMessageReceiver.class);
+	
     @EJB
     private StartupBean startupBean;
 
@@ -54,7 +58,7 @@ public class FLUXFAReportMessageReceiver extends AbstractFluxReceiver {
         try {
             request.setRequest(marshallJaxBObjectToString(xmlMessage));
         } catch (ExchangeModelMarshallException e) {
-            e.printStackTrace();
+        	LOG.error("Problem with marshallJaxBObjectToString:" + xmlMessage,e);
         }
 
         Map<QName, String> otherAttributes = rt.getOtherAttributes();
@@ -75,7 +79,7 @@ public class FLUXFAReportMessageReceiver extends AbstractFluxReceiver {
         try {
             exchange.sendActivityReportToExchange(marshallJaxBObjectToString(request));
         } catch (ExchangeModelMarshallException e) {
-            e.printStackTrace();
+            LOG.error("Problem with sendToExchange:" + request,e);
         }
     }
 

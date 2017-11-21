@@ -29,8 +29,8 @@ import javax.jms.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.europa.ec.fisheries.uvms.commons.message.impl.JMSUtils;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
-import eu.europa.ec.fisheries.uvms.message.JMSUtils;
 import eu.europa.ec.fisheries.uvms.plugins.flux.constants.ModuleQueue;
 
 @Stateless
