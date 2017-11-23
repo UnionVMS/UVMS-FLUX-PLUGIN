@@ -22,6 +22,8 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageResponseMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService;
+
+import org.jboss.ws.api.annotation.WebContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xeu.bridge_connector.v1.RequestType;
@@ -31,15 +33,16 @@ import xeu.bridge_connector.v1.RequestType;
  */
 @Stateless
 @WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
+@WebContext(contextRoot = "/flux-service")  
 public class FluxMessageReceiverBean extends AbstractFluxReceiver {
 
     private static Logger LOG = LoggerFactory.getLogger(FluxMessageReceiverBean.class);
 
     @EJB
-    ExchangeService exchange;
+    private ExchangeService exchange;
 
     @EJB
-    StartupBean startupBean;
+    private StartupBean startupBean;
 
 
     @Override protected void sendToExchange(RequestType rt) throws JAXBException, PluginException {
