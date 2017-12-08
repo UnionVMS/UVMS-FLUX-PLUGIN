@@ -49,7 +49,7 @@ public class StartupBean extends PluginDataHolder implements eu.europa.ec.fisher
 
     final static Logger LOG = LoggerFactory.getLogger(StartupBean.class);
 
-    private final static int MAX_NUMBER_OF_TRIES = 10;
+    private final static int MAX_NUMBER_OF_TRIES = 20;
     private boolean isRegistered = false;
     private boolean isEnabled = false;
     private boolean waitingForResponse = false;
@@ -108,9 +108,9 @@ public class StartupBean extends PluginDataHolder implements eu.europa.ec.fisher
         unregister();
     }
 
-    @Schedule(second = "*/30", minute = "*", hour = "*", persistent = false)
+    @Schedule(second = "*/10", minute = "*", hour = "*", persistent = false)
     public void timeout(Timer timer) {
-        if (!waitingForResponse && !isRegistered && numberOfTriesExecuted < MAX_NUMBER_OF_TRIES) {
+        if (!isRegistered && numberOfTriesExecuted < MAX_NUMBER_OF_TRIES) {
             LOG.info(getRegisterClassName() + " is not registered, trying to register");
             register();
             numberOfTriesExecuted++;

@@ -20,8 +20,8 @@
         <connector-bridge.client.version>2.0.1</connector-bridge.client.version>
         <bridge-connector.client.version>2.0.1</bridge-connector.client.version>
         <flux.movement.client.version>2.0.1</flux.movement.client.version>
-        <exchange.model.version>4.0.5</exchange.model.version>
-        <activity.model>1.0.1</activity.model>
+        <exchange.model.version>4.0.7</exchange.model.version>
+        <activity.model>1.0.2</activity.model>
 
         <jodatime.version>2.9.9</jodatime.version>
         <project.scm.id>github</project.scm.id>
