@@ -16,26 +16,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
 
+@Slf4j
 public class DateUtil {
 
     private static DatatypeFactory dataTypeFactory;
     public static final int DESCENDING = -1;
     public static final int ASCENDING = 1;
-
-    private static Logger LOG = LoggerFactory.getLogger(DateUtil.class);
 
     final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
     TimeZone CET_FORMAT = TimeZone.getTimeZone("UTC");
@@ -57,18 +53,16 @@ public class DateUtil {
         try {
             dataTypeFactory = DatatypeFactory.newInstance();
         } catch (final DatatypeConfigurationException e) {
-            LOG.error("[ Error when instantiating a DatatypeFactory. ] {} {}", e.getMessage(), e.getStackTrace());
+            log.error("[ Error when instantiating a DatatypeFactory. ] {} {}", e.getMessage(), e.getStackTrace());
         }
     }
 
     public static int compareDates(Date d1, Date d2, int order) {
         if (d1 != null && d2 != null) {
             return d1.compareTo(d2) * order;
-        }
-        if (d2 != null && d1 == null) {
+        } else if (d2 != null && d1 == null) {
             return -1 * order;
-        }
-        if (d2 == null && d1 != null) {
+        } else if (d2 == null && d1 != null) {
             return 1 * order;
         }
         return 0;
@@ -79,7 +73,7 @@ public class DateUtil {
      * .
      *
      * @param xmlGregorianCalendar the {@link XMLGregorianCalendar} that should
-     * be transformed
+     *                             be transformed
      * @return the created {@link Date}. If an {@link Date} could not be
      * created, the return value is {@code null}
      */
@@ -91,7 +85,7 @@ public class DateUtil {
         }
         return date;
     }
-    
+
 
     public static Date getDate(final XMLGregorianCalendar inDate, final XMLGregorianCalendar inTime) {
         Date date = getDate(inDate);
@@ -158,7 +152,7 @@ public class DateUtil {
                 return null;
             }
         } catch (IllegalArgumentException e) {
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
             throw new IllegalArgumentException(e);
         }
     }
@@ -185,15 +179,15 @@ public class DateUtil {
      * @return A {@link Date} representation of date, with time set to 00:00:00
      * set according to UTC timezone.
      * @throws {@link NumberFormatException} when the input parameter isn't as
-     * expected.
+     *                expected.
      */
     public static Date getTimeFromString(String input) {
         if (input != null && !input.trim().isEmpty()) {
             final String pattern = "(19|20){1}\\d{6}";
             if (input.length() == 8 & input.matches(pattern)) {
-                DateTime time = new DateTime(new Integer(input.substring(0, 4)).intValue() // year
-                        , new Integer(input.substring(4, 6)).intValue() // month
-                        , new Integer(input.substring(6, 8)).intValue() // day
+                DateTime time = new DateTime(new Integer(input.substring(0, 4)) // year
+                        , new Integer(input.substring(4, 6)) // month
+                        , new Integer(input.substring(6, 8)) // day
                         , 0 // hour
                         , 0 // minute
                         , DateTimeZone.UTC);

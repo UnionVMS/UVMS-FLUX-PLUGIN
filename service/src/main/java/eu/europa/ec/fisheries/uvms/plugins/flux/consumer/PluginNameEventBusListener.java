@@ -11,16 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.consumer;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
 import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeTypeType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PingRequest;
@@ -30,49 +20,55 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetConfigRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SetReportRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.StartRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.StopRequest;
-import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangePluginResponseMapper;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.producer.PluginMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.flux.constants.MovementPluginConstants;
+import eu.europa.ec.fisheries.uvms.plugins.flux.producer.PluginToExchangeProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.PluginService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
+import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import lombok.extern.slf4j.Slf4j;
 
-@MessageDriven(mappedName = ExchangeModelConstants.PLUGIN_EVENTBUS, activationConfig = {
-    @ActivationConfigProperty(propertyName = "messagingType", propertyValue = ExchangeModelConstants.CONNECTION_TYPE),
-    @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = ExchangeModelConstants.DESTINATION_TYPE_TOPIC),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = ExchangeModelConstants.EVENTBUS_NAME)
+@MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
+        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR,          propertyValue = MessageConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_DURABILITY_STR, propertyValue = MessageConstants.DURABLE_CONNECTION),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR,        propertyValue = MessageConstants.DESTINATION_TYPE_TOPIC),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR,            propertyValue = MessageConstants.EVENT_BUS_TOPIC_NAME),
+        @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_NAME_STR,       propertyValue = MovementPluginConstants.SUBSCRIPTION_NAME_EV),
+        @ActivationConfigProperty(propertyName = MessageConstants.CLIENT_ID_STR,               propertyValue = MovementPluginConstants.CLIENT_ID_EV),
+        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGE_SELECTOR_STR,        propertyValue = MovementPluginConstants.MESSAGE_SELECTOR_EV)
 })
+@Slf4j
 public class PluginNameEventBusListener implements MessageListener {
 
-    final static Logger LOG = LoggerFactory.getLogger(PluginNameEventBusListener.class);
+    @EJB
+    private PluginService service;
 
     @EJB
-    PluginService service;
+    private PluginToExchangeProducer messageProducer;
 
     @EJB
-    PluginMessageProducer messageProducer;
-
-    @EJB
-    StartupBean startup;
+    private StartupBean startup;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
-
-        LOG.debug("Eventbus listener for flux (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
-
+        log.debug("Eventbus listener for flux (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
-
         try {
-
             PluginBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, PluginBaseRequest.class);
-
             String responseMessage = null;
-
             switch (request.getMethod()) {
                 case SET_CONFIG:
                     SetConfigRequest setConfigRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetConfigRequest.class);
@@ -109,16 +105,14 @@ public class PluginNameEventBusListener implements MessageListener {
                     responseMessage = ExchangePluginResponseMapper.mapToPingResponse(startup.isIsEnabled(), startup.isIsEnabled());
                     break;
                 default:
-                    LOG.error("Not supported method");
+                    log.error("Not supported method");
                     break;
             }
-
-            messageProducer.sendResponseMessage(responseMessage, textMessage);
-
+            messageProducer.sendResponseMessageToSender(textMessage, responseMessage);
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            LOG.error("[ Error when receiving message in flux " + startup.getRegisterClassName() + " ]", e);
-        } catch (JMSException ex) {
-            LOG.error("[ Error when handling JMS message in flux " + startup.getRegisterClassName() + " ]", ex);
+            log.error("[ Error when receiving message in flux " + startup.getRegisterClassName() + " ]", e);
+        } catch (JMSException | MessageException ex) {
+            log.error("[ Error when handling JMS message in flux " + startup.getRegisterClassName() + " ]", ex);
         }
     }
 }

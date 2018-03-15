@@ -11,6 +11,7 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.mapper;
 
+import eu.europa.ec.fisheries.uvms.plugins.flux.exception.MappingException;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -67,21 +68,17 @@ public class FluxMessageRequestMapper {
     private static final String PURPOSE_CODE = "9";
 
     @EJB
-    StartupBean settings;
+    private StartupBean startupBean;
 
     public PostMsgType mapToRequest(MovementType movement, String messageId, String recipient) throws JAXBException, MappingException {
-
         PostMsgType message = new PostMsgType();
-
         if (recipient == null || recipient.isEmpty()) {
-            message.setAD(settings.getSetting("FLUX_DEFAULT_AD"));
+            message.setAD(startupBean.getSetting("FLUX_DEFAULT_AD"));
         } else {
             message.setAD(recipient);
         }
-
-        message.setDF(settings.getSetting("FLUX_DATAFLOW"));
+        message.setDF(startupBean.getSetting("FLUX_DATAFLOW"));
         message.setID(messageId);
-
         //Below does not need to be set because the bridge takes care of it
         //Date timeInFuture = DateUtil.getTimeInFuture(1);
         //message.setTODT(DateUtil.createXMLGregorianCalendar(timeInFuture, TimeZone.getTimeZone("UTC")));
@@ -91,17 +88,13 @@ public class FluxMessageRequestMapper {
         //message.setVB(VerbosityType.ERROR);
         //message.setAR(false);
         //message.setTS(true);
-        FLUXVesselPositionMessage attr = mapToFluxMovement(movement, settings.getSetting("FLUX_AD"), settings.getSetting("OWNER_FLUX_PARTY"));
-
+        FLUXVesselPositionMessage attr = mapToFluxMovement(movement, startupBean.getSetting("FLUX_AD"), startupBean.getSetting("OWNER_FLUX_PARTY"));
         ObjectFactory fact = new ObjectFactory();
-
         JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Marshaller marshaller = context.createMarshaller();
         DOMResult res = new DOMResult();
         marshaller.marshal(attr, res);
-
         Element elt = ((Document) res.getNode()).getDocumentElement();
-
         message.setAny(elt);
         return message;
     }
@@ -130,13 +123,11 @@ public class FluxMessageRequestMapper {
 
     private FLUXReportDocumentType mapToReportDocument(String fluxOwner, String referenceNumber) {
         FLUXReportDocumentType doc = new FLUXReportDocumentType();
-
         if (referenceNumber == null) {
             doc.getIDS().add(mapToGUIDIDType());
         } else {
             doc.getIDS().add(mapToIdType(referenceNumber));
         }
-
         doc.setCreationDateTime(mapToNowDateTime());
         doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
         doc.setOwnerFLUXParty(mapToFluxPartyType(fluxOwner));
@@ -145,47 +136,37 @@ public class FluxMessageRequestMapper {
 
     public void addHeaderValueToRequest(Object port, final Map<String, String> values) {
         BindingProvider bp = (BindingProvider) port;
-        Map<String, Object> context = bp.getRequestContext();
-
         Map<String, List<String>> headers = new HashMap<>();
         for (Entry entry : values.entrySet()) {
             headers.put(entry.getKey().toString(), Collections.singletonList(entry.getValue().toString()));
         }
-        context.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
+        bp.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, headers);
     }
 
     private VesselTransportMeansType mapToVesselTransportMeans(MovementType movement, String ad) throws MappingException {
         VesselTransportMeansType retVal = new VesselTransportMeansType();
-
         //Handle Asset ID
         Map<String, String> ids = new HashMap<>();
-
         for (AssetIdList col : movement.getAssetId().getAssetIdList()) {
             ids.put(col.getIdType().name(), col.getValue());
         }
-
         if (ids.containsKey(AssetIdType.IRCS.name()) && movement.getIrcs() != null) {
             if (!movement.getIrcs().equals(ids.get(AssetIdType.IRCS.name()))) {
                 throw new MappingException("Asset IRCS does not match when mapping AssetID ( There are 2 ways of getting Ircs in this object! :( and they do not match ) " + movement.getIrcs() + ":" +ids.get(AssetIdType.IRCS.name()));
             }
         }
-
         if (movement.getIrcs() != null) {
             retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.IRCS, movement.getIrcs()));
         }
-
         if (movement.getExternalMarking() != null) {
             retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.EXT_MARKING, movement.getExternalMarking()));
         }
-
         if (ids.containsKey(AssetIdType.CFR.name())) {
             retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.CFR, ids.get(AssetIdType.CFR.name())));
         }
         //End handle Asset Id
-
         retVal.setRegistrationVesselCountry(mapToVesselCountry(movement.getFlagState()));
         retVal.getSpecifiedVesselPositionEvents().add(mapToVesselPosition(movement));
-
         return retVal;
     }
 
@@ -252,13 +233,10 @@ public class FluxMessageRequestMapper {
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
         geoType.setLatitudeMeasure(mapToMeasureType(point.getLatitude()));
         geoType.setLongitudeMeasure(mapToMeasureType(point.getLongitude()));
-
         if (point.getAltitude() != null) {
             geoType.setAltitudeMeasure(mapToMeasureType(point.getAltitude()));
         }
-
         return geoType;
-
     }
 
     private enum VESSEL_ID_TYPE {

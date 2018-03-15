@@ -11,32 +11,33 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.jws.WebService;
-import javax.xml.bind.JAXBException;
-import java.util.List;
+import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.DF;
+import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.FR;
+import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.GUID;
+import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.ON;
+import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.USER;
 
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageResponseMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.jws.WebService;
+import javax.xml.namespace.QName;
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.ws.api.annotation.WebContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xeu.bridge_connector.v1.RequestType;
 
-/**
- *
- */
 @Stateless
 @WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
-@WebContext(contextRoot = "/flux-service")  
+@WebContext(contextRoot = "/flux-service")
+@Slf4j
 public class FluxMessageReceiverBean extends AbstractFluxReceiver {
-
-    private static Logger LOG = LoggerFactory.getLogger(FluxMessageReceiverBean.class);
 
     @EJB
     private ExchangeService exchange;
@@ -44,18 +45,66 @@ public class FluxMessageReceiverBean extends AbstractFluxReceiver {
     @EJB
     private StartupBean startupBean;
 
-
-    @Override protected void sendToExchange(RequestType rt) throws JAXBException, PluginException {
-
-        List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToMovementType(rt, startupBean.getRegisterClassName());
-
+    @Override
+    protected void sendToExchange(RequestType rt) throws PluginException {
+        List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToReportMovementTypes(rt, startupBean.getRegisterClassName());
+        log.info("[INFO] Going to send [" + movements.size() + "] movements to exchange.");
+        final Map<String, String> msgProperties = extractMsgProperties(rt);
         for (SetReportMovementType movement : movements) {
-            exchange.sendMovementReportToExchange(movement);
+            exchange.sendMovementReportToExchange(movement, msgProperties);
+        }
+        log.info("[INFO] Finished sending all movements to exchange.");
+    }
+
+    private Map<String, String> extractMsgProperties(RequestType rt) throws PluginException {
+        Map<QName, String> attributes = rt.getOtherAttributes();
+        Map<String, String> props = new HashMap<>();
+        props.put(USER, attributes.get(new QName(USER)));
+        props.put(ON, rt.getON());
+        props.put(FR, attributes.get(new QName(FR)));
+        props.put(DF, attributes.get(new QName(DF)));
+        props.put(GUID, FluxMessageResponseMapper.extractMessageGUID(rt));
+        return props;
+    }
+
+    @Override
+    protected StartupBean getStartupBean() {
+        return startupBean;
+    }
+
+    //@Override TODO : for the future we send the whole message to exchange instead of each movement separately...
+ /*   protected void sendToExchangeNew(RequestType rt) {
+        try {
+            SetFLUXMovementReportRequest request = new SetFLUXMovementReportRequest();
+            Map<QName, String> otherAttributes = rt.getOtherAttributes();
+            final FLUXVesselPositionMessage xmlMessage = FluxMessageResponseMapper.extractVesselPositionMessage(rt.getAny());
+            request.setRequest(marshallJaxBObjectToString(xmlMessage));
+            String requestStr = createSetFLUXMovementReportRequest(request.getRequest(), otherAttributes.get(new QName(USER)), rt.getDF(),
+                    DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
+                    otherAttributes.get(new QName(FR)), rt.getON());
+            pluginToExchangeProducer.sendModuleMessage(requestStr, null);
+        } catch (JAXBException | MessageException | PluginException e) {
+            throw new RuntimeException("Couldn't transform Element to Source", e);
         }
     }
 
-
-    @Override protected StartupBean getStartupBean() {
-        return startupBean;
+    private String createSetFLUXMovementReportRequest(String message, String username, String fluxDFValue, Date date,
+                                                      String messageGuid, PluginType pluginType, String senderReceiver, String onValue) throws JAXBException {
+        SetFLUXMovementReportRequest request = new SetFLUXMovementReportRequest();
+        request.setMethod(ExchangeModuleMethod.SET_MOVEMENT_REPORT);
+        request.setRequest(message);
+        populateBaseProperties(request, fluxDFValue, date, messageGuid, pluginType, senderReceiver, onValue, username);
+        return marshallJaxBObjectToString(request, "Unicode", true);
     }
+
+    private static void populateBaseProperties(ExchangeBaseRequest request, String fluxDFValue, Date date, String messageGuid, PluginType pluginType, String senderReceiver, String onValue, String username) {
+        request.setUsername(username);
+        request.setFluxDataFlow(fluxDFValue);
+        request.setDate(date);
+        request.setMessageGuid(messageGuid);
+        request.setPluginType(pluginType);
+        request.setSenderOrReceiver(senderReceiver);
+        request.setOnValue(onValue);
+    }
+*/
 }
