@@ -11,19 +11,17 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.PortInitiator;
+import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
+import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
+import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageRequestMapper;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import java.util.HashMap;
-import java.util.Map;
-
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.PortInitiator;
-import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
-import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageRequestMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import xeu.connector_bridge.v1.PostMsgOutType;
 import xeu.connector_bridge.v1.PostMsgType;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
@@ -33,23 +31,22 @@ import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
  */
 @LocalBean
 @Stateless
+@Slf4j
 public class FluxMessageSenderBean {
 
     @EJB
-    PortInitiator port;
+    private PortInitiator port;
 
     @EJB
-    FluxMessageRequestMapper mapper;
+    private FluxMessageRequestMapper mapper;
 
     @EJB
-    StartupBean startupBean;
-
-    private static Logger LOG = LoggerFactory.getLogger(FluxMessageSenderBean.class);
+    private StartupBean startupBean;
 
     public String sendMovement(MovementType movement, String messageId, String recipient) throws PluginException {
         try {
 
-            LOG.info("Sending message to EU [ {} ] with messageID: {} ", messageId);
+            log.info("Sending message to EU [ {} ] with messageID: {} ", messageId);
 
             BridgeConnectorPortType portType = port.getPort();
 
@@ -66,9 +63,9 @@ public class FluxMessageSenderBean {
             PostMsgOutType resp = portType.post(request);
 
             if (resp.getAssignedON() == null) {
-                LOG.info("Failed to send to flux Recipient {}, Mesageid {} Should corralate with Movement GUID", recipient, messageId);
+                log.info("Failed to send to flux Recipient {}, Mesageid {} Should corralate with Movement GUID", recipient, messageId);
             } else {
-                LOG.info("Success when sending to flux MessageId {} ( Should corralate with Movement GUID ) Recipient {} ", messageId, recipient);
+                log.info("Success when sending to flux MessageId {} ( Should corralate with Movement GUID ) Recipient {} ", messageId, recipient);
             }
 
             if (request.getID() != null && !request.getID().isEmpty()) {
@@ -78,7 +75,7 @@ public class FluxMessageSenderBean {
             }
 
         } catch (Exception e) {
-            LOG.error("[ Error when sending movement to FLUX. ] {}", e.getMessage());
+            log.error("[ Error when sending movement to FLUX. ] {}", e.getMessage());
             throw new PluginException(e.getMessage());
         }
     }

@@ -11,11 +11,6 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.service;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.util.UUID;
-
 import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeTypeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandTypeType;
@@ -27,18 +22,22 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.PortInitiator;
+import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.message.FluxMessageSenderBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.UUID;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
 @LocalBean
 @Stateless
+@Slf4j
 public class PluginService {
 
     @EJB
@@ -50,8 +49,6 @@ public class PluginService {
     @EJB
     PortInitiator portInintiator;
 
-    final static Logger LOG = LoggerFactory.getLogger(PluginService.class);
-
     /**
      * TODO implement
      *
@@ -59,18 +56,16 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType setReport(ReportType report) {
-        LOG.info(startupBean.getRegisterClassName() + ".report(" + report.getType().name() + ")");
-        LOG.debug("timestamp: " + report.getTimestamp());
+        log.info(startupBean.getRegisterClassName() + ".report(" + report.getType().name() + ")");
+        log.debug("timestamp: " + report.getTimestamp());
         MovementType movement = report.getMovement();
         if (movement != null && ReportTypeType.MOVEMENT.equals(report.getType())) {
             try {
-
                 MovementPoint pos = movement.getPosition();
                 if (pos != null) {
-                    LOG.info("lon: " + pos.getLongitude());
-                    LOG.info("lat: " + pos.getLatitude());
+                    log.info("lon: " + pos.getLongitude());
+                    log.info("lat: " + pos.getLatitude());
                 }
-
                 String editorType = startupBean.getSetting("EDITOR_TYPE");
                 String actionReason = startupBean.getSetting("ACTION_REASON");
 
@@ -78,11 +73,9 @@ public class PluginService {
                 if (movement.getGuid() != null) {
                     messageId = movement.getGuid();
                 }
-
                 sender.sendMovement(movement, messageId, report.getRecipient());
-
             } catch (PluginException ex) {
-                LOG.debug("Error when setting report");
+                log.debug("Error when setting report");
                 return AcknowledgeTypeType.NOK;
             }
         }
@@ -96,15 +89,15 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType setCommand(CommandType command) {
-        LOG.info(startupBean.getRegisterClassName() + ".setCommand(" + command.getCommand().name() + ")");
-        LOG.debug("timestamp: " + command.getTimestamp());
+        log.info(startupBean.getRegisterClassName() + ".setCommand(" + command.getCommand().name() + ")");
+        log.debug("timestamp: " + command.getTimestamp());
         PollType poll = command.getPoll();
         EmailType email = command.getEmail();
         if (poll != null && CommandTypeType.POLL.equals(command.getCommand())) {
-            LOG.info("POLL: " + poll.getPollId());
+            log.info("POLL: " + poll.getPollId());
         }
         if (email != null && CommandTypeType.EMAIL.equals(command.getCommand())) {
-            LOG.info("EMAIL: subject=" + email.getSubject());
+            log.info("EMAIL: subject=" + email.getSubject());
         }
         return AcknowledgeTypeType.OK;
     }
@@ -116,16 +109,16 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType setConfig(SettingListType settings) {
-        LOG.info(startupBean.getRegisterClassName() + ".setConfig()");
+        log.info(startupBean.getRegisterClassName() + ".setConfig()");
         try {
             for (KeyValueType values : settings.getSetting()) {
-                LOG.debug("Setting [ " + values.getKey() + " : " + values.getValue() + " ]");
+                log.debug("Setting [ " + values.getKey() + " : " + values.getValue() + " ]");
                 startupBean.getSettings().put(values.getKey(), values.getValue());
             }
             portInintiator.updatePort();
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
-            LOG.error("Failed to set config in {}", startupBean.getRegisterClassName());
+            log.error("Failed to set config in {}", startupBean.getRegisterClassName());
             return AcknowledgeTypeType.NOK;
         }
 
@@ -137,13 +130,13 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType start() {
-        LOG.info(startupBean.getRegisterClassName() + ".start()");
+        log.info(startupBean.getRegisterClassName() + ".start()");
         try {
             startupBean.setIsEnabled(Boolean.TRUE);
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.FALSE);
-            LOG.error("Failed to start {}", startupBean.getRegisterClassName());
+            log.error("Failed to start {}", startupBean.getRegisterClassName());
             return AcknowledgeTypeType.NOK;
         }
 
@@ -155,13 +148,13 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType stop() {
-        LOG.info(startupBean.getRegisterClassName() + ".stop()");
+        log.info(startupBean.getRegisterClassName() + ".stop()");
         try {
             startupBean.setIsEnabled(Boolean.FALSE);
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.TRUE);
-            LOG.error("Failed to stop {}", startupBean.getRegisterClassName());
+            log.error("Failed to stop {}", startupBean.getRegisterClassName());
             return AcknowledgeTypeType.NOK;
         }
     }

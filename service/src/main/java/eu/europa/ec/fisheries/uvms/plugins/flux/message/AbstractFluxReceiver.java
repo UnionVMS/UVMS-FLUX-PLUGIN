@@ -10,45 +10,34 @@
 
 package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
-import javax.xml.bind.JAXBException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
+import javax.xml.bind.JAXBException;
+import lombok.extern.slf4j.Slf4j;
 import xeu.bridge_connector.v1.RequestType;
 import xeu.bridge_connector.v1.ResponseType;
 import xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType;
 
+@Slf4j
 public abstract class AbstractFluxReceiver implements BridgeConnectorPortType {
 
-	private static Logger LOG = LoggerFactory.getLogger(AbstractFluxReceiver.class);
-	
-    final String FLUX = "FLUX";
-
-    @Override public ResponseType post(RequestType rt) {
-
+    @Override
+    public ResponseType post(RequestType rt) {
         ResponseType type = new ResponseType();
-
         if (!getStartupBean().isIsEnabled()) {
             type.setStatus("NOK");
             return type;
         }
-
         try {
-            LOG.debug("Got activity request from FLUX in FLUX plugin");
-
+            log.debug("Got activity request from FLUX in FLUX plugin");
             sendToExchange(rt);
-
             type.setStatus("OK");
             return type;
         } catch (Exception e) {
-            LOG.error("[ Error when receiving data from FLUX. ]", e);
+            log.error("[ Error when receiving data from FLUX. ]", e);
             type.setStatus("NOK");
             return type;
         }
-
     }
 
     protected abstract void sendToExchange(RequestType rt) throws JAXBException, PluginException;

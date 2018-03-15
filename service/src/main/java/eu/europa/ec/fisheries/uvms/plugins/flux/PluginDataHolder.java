@@ -15,8 +15,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- **/
+
 public abstract class PluginDataHolder {
 
     public final static String PLUGIN_PROPERTIES = "flux.properties";
@@ -34,35 +33,27 @@ public abstract class PluginDataHolder {
     public ConcurrentHashMap<String, String> getSettings() {
         return settings;
     }
-
     public ConcurrentHashMap<String, String> getCapabilities() {
         return capabilities;
     }
-
     public ConcurrentHashMap<String, SetReportMovementType> getCachedMovement() {
         return cachedMovement;
     }
-
     public Properties getPluginApplicaitonProperties() {
         return fluxApplicaitonProperties;
     }
-
     public void setPluginApplicaitonProperties(Properties fluxApplicaitonProperties) {
         this.fluxApplicaitonProperties = fluxApplicaitonProperties;
     }
-
     public Properties getPluginProperties() {
         return fluxProperties;
     }
-
     public void setPluginProperties(Properties fluxProperties) {
         this.fluxProperties = fluxProperties;
     }
-
     public Properties getPluginCapabilities() {
         return fluxCapabilities;
     }
-
     public void setPluginCapabilities(Properties fluxCapabilities) {
         this.fluxCapabilities = fluxCapabilities;
     }

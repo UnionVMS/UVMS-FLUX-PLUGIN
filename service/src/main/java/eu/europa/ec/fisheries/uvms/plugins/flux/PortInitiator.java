@@ -11,14 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux;
 
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.xml.ws.BindingProvider;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorService;
 
@@ -33,17 +30,11 @@ import xeu.connector_bridge.wsdl.v1.BridgeConnectorService;
 @Startup
 public class PortInitiator {
 
-    private static Logger LOG = LoggerFactory.getLogger(PortInitiator.class);
+    @EJB
+    private StartupBean startupBean;
 
     private BridgeConnectorPortType vesselPort;
 
-    @EJB
-    StartupBean startupBean;
-
-    /**
-     *
-     * @return
-     */
     public BridgeConnectorPortType getPort() {
         if (vesselPort == null) {
             vesselPort = setupPort();
@@ -55,10 +46,6 @@ public class PortInitiator {
         vesselPort = setupPort();
     }
 
-    /**
-     *
-     * @return
-     */
     private BridgeConnectorPortType setupPort() {
         BridgeConnectorService service = new BridgeConnectorService();
         BridgeConnectorPortType port = service.getBridgeConnectorSOAP11Port();

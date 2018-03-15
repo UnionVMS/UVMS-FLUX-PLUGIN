@@ -61,7 +61,7 @@ public class FluxMessageResponseMapperTest {
     public void testFluxMessageResponseMapper() throws JAXBException, PluginException {
         RequestType mapToResponseType = FluxReportMock.mapToResponseType();
 
-        List<SetReportMovementType> mapToMovementType = FluxMessageResponseMapper.mapToMovementType(mapToResponseType, MockConstants.REGISTER_CLASSNAME);
+        List<SetReportMovementType> mapToMovementType = FluxMessageResponseMapper.mapToReportMovementTypes(mapToResponseType, MockConstants.REGISTER_CLASSNAME);
 
         Assert.assertEquals("The size of List<SetReportMovementType> is incorrect ", 1, mapToMovementType.size());
         assertSetReportMovementType(mapToMovementType.get(0));
