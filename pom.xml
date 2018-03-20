@@ -10,7 +10,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
     <artifactId>flux</artifactId>
-    <version>3.0.7</version>
+    <version>3.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin template</description>
     
@@ -64,7 +64,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-FLUX-PLUGIN.git</connection>
-        <tag>flux-3.0.7</tag>
+        <tag>HEAD</tag>
     </scm>
         
     <modules>
