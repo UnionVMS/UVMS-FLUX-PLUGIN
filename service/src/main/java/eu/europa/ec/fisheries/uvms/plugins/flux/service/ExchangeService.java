@@ -11,6 +11,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.service;
 
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.util.Map;
+import java.util.UUID;
+
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
@@ -19,11 +25,6 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.producer.PluginToExchangeProducer;
-import java.util.Map;
-import java.util.UUID;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import lombok.extern.slf4j.Slf4j;
 
 @LocalBean
@@ -57,5 +58,15 @@ public class ExchangeService {
             startupBean.getCachedMovement().put(UUID.randomUUID().toString(), reportType);
         }
     }
+
+    public void sendActivityReportToExchange(String fluxFAReportRequest) {
+        try {
+            producer.sendModuleMessage(fluxFAReportRequest, null);
+        } catch (MessageException e) {
+            log.error("[ERROR] Couldn't send movement");
+        }
+    }
+
+
 
 }

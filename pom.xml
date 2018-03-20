@@ -35,6 +35,18 @@
             <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+                      <groupId>eu.europa.ec.fisheries.uvms.activity</groupId>
+                       <artifactId>activity-model</artifactId>
+                       <version>${activity.model}</version>
+                        <exclusions>
+                        	<exclusion>
+                        	  <groupId>org.mockito</groupId>
+              				  <artifactId>mockito-all</artifactId>
+                        	</exclusion>
+                        </exclusions>
+                    </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
