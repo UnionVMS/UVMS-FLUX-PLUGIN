@@ -17,25 +17,26 @@ import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.G
 import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.ON;
 import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.USER;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.jws.WebService;
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.mapper.FluxMessageResponseMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.jws.WebService;
-import javax.xml.namespace.QName;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.ws.api.annotation.WebContext;
 import xeu.bridge_connector.v1.RequestType;
 
 @Stateless
 @WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
-@WebContext(contextRoot = "/flux-service")
+@WebContext(contextRoot = "/fluxfmc/flux-service")
 @Slf4j
 public class FluxMessageReceiverBean extends AbstractFluxReceiver {
 
