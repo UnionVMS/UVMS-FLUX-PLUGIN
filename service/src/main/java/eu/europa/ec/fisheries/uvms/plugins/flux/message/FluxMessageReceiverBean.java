@@ -36,7 +36,7 @@ import xeu.bridge_connector.v1.RequestType;
 
 @Stateless
 @WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
-@WebContext(contextRoot = "/fluxfmc/flux-service")
+@WebContext(contextRoot = "/unionvms/flux-service")
 @Slf4j
 public class FluxMessageReceiverBean extends AbstractFluxReceiver {
 
