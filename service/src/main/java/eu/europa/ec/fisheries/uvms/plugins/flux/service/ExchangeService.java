@@ -11,6 +11,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.service;
 
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.util.Map;
+import java.util.UUID;
+
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
@@ -19,11 +25,6 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.producer.PluginToExchangeProducer;
-import java.util.Map;
-import java.util.UUID;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import lombok.extern.slf4j.Slf4j;
 
 @LocalBean
@@ -46,7 +47,7 @@ public class ExchangeService {
     public void sendMovementReportToExchange(SetReportMovementType reportType, Map<String, String> msgProps) {
         try {
             String messageId = producer.sendModuleMessage(
-                    ExchangeModuleRequestMapper.createSetMovementReportRequest(reportType, msgProps.get(USER), msgProps.get(DF),
+                    ExchangeModuleRequestMapper.createSetMovementReportRequest(reportType, "FLUXWS", msgProps.get(DF),
                             DateUtils.nowUTC().toDate(), msgProps.get(GUID), PluginType.FLUX, msgProps.get(FR), msgProps.get(ON)),
                     null);
             startupBean.getCachedMovement().put(messageId, reportType);
