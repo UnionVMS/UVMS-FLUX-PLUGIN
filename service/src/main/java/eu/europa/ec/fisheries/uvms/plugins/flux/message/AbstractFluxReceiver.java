@@ -10,9 +10,11 @@
 
 package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
+import javax.xml.bind.JAXBException;
+
+import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
-import javax.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
 import xeu.bridge_connector.v1.RequestType;
 import xeu.bridge_connector.v1.ResponseType;
@@ -40,7 +42,7 @@ public abstract class AbstractFluxReceiver implements BridgeConnectorPortType {
         }
     }
 
-    protected abstract void sendToExchange(RequestType rt) throws JAXBException, PluginException;
+    protected abstract void sendToExchange(RequestType rt) throws JAXBException, PluginException, ExchangeModelMarshallException;
 
     protected abstract StartupBean getStartupBean();
 }

@@ -9,13 +9,8 @@
  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
  copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
-import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.DF;
-import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.FR;
-import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.GUID;
-import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.ON;
-import static eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService.USER;
+package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -48,11 +43,11 @@ public class FluxMessageReceiverBean extends AbstractFluxReceiver {
 
     @Override
     protected void sendToExchange(RequestType rt) throws PluginException {
+
         List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToReportMovementTypes(rt, startupBean.getRegisterClassName());
         log.info("[INFO] Going to send [" + movements.size() + "] movements to exchange.");
-        final Map<String, String> msgProperties = extractMsgProperties(rt);
         for (SetReportMovementType movement : movements) {
-            exchange.sendMovementReportToExchange(movement, msgProperties);
+            exchange.sendMovementReportToExchange(movement);
         }
         log.info("[INFO] Finished sending all movements to exchange.");
     }
@@ -60,11 +55,11 @@ public class FluxMessageReceiverBean extends AbstractFluxReceiver {
     private Map<String, String> extractMsgProperties(RequestType rt) throws PluginException {
         Map<QName, String> attributes = rt.getOtherAttributes();
         Map<String, String> props = new HashMap<>();
-        props.put(USER, attributes.get(new QName(USER)));
-        props.put(ON, rt.getON());
-        props.put(FR, attributes.get(new QName(FR)));
-        props.put(DF, attributes.get(new QName(DF)));
-        props.put(GUID, FluxMessageResponseMapper.extractMessageGUID(rt));
+        props.put("USER", attributes.get(new QName("USER")));
+        props.put("ON", rt.getON());
+        props.put("FR", attributes.get(new QName("FR")));
+        props.put("DF", attributes.get(new QName("DF")));
+        props.put("GUID", FluxMessageResponseMapper.extractMessageGUID(rt));
         return props;
     }
 
