@@ -9,9 +9,6 @@
 
 package eu.europa.ec.fisheries.uvms.plugins.flux.message;
 
-import static eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller.marshallJaxBObjectToString;
-import static eu.europa.ec.fisheries.uvms.plugins.flux.constants.ActivityType.UNKNOWN;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jws.WebService;
@@ -19,30 +16,28 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
+import eu.europa.ec.fisheries.schema.exchange.module.v1.SetFAQueryMessageRequest;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.SetFLUXFAReportMessageRequest;
+import eu.europa.ec.fisheries.schema.exchange.module.v1.SetFLUXFAResponseMessageRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.constants.ActivityType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.ExchangeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.jboss.ws.api.annotation.WebContext;
+import un.unece.uncefact.data.standard.fluxfaquerymessage._3.FLUXFAQueryMessage;
 import un.unece.uncefact.data.standard.fluxfareportmessage._3.FLUXFAReportMessage;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._20.FAQuery;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._20.FLUXReportDocument;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._20.FLUXResponseDocument;
 import un.unece.uncefact.data.standard.unqualifieddatatype._20.IDType;
 import xeu.bridge_connector.v1.RequestType;
 
@@ -52,27 +47,46 @@ import xeu.bridge_connector.v1.RequestType;
 @Slf4j
 public class FLUXFAReportMessageReceiverBean extends AbstractFluxReceiver {
 
-    private static final String FLUXFAREPORT_MESSAGE_START_XSD_ELEMENT = "FLUXFAReportMessage";
-    private static final String FLUXFAQUERY_MESSAGE_START_XSD_ELEMENT = "FLUXFAQueryMessage";
-    private static final String FLUXRESPONSE_MESSAGE_START_XSD_ELEMENT = "FLUXResponseMessage";
-
+    private static final String ISO_8859_1 = "ISO-8859-1";
     @EJB
     private StartupBean startupBean;
 
     @EJB
     private ExchangeService exchange;
 
-    @Override protected void sendToExchange(RequestType rt) throws JAXBException, PluginException {
+    @Override
+    protected void sendToExchange(RequestType rt) throws JAXBException, PluginException {
 
-        SetFLUXFAReportMessageRequest request = new SetFLUXFAReportMessageRequest();
-        JAXBContext jc = JAXBContext.newInstance(FLUXFAReportMessage.class);
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        FLUXFAReportMessage xmlMessage = (FLUXFAReportMessage) unmarshaller.unmarshal(rt.getAny());
+        String localName = rt.getAny().getLocalName();
+        Map<QName, String> otherAttributes = rt.getOtherAttributes();
+        String user = otherAttributes.get(new QName("USER"));
+        String fr = otherAttributes.get(new QName("FR"));
+        ExchangeBaseRequest exchangeBaseRequest;
 
-        try {
+        if ("FLUXFAQueryMessage".equals(localName)){
+            exchangeBaseRequest = new SetFAQueryMessageRequest();
+            exchangeBaseRequest.setMethod(ExchangeModuleMethod.SET_FA_QUERY_MESSAGE);
 
+            JAXBContext jc = JAXBContext.newInstance(FLUXFAQueryMessage.class);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            FLUXFAQueryMessage xmlMessage = (FLUXFAQueryMessage) unmarshaller.unmarshal(rt.getAny());
+            FAQuery faQuery = xmlMessage.getFAQuery();
+            String guid = null;
+            if (faQuery != null){
+                IDType id = faQuery.getID();
+                guid = id.getValue();
+            }
+            exchangeBaseRequest.setMessageGuid(guid);
+
+            ((SetFAQueryMessageRequest) exchangeBaseRequest).setRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage, ISO_8859_1,true));
+
+        }
+        else if ("FLUXFAReportMessage".equals(localName)){
+            exchangeBaseRequest = new SetFLUXFAReportMessageRequest();
+            JAXBContext jc = JAXBContext.newInstance(FLUXFAReportMessage.class);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            FLUXFAReportMessage xmlMessage = (FLUXFAReportMessage) unmarshaller.unmarshal(rt.getAny());
             FLUXReportDocument fluxReportDocument = xmlMessage.getFLUXReportDocument();
-
             String guid = null;
             if (fluxReportDocument != null){
                 List<IDType> fluxReportDocumentIDS = fluxReportDocument.getIDS();
@@ -80,67 +94,39 @@ public class FLUXFAReportMessageReceiverBean extends AbstractFluxReceiver {
                     guid = fluxReportDocumentIDS.get(0).getValue();
                 }
             }
-            String messageAsString = marshallJaxBObjectToString(xmlMessage);
-            ActivityType activityType = extractActivityTypeFromMessage(messageAsString);
+            exchangeBaseRequest.setMethod(ExchangeModuleMethod.SET_FLUX_FA_REPORT_MESSAGE);
+            exchangeBaseRequest.setMessageGuid(guid);
+            ((SetFLUXFAReportMessageRequest)exchangeBaseRequest).setRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage, ISO_8859_1,true));
 
-            Map<QName, String> otherAttributes = rt.getOtherAttributes();
-            String user = otherAttributes.get(new QName("USER"));
-            String fr = otherAttributes.get(new QName("FR"));
 
-            switch (activityType){
-                case FA_REPORT:
-                    request.setMethod(ExchangeModuleMethod.SET_FLUX_FA_REPORT_MESSAGE);
-                    break;
-                case FA_QUERY:
-                    request.setMethod(ExchangeModuleMethod.SET_FA_QUERY_MESSAGE);
-                    break;
-                case FLUX_RESPONSE:
-                    request.setMethod(ExchangeModuleMethod.RCV_FLUX_FA_RESPONSE_MESSAGE);
-                    break;
-                    default:
-                case UNKNOWN:
-                    request.setMethod(ExchangeModuleMethod.UNKNOWN);
-            }
-            request.setUsername(user);
-
-            request.setFluxDataFlow(rt.getDF());
-            request.setDate(new Date());
-            request.setMessageGuid(guid);
-            request.setPluginType(PluginType.FLUX);
-            request.setSenderOrReceiver(fr);
-            request.setOnValue(rt.getON());
-
-            request.setRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage,"ISO-8859-1",true));
-            exchange.sendActivityReportToExchange(JAXBUtils.marshallJaxBObjectToString(request,"ISO-8859-1",true));
-
-        } catch ( ExchangeModelMarshallException | XMLStreamException e) {
-            e.printStackTrace();
         }
+        else if ("FLUXResponseMessage".equals(localName)){
+            exchangeBaseRequest = new SetFLUXFAResponseMessageRequest();
+            exchangeBaseRequest.setMethod(ExchangeModuleMethod.RCV_FLUX_FA_RESPONSE_MESSAGE);
+            JAXBContext jc = JAXBContext.newInstance(FLUXFAReportMessage.class);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            FLUXResponseDocument xmlMessage = (FLUXResponseDocument) unmarshaller.unmarshal(rt.getAny());
+            ((SetFLUXFAResponseMessageRequest)exchangeBaseRequest).setRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage, ISO_8859_1,true));
+
+        }
+        else {
+            exchangeBaseRequest = new SetFLUXFAReportMessageRequest();
+            exchangeBaseRequest.setMethod(ExchangeModuleMethod.UNKNOWN);
+        }
+
+        exchangeBaseRequest.setUsername(user);
+        exchangeBaseRequest.setFluxDataFlow(rt.getDF());
+        exchangeBaseRequest.setDate(new Date());
+        exchangeBaseRequest.setPluginType(PluginType.FLUX);
+        exchangeBaseRequest.setSenderOrReceiver(fr);
+        exchangeBaseRequest.setOnValue(rt.getON());
+
+        exchange.sendActivityReportToExchange(JAXBUtils.marshallJaxBObjectToString(exchangeBaseRequest, ISO_8859_1,true));
+
     }
 
     @Override protected StartupBean getStartupBean() {
         return startupBean;
     }
 
-    ActivityType extractActivityTypeFromMessage(String document) throws XMLStreamException {
-        Reader reader = new StringReader(document);
-        XMLStreamReader xml = XMLInputFactory.newFactory().createXMLStreamReader(reader);
-        ActivityType type = null;
-        while (xml.hasNext()) {
-            int nextNodeType = xml.next();
-            if (nextNodeType == XMLStreamConstants.START_ELEMENT) {
-                if (FLUXFAREPORT_MESSAGE_START_XSD_ELEMENT.equals(xml.getLocalName())) {
-                    type = ActivityType.FA_REPORT;
-                    break;
-                } else if (FLUXFAQUERY_MESSAGE_START_XSD_ELEMENT.equals(xml.getLocalName())) {
-                    type = ActivityType.FA_QUERY;
-                    break;
-                } else if (FLUXRESPONSE_MESSAGE_START_XSD_ELEMENT.equals(xml.getLocalName())) {
-                    type = ActivityType.FLUX_RESPONSE;
-                }
-            }
-        }
-        xml.close();
-        return type != null ? type : UNKNOWN;
-    }
 }
