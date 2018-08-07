@@ -355,8 +355,8 @@
       <!--<xsd:enumeration value="ELOG"/>-->
     </xsd:restriction>
   </xsd:simpleType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Movement.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:movement="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:asset="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:mobterm="urn:mobileterminal.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:plugin="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <xsd:import namespace="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Asset.xsd"/>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Movement.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:movement="urn:movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:transportMeans="urn:transportMeans.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:mobterm="urn:mobileterminal.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:plugin="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:import namespace="urn:transportMeans.movement.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Asset.xsd"/>
   <xsd:import namespace="urn:mobileterminal.movement.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="MobileTerminal.xsd"/>
   <xsd:import namespace="urn:types.plugin.exchange.schema.fisheries.ec.europa.eu:v1" schemaLocation="Plugin.xsd"/>
   <xsd:complexType name="ReportMovementType" abstract="true">
@@ -414,7 +414,7 @@
   <!--Type received in UNIONVMS-->
   <xsd:complexType name="MovementBaseType">
     <xsd:sequence>
-      <xsd:element name="assetId" type="asset:AssetId"/>
+      <xsd:element name="assetId" type="transportMeans:AssetId"/>
       <xsd:element name="mobileTerminalId" type="mobterm:MobileTerminalId"/>
       <xsd:element name="comChannelType" type="movement:MovementComChannelType"/>
       <xsd:element name="source" type="movement:MovementSourceType"/>
@@ -528,11 +528,11 @@
       <xsd:element name="callback" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Asset.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:asset="urn:asset.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\C:\Projekt\dev\uvms-github\Exchange\UVMS-ExchangeModule-MODEL\src\main\resources\contract\Asset.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="urn:transportMeans.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:transportMeans="urn:transportMeans.movement.exchange.schema.fisheries.ec.europa.eu:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
   <xsd:complexType name="AssetId">
     <xsd:sequence>
-      <xsd:element name="assetType" type="asset:AssetType"/>
-      <xsd:element name="assetIdList" type="asset:AssetIdList" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="assetType" type="transportMeans:AssetType"/>
+      <xsd:element name="assetIdList" type="transportMeans:AssetIdList" minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:simpleType name="AssetType">
@@ -545,7 +545,7 @@
   </xsd:simpleType>
   <xsd:complexType name="AssetIdList">
     <xsd:sequence>
-      <xsd:element name="idType" type="asset:AssetIdType"/>
+      <xsd:element name="idType" type="transportMeans:AssetIdType"/>
       <xsd:element name="value" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
