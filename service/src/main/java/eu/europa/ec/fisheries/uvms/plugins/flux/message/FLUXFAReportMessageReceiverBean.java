@@ -15,7 +15,9 @@ import javax.jws.WebService;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentit
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._20.FLUXResponseDocument;
 import un.unece.uncefact.data.standard.unqualifieddatatype._20.IDType;
 import xeu.bridge_connector.v1.RequestType;
+import xeu.bridge_connector.v1.VerbosityType;
 
 @Stateless
 @WebService(serviceName = "FLUXFAReportMessageService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
@@ -61,6 +64,13 @@ public class FLUXFAReportMessageReceiverBean extends AbstractFluxReceiver {
         Map<QName, String> otherAttributes = rt.getOtherAttributes();
         String user = otherAttributes.get(new QName("USER"));
         String fr = otherAttributes.get(new QName("FR"));
+        String on = rt.getON();
+        String ad = rt.getAD();
+        String df = rt.getDF();
+        Integer to = rt.getTO();
+        XMLGregorianCalendar todt = rt.getTODT();
+        VerbosityType vb = rt.getVB();
+
         ExchangeBaseRequest exchangeBaseRequest;
 
         if ("FLUXFAQueryMessage".equals(localName)){
@@ -120,6 +130,15 @@ public class FLUXFAReportMessageReceiverBean extends AbstractFluxReceiver {
         exchangeBaseRequest.setPluginType(PluginType.FLUX);
         exchangeBaseRequest.setSenderOrReceiver(fr);
         exchangeBaseRequest.setOnValue(rt.getON());
+        Integer to1 = rt.getTO();
+        if (to1 != null){
+            exchangeBaseRequest.setTo(BigInteger.valueOf(to1));
+        }
+
+        XMLGregorianCalendar todt1 = rt.getTODT();
+        if (todt1 != null){
+            exchangeBaseRequest.setTodt(todt1.toString());
+        }
 
         exchange.sendActivityReportToExchange(JAXBUtils.marshallJaxBObjectToString(exchangeBaseRequest, ISO_8859_1,true));
 
