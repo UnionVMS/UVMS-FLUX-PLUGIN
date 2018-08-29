@@ -52,7 +52,7 @@
             <collectionProp name="JMSProperties.properties">
               <elementProp name="" elementType="JMSProperty">
                 <stringProp name="JMSProperty.name">ServiceName</stringProp>
-                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.flux</stringProp>
+                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.movement</stringProp>
                 <stringProp name="JMSProperty.type">java.lang.String</stringProp>
               </elementProp>
               <elementProp name="" elementType="JMSProperty">
@@ -145,35 +145,35 @@
     &lt;method&gt;SET_CONFIG&lt;/method&gt;
     &lt;configurations&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.CLIENT_CERT_HEADER&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.CLIENT_CERT_HEADER&lt;/key&gt;
             &lt;value&gt;Client-Cert&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.CLIENT_CERT_USER&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.CLIENT_CERT_USER&lt;/key&gt;
             &lt;value&gt;UVMS_TEST&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_AD&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.FLUX_AD&lt;/key&gt;
             &lt;value&gt;SWE&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_DATAFLOW&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.FLUX_DATAFLOW&lt;/key&gt;
             &lt;value&gt;urn:un:unece:uncefact:data:standard:FLUXVesselPositionMessage:4&lt;/value&gt;
         &lt;/setting&gt;
          &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.OWNER_FLUX_PARTY&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.OWNER_FLUX_PARTY&lt;/key&gt;
             &lt;value&gt;SWE&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.ACTION_REASON&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.ACTION_REASON&lt;/key&gt;
             &lt;value&gt;UNIONVMS POC version 1.0&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.LOCAL_ENDPOINT&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.LOCAL_ENDPOINT&lt;/key&gt;
             &lt;value&gt;http://localhost:8088/flux&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_ENDPOINT&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.FLUX_ENDPOINT&lt;/key&gt;
             &lt;value&gt;http://livm58t:8080/BridgeWebApp/connector&lt;/value&gt;
         &lt;/setting&gt;
     &lt;/configurations&gt;
@@ -188,7 +188,7 @@
             <collectionProp name="JMSProperties.properties">
               <elementProp name="" elementType="JMSProperty">
                 <stringProp name="JMSProperty.name">ServiceName</stringProp>
-                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.flux</stringProp>
+                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.movement</stringProp>
                 <stringProp name="JMSProperty.type">java.lang.String</stringProp>
               </elementProp>
               <elementProp name="" elementType="JMSProperty">
@@ -215,35 +215,35 @@
     &lt;method&gt;SET_CONFIG&lt;/method&gt;
     &lt;configurations&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.CLIENT_CERT_HEADER&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.CLIENT_CERT_HEADER&lt;/key&gt;
             &lt;value&gt;Client-Cert&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.CLIENT_CERT_USER&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.CLIENT_CERT_USER&lt;/key&gt;
             &lt;value&gt;UVMS_TEST&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_AD&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.FLUX_AD&lt;/key&gt;
             &lt;value&gt;SWE&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_DATAFLOW&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.FLUX_DATAFLOW&lt;/key&gt;
             &lt;value&gt;urn:un:unece:uncefact:data:standard:FLUXVesselPositionMessage:4&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.ACTION_REASON&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.ACTION_REASON&lt;/key&gt;
             &lt;value&gt;UNIONVMS POC version 1.0&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.OWNER_FLUX_PARTY&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.OWNER_FLUX_PARTY&lt;/key&gt;
             &lt;value&gt;SWE&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.LOCAL_ENDPOINT&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.LOCAL_ENDPOINT&lt;/key&gt;
             &lt;value&gt;http://localhost:8088/flux&lt;/value&gt;
         &lt;/setting&gt;
         &lt;setting&gt;
-            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.flux.FLUX_ENDPOINT&lt;/key&gt;
+            &lt;key&gt;eu.europa.ec.fisheries.uvms.plugins.movement.FLUX_ENDPOINT&lt;/key&gt;
             &lt;value&gt;http://192.168.2.103:8181/BridgeWebApp/connector&lt;/value&gt;
         &lt;/setting&gt;
     &lt;/configurations&gt;
@@ -258,7 +258,7 @@
             <collectionProp name="JMSProperties.properties">
               <elementProp name="" elementType="JMSProperty">
                 <stringProp name="JMSProperty.name">ServiceName</stringProp>
-                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.flux</stringProp>
+                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.movement</stringProp>
                 <stringProp name="JMSProperty.type">java.lang.String</stringProp>
               </elementProp>
               <elementProp name="" elementType="JMSProperty">
@@ -423,7 +423,7 @@
             <collectionProp name="JMSProperties.properties">
               <elementProp name="" elementType="JMSProperty">
                 <stringProp name="JMSProperty.name">ServiceName</stringProp>
-                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.flux</stringProp>
+                <stringProp name="JMSProperty.value">eu.europa.ec.fisheries.uvms.plugins.movement</stringProp>
                 <stringProp name="JMSProperty.type">java.lang.String</stringProp>
               </elementProp>
               <elementProp name="" elementType="JMSProperty">
@@ -513,7 +513,7 @@
     &lt;method&gt;SEND_REPORT_TO_PLUGIN&lt;/method&gt;
     &lt;username&gt;UVMS&lt;/username&gt;
     &lt;report&gt;
-        &lt;pluginName&gt;eu.europa.ec.fisheries.uvms.plugins.flux&lt;/pluginName&gt;
+        &lt;pluginName&gt;eu.europa.ec.fisheries.uvms.plugins.movement&lt;/pluginName&gt;
         &lt;pluginType&gt;FLUX&lt;/pluginType&gt;
         &lt;timestamp&gt;2016-11-15T10:15:16.239+01:00&lt;/timestamp&gt;
         &lt;fwdRule&gt;SOME_FWRD_RULE&lt;/fwdRule&gt;
