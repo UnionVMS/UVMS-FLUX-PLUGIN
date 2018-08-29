@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>flux-service</artifactId>
+    <artifactId>${project.parent.artifactId}-service</artifactId>
     <name>${project.parent.artifactId}-service</name>
     <packaging>ejb</packaging>
 
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-        <artifactId>flux</artifactId>
+        <artifactId>movement-plugin</artifactId>
         <version>3.0.13-SNAPSHOT</version>
     </parent>
 
@@ -99,11 +99,6 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.activity</groupId>
-                <artifactId>activity-model</artifactId>
-                <version>${activity.model}</version>
-            </dependency>
     </dependencies>
     
     <build>

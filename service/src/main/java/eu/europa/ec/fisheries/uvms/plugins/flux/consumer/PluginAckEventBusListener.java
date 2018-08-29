@@ -18,18 +18,15 @@ import eu.europa.ec.fisheries.schema.exchange.registry.v1.UnregisterServiceRespo
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.service.PluginService;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.service.StartupBean;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.ejb.*;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import lombok.extern.slf4j.Slf4j;
 
 
 @MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {

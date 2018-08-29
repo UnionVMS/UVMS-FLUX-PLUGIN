@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 @Startup
 @DependsOn({"PluginToEventBusTopicProducer", "FileHandlerBean", "PluginAckEventBusListener"})
-public class StartupBean extends PluginDataHolder implements eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean {
+public class StartupBean extends PluginDataHolder {
 
     final static Logger LOG = LoggerFactory.getLogger(StartupBean.class);
 
@@ -56,7 +56,7 @@ public class StartupBean extends PluginDataHolder implements eu.europa.ec.fisher
     private boolean isEnabled = false;
     private boolean waitingForResponse = false;
     private int numberOfTriesExecuted = 0;
-    private String REGISTER_CLASS_NAME = "";
+    private String REGISTER_CLASS_NAME = "FluxMovementPlugin";
 
     @EJB
     private PluginToEventBusTopicProducer messageProducer;
@@ -193,7 +193,7 @@ public class StartupBean extends PluginDataHolder implements eu.europa.ec.fisher
     public void setIsRegistered(boolean isRegistered) {
         this.isRegistered = isRegistered;
     }
-    @Override public boolean isIsEnabled() {
+    public boolean isIsEnabled() {
         return isEnabled;
     }
     public void setIsEnabled(boolean isEnabled) {

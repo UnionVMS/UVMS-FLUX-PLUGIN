@@ -58,57 +58,14 @@ public class FluxMessageResponseMapper {
     private static final String MOVEMENTTYPE_ENT = "ENT";
     private static final String MOVEMENTTYPE_MAN = "MAN";
 
-    public static FLUXVesselPositionMessage extractVesselPositionMessage(Element any) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        FLUXVesselPositionMessage xmlMessage = (FLUXVesselPositionMessage) unmarshaller.unmarshal(any);
-        return xmlMessage;
-    }
-
-    private static VesselTransportMeansType extractMovement(FLUXVesselPositionMessage attribute) throws PluginException {
-        try {
-            if (attribute != null) {
-                return attribute.getVesselTransportMeans();
-            } else {
-                throw new PluginException("Error when extracting ExchangeDocumentInfoType ( Movement ): BasicAttribute is null");
-            }
-        } catch (Exception e) {
-            log.error("[ Error when extracting movement. ] {}", e.getMessage());
-            throw new PluginException("Error when extracting ExchangeDocumentInfoType ( Vessel ) : " + e.getMessage());
-        }
-    }
-
-    public static String extractMessageGUID(FLUXVesselPositionMessage attribute) throws PluginException {
-        try {
-            if (attribute != null) {
-                IDType messageID = attribute.getFLUXReportDocument().getIDS().get(0);
-                return messageID.getValue();
-            } else {
-                throw new PluginException("Error when extracting Correlation ID: BasicAttribute is null");
-            }
-        } catch (Exception e) {
-            log.error("[ Error when extracting correlation ID. ] {}", e.getMessage());
-            throw new PluginException("Error when extracting Correlation ID: " + e.getMessage());
-        }
-    }
-
-
-    public static String extractMessageGUID(RequestType rt) throws PluginException {
-        try {
-            return extractMessageGUID(extractVesselPositionMessage(rt.getAny()));
-        } catch (JAXBException e) {
-            throw new PluginException(e.getMessage());
-        }
-    }
-
     public static List<SetReportMovementType> mapToReportMovementTypes(RequestType rt, String registerClassName) throws PluginException {
-        FLUXVesselPositionMessage extractVesselPositionMessage;
+        FLUXVesselPositionMessage vessPosMessage;
         try {
-            extractVesselPositionMessage = extractVesselPositionMessage(rt.getAny());
+            vessPosMessage = extractVesselPositionMessage(rt.getAny());
         } catch (JAXBException e) {
-            throw new PluginException("[ERROR] Error while trying to FluxMessageResponseMapper.extractVesselPositionMessage(rt.getAny())!");
+            throw new PluginException("[ERROR] Error while trying to FluxMessageResponseMapper.vessPosMessage(rt.getAny())!");
         }
-        VesselTransportMeansType positionReport = extractMovement(extractVesselPositionMessage);
+        VesselTransportMeansType positionReport = vessPosMessage.getVesselTransportMeans();
         List<SetReportMovementType> movementList = new ArrayList<>();
         for (VesselPositionEventType col : positionReport.getSpecifiedVesselPositionEvents()) {
             SetReportMovementType movementType = new SetReportMovementType();
@@ -248,11 +205,41 @@ public class FluxMessageResponseMapper {
         return idType;
     }
 
+    public static String extractMessageGUID(FLUXVesselPositionMessage attribute) throws PluginException {
+        try {
+            if (attribute != null) {
+                IDType messageID = attribute.getFLUXReportDocument().getIDS().get(0);
+                return messageID.getValue();
+            } else {
+                throw new PluginException("Error when extracting Correlation ID: BasicAttribute is null");
+            }
+        } catch (Exception e) {
+            log.error("[ Error when extracting correlation ID. ] {}", e.getMessage());
+            throw new PluginException("Error when extracting Correlation ID: " + e.getMessage());
+        }
+    }
+
+
+    public static String extractMessageGUID(RequestType rt) throws PluginException {
+        try {
+            return extractMessageGUID(extractVesselPositionMessage(rt.getAny()));
+        } catch (JAXBException e) {
+            throw new PluginException(e.getMessage());
+        }
+    }
+
     private static AssetIdList mapToVesselId(AssetIdType assetIdType, String value) {
         AssetIdList assetId = new AssetIdList();
         assetId.setIdType(assetIdType);
         assetId.setValue(value);
         return assetId;
+    }
+
+    public static FLUXVesselPositionMessage extractVesselPositionMessage(Element any) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        FLUXVesselPositionMessage xmlMessage = (FLUXVesselPositionMessage) unmarshaller.unmarshal(any);
+        return xmlMessage;
     }
 
 }

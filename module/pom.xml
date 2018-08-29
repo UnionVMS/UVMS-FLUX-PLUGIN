@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>flux-module</artifactId>
+    <artifactId>${project.parent.artifactId}-module</artifactId>
     <name>${project.parent.artifactId}-module</name>
     <packaging>ear</packaging>
 
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-        <artifactId>flux</artifactId>
+        <artifactId>movement-plugin</artifactId>
         <version>3.0.13-SNAPSHOT</version>
     </parent>
 
@@ -23,7 +23,7 @@
                     <modules>
                         <ejbModule>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>flux-service</artifactId>
+                            <artifactId>${project.parent.artifactId}-service</artifactId>
                         </ejbModule>
                     </modules>
                     <skinnyWars>true</skinnyWars>
@@ -35,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>  
-            <artifactId>flux-service</artifactId>
+            <artifactId>${project.parent.artifactId}-service</artifactId>
             <version>${project.version}</version>
             <type>ejb</type>
         </dependency>

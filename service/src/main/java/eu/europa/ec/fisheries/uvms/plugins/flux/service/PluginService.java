@@ -23,7 +23,6 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.PortInitiator;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.message.FluxMessageSenderBean;
 import java.util.UUID;
@@ -41,13 +40,13 @@ import lombok.extern.slf4j.Slf4j;
 public class PluginService {
 
     @EJB
-    StartupBean startupBean;
+    private StartupBean startupBean;
 
     @EJB
-    FluxMessageSenderBean sender;
+    private FluxMessageSenderBean sender;
 
     @EJB
-    PortInitiator portInintiator;
+    private PortInitiator portInintiator;
 
     /**
      * TODO implement

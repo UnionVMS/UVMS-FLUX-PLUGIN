@@ -12,10 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.plugins.flux.exception;
 
 public class PluginException extends Exception {
-    private static final long serialVersionUID = 1L;
 
     public PluginException(String message) {
         super(message);
     }
-
 }

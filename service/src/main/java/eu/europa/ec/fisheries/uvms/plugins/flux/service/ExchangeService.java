@@ -11,29 +11,17 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.plugins.flux.service;
 
-import static eu.europa.ec.fisheries.uvms.plugins.flux.constants.ActivityType.UNKNOWN;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.plugins.flux.producer.PluginToExchangeProducer;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
-import java.util.Date;
 import java.util.UUID;
-
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.plugins.flux.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.constants.ActivityType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.producer.PluginToExchangeProducer;
-import eu.europa.ec.fisheries.uvms.plugins.flux.util.SaxParserUUIDExtractor;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.SAXException;
 
 @LocalBean
 @Stateless
@@ -65,69 +53,4 @@ public class ExchangeService {
         }
     }
 
-    public void sendActivityReportToExchange(String fluxFAReportRequest) {
-        String messageId = null;
-        try {
-            messageId = producer.sendModuleMessage(fluxFAReportRequest, null);
-        } catch (MessageException e) {
-            e.printStackTrace();
-        }
-        log.info("[END] Request object created and Message sent to [EXCHANGE] module : " + messageId);
-
-    }
-
-    /**
-     * Create object with all necessary properties required to communicate with exchange
-     *
-     * @param textMessage
-     * @return
-     * @throws JMSException
-     */
-    private ExchangeMessageProperties createExchangeMessagePropertiesForFluxFAReportRequest(TextMessage textMessage, ActivityType type) throws JMSException {
-        ExchangeMessageProperties exchangeMessageProperties = new ExchangeMessageProperties();
-        exchangeMessageProperties.setUsername(exchangeUsername);
-        exchangeMessageProperties.setDate(new Date());
-        exchangeMessageProperties.setPluginType(PluginType.FLUX);
-        exchangeMessageProperties.setDFValue(extractStringPropertyFromJMSTextMessage(textMessage, DF));
-        exchangeMessageProperties.setSenderReceiver(extractStringPropertyFromJMSTextMessage(textMessage, FR));
-        exchangeMessageProperties.setOnValue(extractStringPropertyFromJMSTextMessage(textMessage, ON));
-        exchangeMessageProperties.setMessageGuid(type != UNKNOWN ? extractMessageGuidFromInputXML(textMessage.getText(), type) : StringUtils.EMPTY);
-        log.info("Properties read from the message:" + exchangeMessageProperties);
-        return exchangeMessageProperties;
-    }
-
-
-    @Data
-    public class ExchangeMessageProperties {
-        private String username;
-        private String reportType;
-        private String DFValue;
-        private String onValue;
-        private Date date;
-        private PluginType pluginType;
-        private String senderReceiver;
-        private String messageGuid;
-    }
-
-    //Extract UUID value from FLUXReportDocument as messageGuid
-    private String extractMessageGuidFromInputXML(String message, ActivityType type) {
-        String messageGuid = null;
-        SaxParserUUIDExtractor saxParserForFaFLUXMessge = new SaxParserUUIDExtractor(type);
-        try {
-            saxParserForFaFLUXMessge.parseDocument(message);
-        } catch (SAXException | NullPointerException e) {
-            messageGuid = saxParserForFaFLUXMessge.getUuidValue();
-        }
-        return messageGuid;
-    }
-
-    private String extractStringPropertyFromJMSTextMessage(TextMessage textMessage, String property) {
-        String value = null;
-        try {
-            value = textMessage.getStringProperty(property);
-        } catch (JMSException e) {
-            log.error("Couldn't find the property [ " + property + " ] in JMS Text Message:" + property, e);
-        }
-        return value;
-    }
 }
