@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
-    <artifactId>movement-plugin</artifactId>
+    <artifactId>flux-movement-plugin</artifactId>
     <version>3.0.13-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin template</description>
