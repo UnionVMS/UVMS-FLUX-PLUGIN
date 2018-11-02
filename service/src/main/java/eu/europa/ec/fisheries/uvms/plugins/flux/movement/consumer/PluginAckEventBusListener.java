@@ -60,7 +60,6 @@ public class PluginAckEventBusListener implements MessageListener {
     private PluginService fluxService;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
         log.info("Eventbus listener for movement at selector: {} got a message", startupService.getPluginResponseSubscriptionName());
         TextMessage textMessage = (TextMessage) inMessage;

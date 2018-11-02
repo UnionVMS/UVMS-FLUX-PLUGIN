@@ -65,7 +65,6 @@ public class PluginNameEventBusListener implements MessageListener {
     private StartupBean startup;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
         log.debug("Eventbus listener for movement (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
