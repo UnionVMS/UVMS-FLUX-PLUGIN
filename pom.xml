@@ -25,12 +25,14 @@
         <project.scm.id>github</project.scm.id>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <lombok.version>1.16.18</lombok.version>
+        <javaee.version>8.0</javaee.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
+            <version>${javaee.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
