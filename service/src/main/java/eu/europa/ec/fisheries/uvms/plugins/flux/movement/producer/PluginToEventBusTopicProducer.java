@@ -32,7 +32,7 @@ import javax.ejb.Stateless;
 public class PluginToEventBusTopicProducer extends AbstractTopicProducer {
 
     @Override
-    protected String getDestinationName() {
+    public String getDestinationName() {
         return MessageConstants.EVENT_BUS_TOPIC;
     }
 }
