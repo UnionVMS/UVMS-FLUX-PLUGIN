@@ -110,7 +110,11 @@ public class PluginNameEventBusListener implements MessageListener {
                     log.error("Not supported method");
                     break;
             }
-            messageProducer.sendResponseMessageToSender(textMessage, responseMessage);
+            if(responseMessage != null){
+                messageProducer.sendModuleMessage(responseMessage, null);
+            } else {
+                log.warn("[WARN] ResponseMessage is null!! RespMessage : {} - JMSMessage : {}", responseMessage, textMessage);
+            }
         } catch (ExchangeModelMarshallException | NullPointerException e) {
             log.error("[ Error when receiving message in movement " + startup.getRegisterClassName() + " ]", e);
         } catch (JMSException | MessageException ex) {
