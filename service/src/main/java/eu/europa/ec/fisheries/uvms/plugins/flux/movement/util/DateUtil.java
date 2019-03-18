@@ -23,7 +23,6 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.util;
 
-import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -37,6 +36,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
 
 public class DateUtil {
@@ -47,8 +47,8 @@ public class DateUtil {
     public static final int DESCENDING = -1;
     public static final int ASCENDING = 1;
 
-    final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
-    TimeZone CET_FORMAT = TimeZone.getTimeZone("UTC");
+    private static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+    private static final TimeZone CET_FORMAT = TimeZone.getTimeZone("UTC");
 
     public static DateTimeType mapToDateTime(XMLGregorianCalendar positionTime) {
         DateTimeType date = new DateTimeType();

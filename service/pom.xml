@@ -59,6 +59,12 @@
             <artifactId>bridge-connector-client</artifactId>
             <version>${bridge-connector.client.version}</version>
         </dependency>
+        <dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-test-deps</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
     
     <build>
