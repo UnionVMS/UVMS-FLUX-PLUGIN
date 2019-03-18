@@ -29,7 +29,6 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PortInitiator;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageRequestMapper;
-import lombok.extern.slf4j.Slf4j;
 import xeu.connector_bridge.v1.PostMsgOutType;
 import xeu.connector_bridge.v1.PostMsgType;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
@@ -37,6 +36,8 @@ import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,8 +46,9 @@ import java.util.Map;
  */
 @LocalBean
 @Stateless
-@Slf4j
 public class FluxMessageSenderBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FluxMessageSenderBean.class);
 
     @EJB
     private PortInitiator port;
@@ -60,7 +62,7 @@ public class FluxMessageSenderBean {
     public String sendMovement(MovementType movement, String messageId, String recipient) throws PluginException {
         try {
 
-            log.info("Sending message to EU [ {} ] with messageID: {} ", messageId);
+            LOG.info("Sending message to EU [ {} ] with messageID: {} ", messageId);
 
             BridgeConnectorPortType portType = port.getPort();
 
@@ -76,9 +78,9 @@ public class FluxMessageSenderBean {
             PostMsgOutType resp = portType.post(request);
 
             if (resp.getAssignedON() == null) {
-                log.info("Failed to send to movement Recipient {}, Mesageid {} Should corralate with Movement GUID", recipient, messageId);
+                LOG.info("Failed to send to movement Recipient {}, Mesageid {} Should corralate with Movement GUID", recipient, messageId);
             } else {
-                log.info("Success when sending to movement MessageId {} ( Should corralate with Movement GUID ) Recipient {} ", messageId, recipient);
+                LOG.info("Success when sending to movement MessageId {} ( Should corralate with Movement GUID ) Recipient {} ", messageId, recipient);
             }
 
             if (request.getID() != null && !request.getID().isEmpty()) {
@@ -88,7 +90,7 @@ public class FluxMessageSenderBean {
             }
 
         } catch (Exception e) {
-            log.error("[ Error when sending movement to FLUX. ]", e);
+            LOG.error("[ Error when sending movement to FLUX. ]", e);
             throw new PluginException(e.getMessage());
         }
     }

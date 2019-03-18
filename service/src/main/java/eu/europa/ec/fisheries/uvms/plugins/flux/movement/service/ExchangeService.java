@@ -28,17 +28,19 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 @LocalBean
 @Stateless
-@Slf4j
 public class ExchangeService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangeService.class);
 
     @EJB
     private StartupBean startupBean;
@@ -52,9 +54,9 @@ public class ExchangeService {
             String messageId = producer.sendModuleMessage(text, null);
             startupBean.getCachedMovement().put(messageId, reportType);
         } catch (ExchangeModelMarshallException e) {
-            log.error("Couldn't map movement to setreportmovementtype");
+            LOG.error("Couldn't map movement to setreportmovementtype");
         } catch (MessageException e) {
-            log.error("Couldn't send movement");
+            LOG.error("Couldn't send movement");
             startupBean.getCachedMovement().put(UUID.randomUUID().toString(), reportType);
         }
     }

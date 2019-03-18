@@ -34,6 +34,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.message.FluxMessageSenderBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.util.DateUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,9 +44,10 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselCountryType;
@@ -57,9 +59,10 @@ import un.unece.uncefact.data.standard.unqualifieddatatype._18.IDType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.MeasureType;
 import xeu.bridge_connector.v1.RequestType;
 
-@Slf4j
 public class FluxMessageResponseMapper {
 
+    private static final Logger LOG = LoggerFactory.getLogger(FluxMessageResponseMapper.class);
+    
     private static final String ASSET_EXT_MARKING_CODE = "EXT_MARKING";
     private static final String ASSET_IRCS_CODE = "IRCS";
     private static final String ASSET_UVI_CODE = "UVI";
@@ -113,7 +116,7 @@ public class FluxMessageResponseMapper {
             movement.setFlagState(registrationVesselCountry.getID().getValue());
         } else {
             movement.setFlagState(null);
-            log.error("[ERROR] Couldn't set FlagState, VesselTransportMeansType.getRegistrationVesselCountry.ID!");
+            LOG.error("[ERROR] Couldn't set FlagState, VesselTransportMeansType.getRegistrationVesselCountry.ID!");
         }
     }
 
@@ -150,11 +153,11 @@ public class FluxMessageResponseMapper {
                     break;
                 default:
                     movType = null;
-                    log.error("[ERROR] Movement type couldn't be mapped", vessPosTypeCode.getValue());
+                    LOG.error("[ERROR] Movement type couldn't be mapped", vessPosTypeCode.getValue());
             }
         } else {
             movType = MovementTypeType.POS;
-            log.error("[ERROR] Couldn't map to movementType, vessPosTypeCode was null!");
+            LOG.error("[ERROR] Couldn't map to movementType, vessPosTypeCode was null!");
         }
         return movType;
     }
@@ -210,7 +213,7 @@ public class FluxMessageResponseMapper {
                         assetIdList.add(mapToVesselId(AssetIdType.IMO, vesselId.getValue()));
                         break;
                     default:
-                        log.error("VesselId type not mapped {}", vesselId.getKey());
+                        LOG.error("VesselId type not mapped {}", vesselId.getKey());
                 }
             }
         }
@@ -226,7 +229,7 @@ public class FluxMessageResponseMapper {
                 throw new PluginException("Error when extracting Correlation ID: BasicAttribute is null");
             }
         } catch (Exception e) {
-            log.error("[ Error when extracting correlation ID. ] {}", e.getMessage());
+            LOG.error("[ Error when extracting correlation ID. ] {}", e.getMessage());
             throw new PluginException("Error when extracting Correlation ID: " + e.getMessage());
         }
     }

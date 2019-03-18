@@ -31,15 +31,17 @@ import java.util.TimeZone;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
 
-@Slf4j
 public class DateUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DateUtil.class);
 
     private static DatatypeFactory dataTypeFactory;
     public static final int DESCENDING = -1;
@@ -65,7 +67,7 @@ public class DateUtil {
         try {
             dataTypeFactory = DatatypeFactory.newInstance();
         } catch (final DatatypeConfigurationException e) {
-            log.error("[ Error when instantiating a DatatypeFactory. ] {} {}", e.getMessage(), e.getStackTrace());
+            LOG.error("[ Error when instantiating a DatatypeFactory. ] {} {}", e.getMessage(), e.getStackTrace());
         }
     }
 
@@ -164,7 +166,7 @@ public class DateUtil {
                 return null;
             }
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            LOG.error(e.getMessage());
             throw new IllegalArgumentException(e);
         }
     }

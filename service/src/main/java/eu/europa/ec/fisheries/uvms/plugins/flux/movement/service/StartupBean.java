@@ -62,9 +62,9 @@ import org.slf4j.LoggerFactory;
 @DependsOn({"PluginToEventBusTopicProducer", "FileHandlerBean", "PluginAckEventBusListener"})
 public class StartupBean extends PluginDataHolder {
 
-    final static Logger LOG = LoggerFactory.getLogger(StartupBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StartupBean.class);
 
-    private final static int MAX_NUMBER_OF_TRIES = 20;
+    private static final int MAX_NUMBER_OF_TRIES = 20;
     private boolean isRegistered = false;
     private boolean isEnabled = false;
     private boolean waitingForResponse = false;

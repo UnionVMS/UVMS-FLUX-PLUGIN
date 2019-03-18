@@ -18,6 +18,8 @@ import javax.inject.Inject;
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import org.jboss.ws.api.annotation.WebContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
@@ -26,14 +28,14 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginExcepti
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageResponseMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
-import lombok.extern.slf4j.Slf4j;
 import xeu.bridge_connector.v1.RequestType;
 
 @Stateless
 @WebService(serviceName = "MovementPositionService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
 @WebContext(contextRoot = "/unionvms/movement-service")
-@Slf4j
 public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FluxMovementPositionReceiverBean.class);
 
     private static final String FR = "FR";
     private static final String USER = "USER";
@@ -48,7 +50,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
     protected void sendToExchange(RequestType rt) throws PluginException {
         try {
             List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToReportMovementTypes(rt, startupBean.getRegisterClassName());
-            log.info("Going to send [" + movements.size() + "] movements to exchange.");
+            LOG.info("Going to send [" + movements.size() + "] movements to exchange.");
             Map<QName, String> attributes = rt.getOtherAttributes();
             for (SetReportMovementType movement : movements) {
                 String requestStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(movement, attributes.getOrDefault(new QName(USER), PluginType.FLUX.value()), rt.getDF(),
@@ -56,7 +58,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
                         attributes.get(new QName(FR)), rt.getON());
                 pluginToExchangeProducer.sendModuleMessage(requestStr, null);
             }
-            log.info("Finished sending all movements to exchange.");
+            LOG.info("Finished sending all movements to exchange.");
         } catch (Exception e) {
             throw new IllegalArgumentException("Could not send position to Exchange!", e);
         }
