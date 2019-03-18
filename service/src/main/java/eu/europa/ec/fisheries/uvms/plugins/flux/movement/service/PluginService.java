@@ -72,14 +72,6 @@ public class PluginService {
         MovementType movement = report.getMovement();
         if (movement != null && ReportTypeType.MOVEMENT.equals(report.getType())) {
             try {
-                MovementPoint pos = movement.getPosition();
-                if (pos != null) {
-                    log.info("lon: " + pos.getLongitude());
-                    log.info("lat: " + pos.getLatitude());
-                }
-                String editorType = startupBean.getSetting("EDITOR_TYPE");
-                String actionReason = startupBean.getSetting("ACTION_REASON");
-
                 String messageId = UUID.randomUUID().toString();
                 if (movement.getGuid() != null) {
                     messageId = movement.getGuid();

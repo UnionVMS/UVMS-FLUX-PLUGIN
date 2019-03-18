@@ -27,6 +27,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PortInitiator;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageRequestMapper;
 import lombok.extern.slf4j.Slf4j;
 import xeu.connector_bridge.v1.PostMsgOutType;
@@ -63,13 +64,12 @@ public class FluxMessageSenderBean {
 
             BridgeConnectorPortType portType = port.getPort();
 
-            //TODO Addd these in properties table
             Map<String, String> headerValues = new HashMap<>();
 
-            String headerKey = startupBean.getSetting("CLIENT_CERT_HEADER");
-            String headerValue = startupBean.getSetting("CLIENT_CERT_USER");
+            String headerKey = startupBean.getSetting(MovementPluginConstants.CLIENT_HEADER);
+            String headerValue = startupBean.getSetting(MovementPluginConstants.CLIENT_HEADER_VALUE);
 
-            headerValues.put(headerKey, headerValue);
+            headerValues.put(headerKey, headerValue + "-" + recipient);
             mapper.addHeaderValueToRequest(portType, headerValues);
 
             PostMsgType request = mapper.mapToRequest(movement, messageId, recipient);
@@ -88,7 +88,7 @@ public class FluxMessageSenderBean {
             }
 
         } catch (Exception e) {
-            log.error("[ Error when sending movement to FLUX. ] {}", e.getMessage());
+            log.error("[ Error when sending movement to FLUX. ]", e);
             throw new PluginException(e.getMessage());
         }
     }

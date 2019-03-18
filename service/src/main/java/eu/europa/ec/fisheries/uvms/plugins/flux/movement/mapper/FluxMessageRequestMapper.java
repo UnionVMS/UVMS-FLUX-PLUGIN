@@ -27,6 +27,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.MappingException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
@@ -39,7 +40,6 @@ import un.unece.uncefact.data.standard.unqualifieddatatype._18.CodeType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.IDType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.MeasureType;
-import xeu.connector_bridge.v1.ObjectFactory;
 import xeu.connector_bridge.v1.PostMsgType;
 
 import javax.ejb.EJB;
@@ -73,11 +73,11 @@ public class FluxMessageRequestMapper {
     public PostMsgType mapToRequest(MovementType movement, String messageId, String recipient) throws JAXBException, MappingException {
         PostMsgType message = new PostMsgType();
         if (recipient == null || recipient.isEmpty()) {
-            message.setAD(startupBean.getSetting("FLUX_DEFAULT_AD"));
+            message.setAD(startupBean.getSetting(MovementPluginConstants.FLUX_DEFAULT_AD));
         } else {
             message.setAD(recipient);
         }
-        message.setDF(startupBean.getSetting("FLUX_DATAFLOW"));
+        message.setDF(startupBean.getSetting(MovementPluginConstants.FLUX_DATAFLOW));
         message.setID(messageId);
         //Below does not need to be set because the bridge takes care of it
         //Date timeInFuture = DateUtil.getTimeInFuture(1);
@@ -88,8 +88,7 @@ public class FluxMessageRequestMapper {
         //message.setVB(VerbosityType.ERROR);
         //message.setAR(false);
         //message.setTS(true);
-        FLUXVesselPositionMessage attr = mapToFluxMovement(movement, startupBean.getSetting("FLUX_AD"), startupBean.getSetting("OWNER_FLUX_PARTY"));
-        ObjectFactory fact = new ObjectFactory();
+        FLUXVesselPositionMessage attr = mapToFluxMovement(movement, startupBean.getSetting(MovementPluginConstants.OWNER_FLUX_PARTY));
         JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Marshaller marshaller = context.createMarshaller();
         DOMResult res = new DOMResult();
@@ -99,10 +98,10 @@ public class FluxMessageRequestMapper {
         return message;
     }
 
-    private FLUXVesselPositionMessage mapToFluxMovement(MovementType movement, String ad, String fluxOwner) throws MappingException {
+    private FLUXVesselPositionMessage mapToFluxMovement(MovementType movement, String fluxOwner) throws MappingException {
         FLUXVesselPositionMessage msg = new FLUXVesselPositionMessage();
         msg.setFLUXReportDocument(mapToReportDocument(fluxOwner, movement.getInternalReferenceNumber()));
-        msg.setVesselTransportMeans(mapToVesselTransportMeans(movement, ad));
+        msg.setVesselTransportMeans(mapToVesselTransportMeans(movement));
         return msg;
     }
 
@@ -143,7 +142,7 @@ public class FluxMessageRequestMapper {
         bp.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, headers);
     }
 
-    private VesselTransportMeansType mapToVesselTransportMeans(MovementType movement, String ad) throws MappingException {
+    private VesselTransportMeansType mapToVesselTransportMeans(MovementType movement) throws MappingException {
         VesselTransportMeansType retVal = new VesselTransportMeansType();
         //Handle Asset ID
         Map<String, String> ids = new HashMap<>();

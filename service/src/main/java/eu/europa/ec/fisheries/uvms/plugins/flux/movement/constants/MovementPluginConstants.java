@@ -37,4 +37,10 @@ public final class MovementPluginConstants {
     public static final String SUBSCRIPTION_NAME_AC = MOVEMENT_GROUP_ID_ARTIFACT_ID_AC;
     public static final String MESSAGE_SELECTOR_AC  = "ServiceName='"+ MOVEMENT_GROUP_ID_ARTIFACT_ID_AC +"'";
 
+    public static final String CLIENT_HEADER = "CLIENT_CERT_HEADER";
+    public static final String CLIENT_HEADER_VALUE = "CLIENT_CERT_USER";
+    public static final String FLUX_ENDPOINT = "FLUX_ENDPOINT";
+    public static final String FLUX_DATAFLOW = "FLUX_DATAFLOW";
+    public static final String FLUX_DEFAULT_AD = "FLUX_DEFAULT_AD";
+    public static final String OWNER_FLUX_PARTY = "OWNER_FLUX_PARTY";
 }

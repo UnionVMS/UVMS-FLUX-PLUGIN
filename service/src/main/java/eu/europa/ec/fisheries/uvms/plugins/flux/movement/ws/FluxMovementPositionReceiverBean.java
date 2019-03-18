@@ -51,7 +51,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
             log.info("Going to send [" + movements.size() + "] movements to exchange.");
             Map<QName, String> attributes = rt.getOtherAttributes();
             for (SetReportMovementType movement : movements) {
-                String requestStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(movement, attributes.get(new QName(USER)), rt.getDF(),
+                String requestStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(movement, attributes.getOrDefault(new QName(USER), PluginType.FLUX.value()), rt.getDF(),
                         DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(rt), PluginType.FLUX,
                         attributes.get(new QName(FR)), rt.getON());
                 pluginToExchangeProducer.sendModuleMessage(requestStr, null);
