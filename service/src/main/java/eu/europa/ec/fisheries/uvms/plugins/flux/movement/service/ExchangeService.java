@@ -52,12 +52,12 @@ public class ExchangeService {
         try {
             String text = ExchangeModuleRequestMapper.createSetMovementReportRequest(reportType, "FLUX");
             String messageId = producer.sendModuleMessage(text, null);
-            startupBean.getCachedMovement().put(messageId, reportType);
+//            startupBean.getCachedMovement().put(messageId, reportType);
         } catch (ExchangeModelMarshallException e) {
             LOG.error("Couldn't map movement to setreportmovementtype");
         } catch (MessageException e) {
             LOG.error("Couldn't send movement");
-            startupBean.getCachedMovement().put(UUID.randomUUID().toString(), reportType);
+//            startupBean.getCachedMovement().put(UUID.randomUUID().toString(), reportType);
         }
     }
 
