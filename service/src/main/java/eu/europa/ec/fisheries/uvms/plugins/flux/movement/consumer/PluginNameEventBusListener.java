@@ -35,13 +35,14 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPlugi
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.PluginService;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.ejb.*;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR,          propertyValue = MessageConstants.CONNECTION_TYPE),
@@ -52,8 +53,9 @@ import javax.jms.TextMessage;
         @ActivationConfigProperty(propertyName = MessageConstants.CLIENT_ID_STR,               propertyValue = MovementPluginConstants.CLIENT_ID_EV),
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGE_SELECTOR_STR,        propertyValue = MovementPluginConstants.MESSAGE_SELECTOR_EV)
 })
-@Slf4j
 public class PluginNameEventBusListener implements MessageListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PluginNameEventBusListener.class);
 
     @EJB
     private PluginService service;
@@ -65,9 +67,8 @@ public class PluginNameEventBusListener implements MessageListener {
     private StartupBean startup;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
-        log.debug("Eventbus listener for movement (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
+        LOG.debug("Eventbus listener for movement (MessageConstants.PLUGIN_SERVICE_CLASS_NAME): {}", startup.getRegisterClassName());
         TextMessage textMessage = (TextMessage) inMessage;
         try {
             PluginBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, PluginBaseRequest.class);
@@ -89,6 +90,7 @@ public class PluginNameEventBusListener implements MessageListener {
                     SetReportRequest setReportRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SetReportRequest.class);
                     AcknowledgeTypeType setReport = service.setReport(setReportRequest.getReport());
                     AcknowledgeType setReportAck = ExchangePluginResponseMapper.mapToAcknowlegeType(textMessage.getJMSMessageID(), setReport);
+                    setReportAck.setUnsentMessageGuid(setReportRequest.getReport().getUnsentMessageGuid());
                     responseMessage = ExchangePluginResponseMapper.mapToSetReportResponse(startup.getRegisterClassName(), setReportAck);
                     break;
                 case START:
@@ -108,14 +110,14 @@ public class PluginNameEventBusListener implements MessageListener {
                     responseMessage = ExchangePluginResponseMapper.mapToPingResponse(startup.isIsEnabled(), startup.isIsEnabled());
                     break;
                 default:
-                    log.error("Not supported method");
+                    LOG.error("Not supported method");
                     break;
             }
             messageProducer.sendResponseMessageToSender(textMessage, responseMessage);
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            log.error("[ Error when receiving message in movement " + startup.getRegisterClassName() + " ]", e);
+            LOG.error("[ Error when receiving message in movement " + startup.getRegisterClassName() + " ]", e);
         } catch (JMSException | MessageException ex) {
-            log.error("[ Error when handling JMS message in movement " + startup.getRegisterClassName() + " ]", ex);
+            LOG.error("[ Error when handling JMS message in movement " + startup.getRegisterClassName() + " ]", ex);
         }
     }
 }

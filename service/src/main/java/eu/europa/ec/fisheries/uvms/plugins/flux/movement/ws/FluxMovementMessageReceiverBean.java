@@ -35,8 +35,9 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchan
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.ExchangeService;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageResponseMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.jboss.ws.api.annotation.WebContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import xeu.bridge_connector.v1.RequestType;
 
@@ -50,8 +51,9 @@ import java.util.Map;
 @Stateless
 @WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
 @WebContext(contextRoot = "/unionvms/movement-service")
-@Slf4j
 public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FluxMovementMessageReceiverBean.class);
 
     private static final String FR = "FR";
     private static final String USER = "USER";
@@ -76,7 +78,7 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
     @Override
     protected void sendToExchange(RequestType rt) {
         try {
-            log.info("Received a Movement message in Movement Plugin..");
+            LOG.info("Received a Movement message in Movement Plugin..");
             SetFLUXMovementReportRequest request = new SetFLUXMovementReportRequest();
             Map<QName, String> attributes = rt.getOtherAttributes();
             FLUXVesselPositionMessage xmlMessage = FluxMessageResponseMapper.extractVesselPositionMessage(rt.getAny());
@@ -86,7 +88,7 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
                     attributes.get(new QName(FR)), rt.getON(), FluxMessageResponseMapper.extractMessageGUID(rt), startupBean.getRegisterClassName(),
                     attributes.get(new QName(AD)), attributes.get(new QName(TO)), attributes.get(new QName(TODT)));
             pluginToExchangeProducer.sendModuleMessage(requestStr, null);
-            log.info("Movement message succesfully sent to Exchange..");
+            LOG.info("Movement message succesfully sent to Exchange..");
         } catch (JAXBException | MessageException | PluginException e) {
             throw new RuntimeException("Couldn't transform Element to Source", e);
         }

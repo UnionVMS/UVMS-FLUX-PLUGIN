@@ -23,6 +23,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement;
 
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorService;
@@ -65,8 +66,7 @@ public class PortInitiator {
         BridgeConnectorPortType port = service.getBridgeConnectorSOAP11Port();
         BindingProvider bp = (BindingProvider) port;
         Map<String, Object> context = bp.getRequestContext();
-        context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, startupBean.getSetting("FLUX_ENDPOINT"));
-        //context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, startupBean.getSetting("LOCAL_ENDPOINT"));
+        context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, startupBean.getSetting(MovementPluginConstants.FLUX_ENDPOINT));
         return port;
     }
 }

@@ -28,14 +28,16 @@ import java.io.InputStream;
 import java.util.Properties;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  **/
 @Startup
 @Singleton
-@Slf4j
 public class FileHandlerBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FileHandlerBean.class);
 
     public Properties getPropertiesFromFile(String fileName) {
         Properties props = new Properties();
@@ -43,7 +45,7 @@ public class FileHandlerBean {
             InputStream inputStream = FileHandlerBean.class.getClassLoader().getResourceAsStream(fileName);
             props.load(inputStream);
         } catch (IOException e) {
-            log.debug("Properties file failed to load");
+            LOG.debug("Properties file failed to load");
         }
         return props;
     }

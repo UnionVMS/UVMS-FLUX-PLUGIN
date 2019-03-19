@@ -33,12 +33,13 @@ import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.PluginService;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.ejb.*;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
@@ -50,8 +51,9 @@ import javax.jms.TextMessage;
         @ActivationConfigProperty(propertyName = MessageConstants.CLIENT_ID_STR, propertyValue = MovementPluginConstants.CLIENT_ID_AC),
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGE_SELECTOR_STR, propertyValue = MovementPluginConstants.MESSAGE_SELECTOR_AC)
 })
-@Slf4j
 public class PluginAckEventBusListener implements MessageListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PluginAckEventBusListener.class);
 
     @EJB
     private StartupBean startupService;
@@ -60,9 +62,8 @@ public class PluginAckEventBusListener implements MessageListener {
     private PluginService fluxService;
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message inMessage) {
-        log.info("Eventbus listener for movement at selector: {} got a message", startupService.getPluginResponseSubscriptionName());
+        LOG.info("Eventbus listener for movement at selector: {} got a message", startupService.getPluginResponseSubscriptionName());
         TextMessage textMessage = (TextMessage) inMessage;
         try {
             ExchangeRegistryBaseRequest request = tryConsumeRegistryBaseRequest(textMessage);
@@ -76,43 +77,43 @@ public class PluginAckEventBusListener implements MessageListener {
                         startupService.setWaitingForResponse(Boolean.FALSE);
                         switch (registerResponse.getAck().getType()) {
                             case OK:
-                                log.info("Register OK");
+                                LOG.info("Register OK");
                                 startupService.setIsRegistered(Boolean.TRUE);
                                 break;
                             case NOK:
-                                log.info("Register NOK: " + registerResponse.getAck().getMessage());
+                                LOG.info("Register NOK: " + registerResponse.getAck().getMessage());
                                 startupService.setIsRegistered(Boolean.FALSE);
                                 break;
                             default:
-                                log.error("[ Type not supperted: ]" + request.getMethod());
+                                LOG.error("[ Type not supperted: ]" + request.getMethod());
                         }
                         break;
                     case UNREGISTER_SERVICE:
                         UnregisterServiceResponse unregisterResponse = JAXBMarshaller.unmarshallTextMessage(textMessage, UnregisterServiceResponse.class);
                         switch (unregisterResponse.getAck().getType()) {
                             case OK:
-                                log.info("Unregister OK");
+                                LOG.info("Unregister OK");
                                 break;
                             case NOK:
-                                log.info("Unregister NOK");
+                                LOG.info("Unregister NOK");
                                 break;
                             default:
-                                log.error("[ Ack type not supported ] ");
+                                LOG.error("[ Ack type not supported ] ");
                                 break;
                         }
                         break;
                     default:
-                        log.error("Not supported method");
+                        LOG.error("Not supported method");
                         break;
                 }
             }
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            log.error("[ Error when receiving message in movement ]", e);
+            LOG.error("[ Error when receiving message in movement ]", e);
         }
     }
 
     private void handlePluginFault(PluginFault fault) {
-        log.error(startupService.getPluginResponseSubscriptionName() + " received fault " + fault.getCode() + " : " + fault.getMessage());
+        LOG.error(startupService.getPluginResponseSubscriptionName() + " received fault " + fault.getCode() + " : " + fault.getMessage());
     }
 
     private ExchangeRegistryBaseRequest tryConsumeRegistryBaseRequest(TextMessage textMessage) {

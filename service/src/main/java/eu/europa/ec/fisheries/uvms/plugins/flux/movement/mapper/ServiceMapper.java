@@ -33,11 +33,13 @@ import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingType;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class ServiceMapper {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceMapper.class);
+    
     public static ServiceType getServiceType(String serviceClassName, String fluxDisplayName, String description, PluginType fluxType, String responseMessageName) {
         if (responseMessageName == null) {
             throw new IllegalArgumentException("Response message must be provided!");
@@ -73,7 +75,7 @@ public class ServiceMapper {
             try {
                 setting.setType(CapabilityTypeType.valueOf(tmp.getKey()));
             } catch (Exception e) {
-                log.error("Error when parsing to Enum type from String KEY: {}", tmp.getKey());
+                LOG.error("Error when parsing to Enum type from String KEY: {}", tmp.getKey());
             }
             setting.setValue(tmp.getValue());
             capabilityListType.getCapability().add(setting);

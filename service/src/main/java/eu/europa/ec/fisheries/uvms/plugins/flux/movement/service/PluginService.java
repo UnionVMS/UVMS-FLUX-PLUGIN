@@ -41,15 +41,17 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 @LocalBean
 @Stateless
-@Slf4j
 public class PluginService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FileHandlerBean.class);
 
     @EJB
     private StartupBean startupBean;
@@ -67,26 +69,18 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType setReport(ReportType report) {
-        log.info(startupBean.getRegisterClassName() + ".report(" + report.getType().name() + ")");
-        log.debug("timestamp: " + report.getTimestamp());
+        LOG.info(startupBean.getRegisterClassName() + ".report(" + report.getType().name() + ")");
+        LOG.debug("timestamp: " + report.getTimestamp());
         MovementType movement = report.getMovement();
         if (movement != null && ReportTypeType.MOVEMENT.equals(report.getType())) {
             try {
-                MovementPoint pos = movement.getPosition();
-                if (pos != null) {
-                    log.info("lon: " + pos.getLongitude());
-                    log.info("lat: " + pos.getLatitude());
-                }
-                String editorType = startupBean.getSetting("EDITOR_TYPE");
-                String actionReason = startupBean.getSetting("ACTION_REASON");
-
                 String messageId = UUID.randomUUID().toString();
                 if (movement.getGuid() != null) {
                     messageId = movement.getGuid();
                 }
                 sender.sendMovement(movement, messageId, report.getRecipient());
             } catch (PluginException ex) {
-                log.debug("Error when setting report");
+                LOG.debug("Error when setting report");
                 return AcknowledgeTypeType.NOK;
             }
         }
@@ -100,15 +94,15 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType setCommand(CommandType command) {
-        log.info(startupBean.getRegisterClassName() + ".setCommand(" + command.getCommand().name() + ")");
-        log.debug("timestamp: " + command.getTimestamp());
+        LOG.info(startupBean.getRegisterClassName() + ".setCommand(" + command.getCommand().name() + ")");
+        LOG.debug("timestamp: " + command.getTimestamp());
         PollType poll = command.getPoll();
         EmailType email = command.getEmail();
         if (poll != null && CommandTypeType.POLL.equals(command.getCommand())) {
-            log.info("POLL: " + poll.getPollId());
+            LOG.info("POLL: " + poll.getPollId());
         }
         if (email != null && CommandTypeType.EMAIL.equals(command.getCommand())) {
-            log.info("EMAIL: subject=" + email.getSubject());
+            LOG.info("EMAIL: subject=" + email.getSubject());
         }
         return AcknowledgeTypeType.OK;
     }
@@ -120,16 +114,16 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType setConfig(SettingListType settings) {
-        log.info(startupBean.getRegisterClassName() + ".setConfig()");
+        LOG.info(startupBean.getRegisterClassName() + ".setConfig()");
         try {
             for (KeyValueType values : settings.getSetting()) {
-                log.debug("Setting [ " + values.getKey() + " : " + values.getValue() + " ]");
+                LOG.debug("Setting [ " + values.getKey() + " : " + values.getValue() + " ]");
                 startupBean.getSettings().put(values.getKey(), values.getValue());
             }
             portInintiator.updatePort();
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
-            log.error("Failed to set config in {}", startupBean.getRegisterClassName());
+            LOG.error("Failed to set config in {}", startupBean.getRegisterClassName());
             return AcknowledgeTypeType.NOK;
         }
 
@@ -141,13 +135,13 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType start() {
-        log.info(startupBean.getRegisterClassName() + ".start()");
+        LOG.info(startupBean.getRegisterClassName() + ".start()");
         try {
             startupBean.setIsEnabled(Boolean.TRUE);
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.FALSE);
-            log.error("Failed to start {}", startupBean.getRegisterClassName());
+            LOG.error("Failed to start {}", startupBean.getRegisterClassName());
             return AcknowledgeTypeType.NOK;
         }
 
@@ -159,13 +153,13 @@ public class PluginService {
      * @return
      */
     public AcknowledgeTypeType stop() {
-        log.info(startupBean.getRegisterClassName() + ".stop()");
+        LOG.info(startupBean.getRegisterClassName() + ".stop()");
         try {
             startupBean.setIsEnabled(Boolean.FALSE);
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.TRUE);
-            log.error("Failed to stop {}", startupBean.getRegisterClassName());
+            LOG.error("Failed to stop {}", startupBean.getRegisterClassName());
             return AcknowledgeTypeType.NOK;
         }
     }

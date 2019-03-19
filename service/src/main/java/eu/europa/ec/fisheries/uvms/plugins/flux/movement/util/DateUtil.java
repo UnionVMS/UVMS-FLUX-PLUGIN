@@ -23,7 +23,6 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.util;
 
-import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -31,22 +30,25 @@ import java.util.TimeZone;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
 
-@Slf4j
 public class DateUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DateUtil.class);
 
     private static DatatypeFactory dataTypeFactory;
     public static final int DESCENDING = -1;
     public static final int ASCENDING = 1;
 
-    final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
-    TimeZone CET_FORMAT = TimeZone.getTimeZone("UTC");
+    private static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+    private static final TimeZone CET_FORMAT = TimeZone.getTimeZone("UTC");
 
     public static DateTimeType mapToDateTime(XMLGregorianCalendar positionTime) {
         DateTimeType date = new DateTimeType();
@@ -65,7 +67,7 @@ public class DateUtil {
         try {
             dataTypeFactory = DatatypeFactory.newInstance();
         } catch (final DatatypeConfigurationException e) {
-            log.error("[ Error when instantiating a DatatypeFactory. ] {} {}", e.getMessage(), e.getStackTrace());
+            LOG.error("[ Error when instantiating a DatatypeFactory. ] {} {}", e.getMessage(), e.getStackTrace());
         }
     }
 
@@ -164,7 +166,7 @@ public class DateUtil {
                 return null;
             }
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            LOG.error(e.getMessage());
             throw new IllegalArgumentException(e);
         }
     }
