@@ -17,6 +17,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
+
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import org.jboss.ws.api.annotation.WebContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +49,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
     private StartupBean startupBean;
 
     @Override
-    protected void sendToExchange(RequestType rt) throws PluginException {
+    protected void sendToExchange(RequestType rt){
         try {
             List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToReportMovementTypes(rt, startupBean.getRegisterClassName());
             LOG.info("Going to send [" + movements.size() + "] movements to exchange.");
@@ -57,6 +59,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
                         DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(rt), PluginType.FLUX,
                         attributes.get(new QName(FR)), rt.getON());
                 pluginToExchangeProducer.sendModuleMessage(requestStr, null);
+                pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value(), null);
             }
             LOG.info("Finished sending all movements to exchange.");
         } catch (Exception e) {
