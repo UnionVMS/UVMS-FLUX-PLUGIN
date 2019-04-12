@@ -34,7 +34,6 @@
 
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.ws;
 
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import xeu.bridge_connector.v1.RequestType;
@@ -69,7 +68,7 @@ public abstract class AbstractFluxReceiver implements BridgeConnectorPortType {
         }
     }
 
-    protected abstract void sendToExchange(RequestType rt) throws JAXBException, PluginException, ExchangeModelMarshallException, TransformerException;
+    protected abstract void sendToExchange(RequestType rt) throws JAXBException, PluginException, TransformerException;
 
     protected abstract StartupBean getStartupBean();
 

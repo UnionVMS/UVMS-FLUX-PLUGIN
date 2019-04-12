@@ -47,6 +47,7 @@ import javax.ejb.Stateless;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
+import java.time.Instant;
 import java.util.Map;
 
 @Stateless
@@ -85,7 +86,7 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
             FLUXVesselPositionMessage xmlMessage = FluxMessageResponseMapper.extractVesselPositionMessage(rt.getAny());
             request.setRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage));
             String requestStr = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(request.getRequest(), attributes.get(new QName(USER)), rt.getDF(),
-                    DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
+                    Instant.now(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
                     attributes.get(new QName(FR)), rt.getON(), FluxMessageResponseMapper.extractMessageGUID(rt), startupBean.getRegisterClassName(),
                     attributes.get(new QName(AD)), attributes.get(new QName(TO)), attributes.get(new QName(TODT)));
             pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null , ExchangeModuleMethod.RECEIVE_MOVEMENT_REPORT_BATCH.value(), null);

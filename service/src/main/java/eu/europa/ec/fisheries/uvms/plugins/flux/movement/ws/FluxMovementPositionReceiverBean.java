@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.ws;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -56,9 +57,8 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
             Map<QName, String> attributes = rt.getOtherAttributes();
             for (SetReportMovementType movement : movements) {
                 String requestStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(movement, attributes.getOrDefault(new QName(USER), PluginType.FLUX.value()), rt.getDF(),
-                        DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(rt), PluginType.FLUX,
+                        Instant.now(), PluginType.FLUX,
                         attributes.get(new QName(FR)), rt.getON());
-                pluginToExchangeProducer.sendModuleMessage(requestStr, null);
                 pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value(), null);
             }
             LOG.info("Finished sending all movements to exchange.");
