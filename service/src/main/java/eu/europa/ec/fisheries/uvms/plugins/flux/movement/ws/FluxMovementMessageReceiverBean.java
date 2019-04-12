@@ -24,6 +24,7 @@
 
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.ws;
 
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.SetFLUXMovementReportRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
@@ -46,6 +47,7 @@ import javax.ejb.Stateless;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
+import java.time.Instant;
 import java.util.Map;
 
 @Stateless
@@ -84,10 +86,10 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
             FLUXVesselPositionMessage xmlMessage = FluxMessageResponseMapper.extractVesselPositionMessage(rt.getAny());
             request.setRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage));
             String requestStr = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(request.getRequest(), attributes.get(new QName(USER)), rt.getDF(),
-                    DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
+                    Instant.now(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
                     attributes.get(new QName(FR)), rt.getON(), FluxMessageResponseMapper.extractMessageGUID(rt), startupBean.getRegisterClassName(),
                     attributes.get(new QName(AD)), attributes.get(new QName(TO)), attributes.get(new QName(TODT)));
-            pluginToExchangeProducer.sendModuleMessage(requestStr, null);
+            pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null , ExchangeModuleMethod.RECEIVE_MOVEMENT_REPORT_BATCH.value(), null);
             LOG.info("Movement message succesfully sent to Exchange..");
         } catch (JAXBException | MessageException | PluginException e) {
             throw new RuntimeException("Couldn't transform Element to Source", e);

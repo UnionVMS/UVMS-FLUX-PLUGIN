@@ -16,8 +16,8 @@
 
     <properties>
         <javaee.version>8.0</javaee.version>
-        <uvms.common.version>3.0.29</uvms.common.version>
-        <exchange.model.version>4.0.33</exchange.model.version>
+        <uvms.common.version>3.0.32</uvms.common.version>
+        <exchange.model.version>5.0.0-UVMS</exchange.model.version>
         <connector-bridge.client.version>2.0.1</connector-bridge.client.version>
         <bridge-connector.client.version>2.0.1</bridge-connector.client.version>
         <flux.movement.client.version>2.0.1</flux.movement.client.version>

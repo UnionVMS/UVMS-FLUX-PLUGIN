@@ -27,11 +27,14 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.MappingException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
@@ -50,6 +53,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
@@ -66,6 +70,8 @@ public class FluxMessageRequestMapper {
 
     private static final String MOVEMENT_TYPE = "POS";
     private static final String PURPOSE_CODE = "9";
+
+    private static final Logger LOG = LoggerFactory.getLogger(FluxMessageRequestMapper.class);
 
     @EJB
     private StartupBean startupBean;
@@ -202,12 +208,24 @@ public class FluxMessageRequestMapper {
 
     private VesselPositionEventType mapToVesselPosition(MovementType movement) {
         VesselPositionEventType position = new VesselPositionEventType();
-        position.setObtainedOccurrenceDateTime(DateUtil.mapToDateTime(movement.getPositionTime()));
+        position.setObtainedOccurrenceDateTime(getXmlGregorianTime(movement.getPositionTime()));
         position.setCourseValueMeasure(mapToMeasureType(movement.getReportedCourse()));
         position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed()));
         position.setTypeCode(mapToCodeType(movement.getMovementType().name()));
         position.setSpecifiedVesselGeographicalCoordinate(mapToGeoPos(movement.getPosition()));
         return position;
+    }
+
+    private DateTimeType getXmlGregorianTime(Date date) {
+        DateTimeType dateTimeType = new DateTimeType();
+        try {
+            GregorianCalendar c = new GregorianCalendar();
+            c.setTime(date);
+            dateTimeType.setDateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
+        } catch (DatatypeConfigurationException ex) {
+            LOG.error("Error while parsing date {} to xml gregorian calendar in FLUX. Error: {}", date, ex);
+        }
+        return dateTimeType;
     }
 
     private MeasureType mapToMeasureType(Double measuredSpeed) {
