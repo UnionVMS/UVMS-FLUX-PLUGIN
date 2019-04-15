@@ -10,7 +10,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
     <artifactId>flux-movement-plugin</artifactId>
-    <version>3.0.18</version>
+    <version>3.0.19-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>FLUX Movement Plugin</description>
 
