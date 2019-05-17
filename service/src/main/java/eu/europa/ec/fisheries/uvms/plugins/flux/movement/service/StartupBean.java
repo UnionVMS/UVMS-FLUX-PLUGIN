@@ -104,7 +104,7 @@ public class StartupBean extends PluginDataHolder {
         serviceType = ServiceMapper.getServiceType(
                 getRegisterClassName(),
                 getApplicaionName(),
-                "Plugin for sending and recieving data to and from FLUX",
+                "Plugin for sending and recieving POSITION data to and from FLUX",
                 PluginType.FLUX,
                 getPluginResponseSubscriptionName());
 
