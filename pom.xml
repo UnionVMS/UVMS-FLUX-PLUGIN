@@ -35,6 +35,12 @@
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
         </dependency>
+        <dependency>
+		    <groupId>org.eclipse.microprofile.metrics</groupId>
+		    <artifactId>microprofile-metrics-api</artifactId>
+		    <version>1.1</version>
+		    <scope>provided</scope>
+		</dependency>
     </dependencies>
 
     <dependencyManagement>

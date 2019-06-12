@@ -29,18 +29,23 @@ import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandTypeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.KeyValueType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.ReportType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.ReportTypeType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PortInitiator;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.message.FluxMessageSenderBean;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +67,22 @@ public class PluginService {
     @EJB
     private PortInitiator portInintiator;
 
+    @Inject
+    private PluginToExchangeProducer pluginToExchangeProducer;
+
+    @Inject
+    @Metric(name = "flux_incoming", absolute = true)
+    Counter fluxIncoming;
+
+    @Inject
+    @Metric(name = "flux_outgoing", absolute = true)
+    Counter fluxOutgoing;
+
+    public void sendToExchange(String requestStr) throws MessageException {
+        pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value(), null);
+        fluxIncoming.inc();
+    }
+
     /**
      * TODO implement
      *
@@ -79,6 +100,7 @@ public class PluginService {
                     messageId = movement.getGuid();
                 }
                 sender.sendMovement(movement, messageId, report.getRecipient());
+                fluxOutgoing.inc();
             } catch (PluginException ex) {
                 LOG.debug("Error when setting report");
                 return AcknowledgeTypeType.NOK;
