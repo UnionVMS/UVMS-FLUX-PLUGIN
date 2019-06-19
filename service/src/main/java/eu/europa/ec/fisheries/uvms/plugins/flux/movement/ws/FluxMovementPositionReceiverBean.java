@@ -19,7 +19,6 @@ import javax.inject.Inject;
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
 
-import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import org.jboss.ws.api.annotation.WebContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageResponseMapper;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.PluginService;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import xeu.bridge_connector.v1.RequestType;
 
@@ -42,7 +41,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
     private static final String USER = "USER";
     
     @Inject
-    private PluginToExchangeProducer pluginToExchangeProducer;
+    private PluginService pluginService;
     
     @Inject
     private StartupBean startupBean;
@@ -51,13 +50,13 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
     protected void sendToExchange(RequestType rt){
         try {
             List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToReportMovementTypes(rt, startupBean.getRegisterClassName());
-            LOG.info("Going to send [" + movements.size() + "] movements to exchange.");
+            LOG.info("Going to send [ {} ] movements to exchange.", movements.size());
             Map<QName, String> attributes = rt.getOtherAttributes();
             for (SetReportMovementType movement : movements) {
                 String requestStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(movement, attributes.getOrDefault(new QName(USER), PluginType.FLUX.value()), rt.getDF(),
                         Instant.now(), PluginType.FLUX,
                         attributes.get(new QName(FR)), rt.getON());
-                pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value(), null);
+                pluginService.sendToExchange(requestStr);
             }
             LOG.info("Finished sending all movements to exchange.");
         } catch (Exception e) {
