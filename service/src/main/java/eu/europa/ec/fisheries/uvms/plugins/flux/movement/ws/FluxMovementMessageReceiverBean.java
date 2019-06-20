@@ -27,8 +27,6 @@ package eu.europa.ec.fisheries.uvms.plugins.flux.movement.ws;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.SetFLUXMovementReportRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
-import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
@@ -44,6 +42,7 @@ import xeu.bridge_connector.v1.RequestType;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.jms.JMSException;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -91,7 +90,7 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
                     attributes.get(new QName(AD)), attributes.get(new QName(TO)), attributes.get(new QName(TODT)));
             pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null , ExchangeModuleMethod.RECEIVE_MOVEMENT_REPORT_BATCH.value(), null);
             LOG.info("Movement message succesfully sent to Exchange..");
-        } catch (JAXBException | MessageException | PluginException e) {
+        } catch (JAXBException | JMSException | PluginException e) {
             throw new RuntimeException("Couldn't transform Element to Source", e);
         }
     }

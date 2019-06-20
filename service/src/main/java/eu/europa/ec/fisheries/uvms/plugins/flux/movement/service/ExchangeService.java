@@ -25,16 +25,15 @@ package eu.europa.ec.fisheries.uvms.plugins.flux.movement.service;
 
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.jms.JMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.UUID;
 
 @LocalBean
 @Stateless
@@ -55,7 +54,7 @@ public class ExchangeService {
 //            startupBean.getCachedMovement().put(messageId, reportType);
         } catch (RuntimeException e) {
             LOG.error("Couldn't map movement to setreportmovementtype");
-        } catch (MessageException e) {
+        } catch (JMSException e) {
             LOG.error("Couldn't send movement");
 //            startupBean.getCachedMovement().put(UUID.randomUUID().toString(), reportType);
         }
