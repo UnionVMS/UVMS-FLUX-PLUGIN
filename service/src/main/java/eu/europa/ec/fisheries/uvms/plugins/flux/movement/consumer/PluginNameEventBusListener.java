@@ -27,7 +27,6 @@ import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeTypeType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.*;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangePluginResponseMapper;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
@@ -115,7 +114,7 @@ public class PluginNameEventBusListener implements MessageListener {
             messageProducer.sendResponseMessageToSender(textMessage, responseMessage);
         } catch (RuntimeException e) {
             LOG.error("[ Error when receiving message in movement " + startup.getRegisterClassName() + " ]", e);
-        } catch (JMSException | MessageException ex) {
+        } catch (JMSException ex) {
             LOG.error("[ Error when handling JMS message in movement " + startup.getRegisterClassName() + " ]", ex);
         }
     }

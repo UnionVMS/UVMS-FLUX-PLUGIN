@@ -24,15 +24,21 @@ package eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractTopicProducer;
+import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.jms.Destination;
+import javax.jms.Topic;
 
 @Stateless
 @LocalBean
 public class PluginToEventBusTopicProducer extends AbstractTopicProducer {
 
+    @Resource(mappedName =  "java:/" + MessageConstants.EVENT_BUS_TOPIC)
+    private Topic destination;
+
     @Override
-    public String getDestinationName() {
-        return MessageConstants.EVENT_BUS_TOPIC;
+    public Destination getDestination() {
+        return destination;
     }
 }
