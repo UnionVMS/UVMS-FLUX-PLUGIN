@@ -99,7 +99,7 @@ public class PluginService {
                 if (movement.getGuid() != null) {
                     messageId = movement.getGuid();
                 }
-                sender.sendMovement(movement, messageId, report.getRecipient());
+                sender.sendMovement(movement, messageId, report.getRecipient(), report.getRecipientInfo());
                 fluxOutgoing.inc();
             } catch (PluginException ex) {
                 LOG.debug("Error when setting report");
