@@ -27,6 +27,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.RecipientInfoType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.MappingException;
@@ -76,14 +77,14 @@ public class FluxMessageRequestMapper {
     @EJB
     private StartupBean startupBean;
 
-    public PostMsgType mapToRequest(MovementType movement, String messageId, String recipient) throws JAXBException, MappingException {
+    public PostMsgType mapToRequest(MovementType movement, String messageId, String recipient, List<RecipientInfoType> recipientInfo) throws JAXBException, MappingException {
         PostMsgType message = new PostMsgType();
         if (recipient == null || recipient.isEmpty()) {
             message.setAD(startupBean.getSetting(MovementPluginConstants.FLUX_DEFAULT_AD));
         } else {
             message.setAD(recipient);
         }
-        message.setDF(startupBean.getSetting(MovementPluginConstants.FLUX_DATAFLOW));
+        message.setDF(getDataflow(recipientInfo));
         message.setID(messageId);
         //Below does not need to be set because the bridge takes care of it
         //Date timeInFuture = DateUtil.getTimeInFuture(1);
@@ -102,6 +103,13 @@ public class FluxMessageRequestMapper {
         Element elt = ((Document) res.getNode()).getDocumentElement();
         message.setAny(elt);
         return message;
+    }
+
+    private String getDataflow(List<RecipientInfoType> recipientInfo) {
+        if (!recipientInfo.isEmpty() && recipientInfo.get(0).getKey() != null) {
+            return recipientInfo.get(0).getKey();
+        }
+        return startupBean.getSetting(MovementPluginConstants.FLUX_DATAFLOW);
     }
 
     private FLUXVesselPositionMessage mapToFluxMovement(MovementType movement, String fluxOwner) throws MappingException {

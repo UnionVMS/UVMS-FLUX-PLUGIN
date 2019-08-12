@@ -24,6 +24,7 @@
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.message;
 
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.RecipientInfoType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PortInitiator;
@@ -39,6 +40,7 @@ import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,7 +61,7 @@ public class FluxMessageSenderBean {
     @EJB
     private StartupBean startupBean;
 
-    public String sendMovement(MovementType movement, String messageId, String recipient) throws PluginException {
+    public String sendMovement(MovementType movement, String messageId, String recipient, List<RecipientInfoType> recipientInfo) throws PluginException {
         try {
 
             LOG.info("Sending message to EU [ {} ] with messageID: {} ", messageId);
@@ -74,7 +76,7 @@ public class FluxMessageSenderBean {
             headerValues.put(headerKey, headerValue + "-" + recipient);
             mapper.addHeaderValueToRequest(portType, headerValues);
 
-            PostMsgType request = mapper.mapToRequest(movement, messageId, recipient);
+            PostMsgType request = mapper.mapToRequest(movement, messageId, recipient, recipientInfo);
             PostMsgOutType resp = portType.post(request);
 
             if (resp.getAssignedON() == null) {

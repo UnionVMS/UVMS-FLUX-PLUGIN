@@ -25,6 +25,7 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class FluxMessageRequestMapperTest {
     public void testMapToRequest() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
 
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, MockConstants.RECIPIENT);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, MockConstants.RECIPIENT, Collections.EMPTY_LIST);
 
         assertNotNull(mapToRequest);
 
@@ -117,7 +118,7 @@ public class FluxMessageRequestMapperTest {
     @Test
     public void testMapToRequestRecipientNull() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.EMPTY_LIST);
         assertNotNull(mapToRequest);
         assertEquals(MockConstants.AD, mapToRequest.getAD());
     }
