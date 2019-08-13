@@ -28,12 +28,12 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.RecipientInfoType;
-import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVesselPositionType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.MappingException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -54,7 +54,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
@@ -69,7 +68,6 @@ import java.util.Map.Entry;
 @Stateless
 public class FluxMessageRequestMapper {
 
-    private static final String MOVEMENT_TYPE = "POS";
     private static final String PURPOSE_CODE = "9";
 
     private static final Logger LOG = LoggerFactory.getLogger(FluxMessageRequestMapper.class);
@@ -150,8 +148,8 @@ public class FluxMessageRequestMapper {
     public void addHeaderValueToRequest(Object port, final Map<String, String> values) {
         BindingProvider bp = (BindingProvider) port;
         Map<String, List<String>> headers = new HashMap<>();
-        for (Entry entry : values.entrySet()) {
-            headers.put(entry.getKey().toString(), Collections.singletonList(entry.getValue().toString()));
+        for (Entry<String, String> entry : values.entrySet()) {
+            headers.put(entry.getKey(), Collections.singletonList(entry.getValue()));
         }
         bp.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, headers);
     }
@@ -159,23 +157,21 @@ public class FluxMessageRequestMapper {
     private VesselTransportMeansType mapToVesselTransportMeans(MovementType movement) throws MappingException {
         VesselTransportMeansType retVal = new VesselTransportMeansType();
         //Handle Asset ID
-        Map<String, String> ids = new HashMap<>();
+        Map<AssetIdType, String> ids = new HashMap<>();
         for (AssetIdList col : movement.getAssetId().getAssetIdList()) {
-            ids.put(col.getIdType().name(), col.getValue());
+            ids.put(col.getIdType(), col.getValue());
         }
-        if (ids.containsKey(AssetIdType.IRCS.name()) && movement.getIrcs() != null) {
-            if (!movement.getIrcs().equals(ids.get(AssetIdType.IRCS.name()))) {
-                throw new MappingException("Asset IRCS does not match when mapping AssetID ( There are 2 ways of getting Ircs in this object! :( and they do not match ) " + movement.getIrcs() + ":" +ids.get(AssetIdType.IRCS.name()));
-            }
+        if (ids.containsKey(AssetIdType.IRCS) && movement.getIrcs() != null && !movement.getIrcs().equals(ids.get(AssetIdType.IRCS))) {
+            throw new MappingException("Asset IRCS does not match when mapping AssetID ( There are 2 ways of getting Ircs in this object! :( and they do not match ) " + movement.getIrcs() + ":" +ids.get(AssetIdType.IRCS));
         }
         if (movement.getIrcs() != null) {
-            retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.IRCS, movement.getIrcs()));
+            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.IRCS, movement.getIrcs()));
         }
         if (movement.getExternalMarking() != null) {
-            retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.EXT_MARKING, movement.getExternalMarking()));
+            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.EXT_MARK, movement.getExternalMarking()));
         }
-        if (ids.containsKey(AssetIdType.CFR.name())) {
-            retVal.getIDS().add(mapToVesselIDType(VESSEL_ID_TYPE.CFR, ids.get(AssetIdType.CFR.name())));
+        if (ids.containsKey(AssetIdType.CFR)) {
+            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.CFR, ids.get(AssetIdType.CFR)));
         }
         //End handle Asset Id
         retVal.setRegistrationVesselCountry(mapToVesselCountry(movement.getFlagState()));
@@ -189,7 +185,7 @@ public class FluxMessageRequestMapper {
         return codeType;
     }
 
-    private IDType mapToVesselIDType(VESSEL_ID_TYPE vesselIdType, String value) {
+    private IDType mapToVesselIDType(Codes.FLUXVesselIDType vesselIdType, String value) {
         IDType idType = new IDType();
         idType.setSchemeID(vesselIdType.name());
         idType.setValue(value);
@@ -219,7 +215,7 @@ public class FluxMessageRequestMapper {
         position.setObtainedOccurrenceDateTime(getXmlGregorianTime(movement.getPositionTime()));
         position.setCourseValueMeasure(mapToMeasureType(movement.getReportedCourse()));
         position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed()));
-        position.setTypeCode(mapToCodeType(movement.getMovementType().name()));
+        position.setTypeCode(mapToCodeType(FLUXVesselPositionType.fromInternal(movement.getMovementType())));
         position.setSpecifiedVesselGeographicalCoordinate(mapToGeoPos(movement.getPosition()));
         return position;
     }
@@ -262,10 +258,5 @@ public class FluxMessageRequestMapper {
             geoType.setAltitudeMeasure(mapToMeasureType(point.getAltitude()));
         }
         return geoType;
-    }
-
-    private enum VESSEL_ID_TYPE {
-
-        CFR, EXT_MARKING, IRCS;
     }
 }

@@ -33,8 +33,10 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVesselIDType;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVesselPositionType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.message.FluxMessageSenderBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.util.DateUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,16 +64,6 @@ import xeu.bridge_connector.v1.RequestType;
 public class FluxMessageResponseMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(FluxMessageResponseMapper.class);
-    
-    private static final String ASSET_EXT_MARKING_CODE = "EXT_MARKING";
-    private static final String ASSET_IRCS_CODE = "IRCS";
-    private static final String ASSET_UVI_CODE = "UVI";
-    private static final String ASSET_CFR_CODE = "CFR";
-
-    private static final String MOVEMENTTYPE_POS = "POS";
-    private static final String MOVEMENTTYPE_EXI = "EXI";
-    private static final String MOVEMENTTYPE_ENT = "ENT";
-    private static final String MOVEMENTTYPE_MAN = "MAN";
 
     public static List<SetReportMovementType> mapToReportMovementTypes(RequestType rt, String registerClassName) throws PluginException {
         FLUXVesselPositionMessage vessPosMessage;
@@ -95,10 +87,10 @@ public class FluxMessageResponseMapper {
 
     private static MovementBaseType mapResponse(VesselPositionEventType response, VesselTransportMeansType report) {
         MovementBaseType movement = new MovementBaseType();
-        HashMap<String, String> extractAssetIds = extractAssetIds(report.getIDS());
+        HashMap<Codes.FLUXVesselIDType, String> extractAssetIds = extractAssetIds(report.getIDS());
         movement.setAssetId(mapToAssetId(extractAssetIds));
-        movement.setExternalMarking(extractAssetIds.get(ASSET_EXT_MARKING_CODE));
-        movement.setIrcs(extractAssetIds.get(ASSET_IRCS_CODE));
+        movement.setExternalMarking(extractAssetIds.get(FLUXVesselIDType.EXT_MARK));
+        movement.setIrcs(extractAssetIds.get(FLUXVesselIDType.IRCS));
         movement.setMovementType(mapToMovementTypeFromPositionType(movement, response.getTypeCode()));
         setFlagState(movement, report.getRegistrationVesselCountry());
         movement.setPosition(mapToMovementPoint(response.getSpecifiedVesselGeographicalCoordinate()));
@@ -138,23 +130,7 @@ public class FluxMessageResponseMapper {
     private static MovementTypeType mapToMovementTypeFromPositionType(MovementBaseType movement, CodeType vessPosTypeCode) {
         MovementTypeType movType;
         if (vessPosTypeCode != null) {
-            switch (vessPosTypeCode.getValue()) {
-                case MOVEMENTTYPE_POS:
-                    movType = MovementTypeType.POS;
-                    break;
-                case MOVEMENTTYPE_EXI:
-                    movType = MovementTypeType.EXI;
-                    break;
-                case MOVEMENTTYPE_ENT:
-                    movType = MovementTypeType.ENT;
-                    break;
-                case MOVEMENTTYPE_MAN:
-                    movType = MovementTypeType.MAN;
-                    break;
-                default:
-                    movType = null;
-                    LOG.error("[ERROR] Movement type couldn't be mapped", vessPosTypeCode.getValue());
-            }
+            movType = FLUXVesselPositionType.fromExternal(vessPosTypeCode.getValue());
         } else {
             movType = MovementTypeType.POS;
             LOG.error("[ERROR] Couldn't map to movementType, vessPosTypeCode was null!");
@@ -187,30 +163,32 @@ public class FluxMessageResponseMapper {
         return point;
     }
 
-    private static HashMap<String, String> extractAssetIds(List<IDType> vesselIds) {
-        HashMap<String, String> ids = new HashMap<>();
+    private static HashMap<FLUXVesselIDType, String> extractAssetIds(List<IDType> vesselIds) {
+        HashMap<FLUXVesselIDType, String> ids = new HashMap<>();
         if (CollectionUtils.isNotEmpty(vesselIds)) {
             for (IDType vesselId : vesselIds) {
-                ids.put(vesselId.getSchemeID(), vesselId.getValue());
+                ids.put(FLUXVesselIDType.valueOf(vesselId.getSchemeID()), vesselId.getValue());
             }
         }
         return ids;
     }
 
-    private static AssetId mapToAssetId(Map<String, String> vesselIds) {
+    private static AssetId mapToAssetId(Map<FLUXVesselIDType, String> vesselIds) {
         AssetId idType = new AssetId();
         List<AssetIdList> assetIdList = idType.getAssetIdList();
         if (MapUtils.isNotEmpty(vesselIds)) {
-            for (Entry<String, String> vesselId : vesselIds.entrySet()) {
+            for (Entry<FLUXVesselIDType, String> vesselId : vesselIds.entrySet()) {
                 switch (vesselId.getKey()) {
-                    case ASSET_IRCS_CODE:
+                    case IRCS:
                         assetIdList.add(mapToVesselId(AssetIdType.IRCS, vesselId.getValue()));
                         break;
-                    case ASSET_CFR_CODE:
+                    case CFR:
                         assetIdList.add(mapToVesselId(AssetIdType.CFR, vesselId.getValue()));
                         break;
-                    case ASSET_UVI_CODE:
+                    case UVI:
                         assetIdList.add(mapToVesselId(AssetIdType.IMO, vesselId.getValue()));
+                        break;
+                    case EXT_MARK:
                         break;
                     default:
                         LOG.error("VesselId type not mapped {}", vesselId.getKey());
