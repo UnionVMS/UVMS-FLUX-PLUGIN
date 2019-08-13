@@ -43,7 +43,7 @@ public class MockConstants {
 
     public static final String ASSET_IRCS = "IRCS";
     public static final String ASSET_CFR = "CFR";
-    public static final String ASSET_EXT_MARKING = "EXT_MARKING";
+    public static final String ASSET_EXT_MARKING = "EXT_MARK";
     public static final String ASSET_NAME = "ASSET_NAME";
     public static final String ASSET_FLAG_STATE = "SWE";
     public static final String FLUX_OWNER = "GER";
