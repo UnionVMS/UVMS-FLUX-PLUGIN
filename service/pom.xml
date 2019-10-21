@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
         <artifactId>flux-movement-plugin</artifactId>
-        <version>3.0.17-SNAPSHOT</version>
+        <version>${uvms.plugins.flux.movement.version}</version>
     </parent>
 
     <properties>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
             <artifactId>uvms-commons-message</artifactId>
-            <version>${uvms.common.version}</version>
+            <version>${uvms.commons.version}</version>
         </dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
