@@ -7,3 +7,8 @@ logging.properties
 /.idea
 .DS_Store
 plugin.properties
+.project
+.classpath
+.settings/
+pom.xml.versionsBackup
+.flattened-pom.xml
