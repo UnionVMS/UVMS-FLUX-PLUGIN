@@ -30,10 +30,6 @@ import java.util.TimeZone;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
@@ -155,22 +151,6 @@ public class DateUtil {
         return xmlCalendar;
     }
 
-    public static Date parseToUTCDate(String dateString) throws IllegalArgumentException {
-        try {
-            if (dateString != null) {
-                DateTimeFormatter formatter = DateTimeFormat.forPattern(FORMAT).withOffsetParsed();
-                DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
-                GregorianCalendar cal = dateTime.toGregorianCalendar();
-                return cal.getTime();
-            } else {
-                return null;
-            }
-        } catch (IllegalArgumentException e) {
-            LOG.error(e.getMessage());
-            throw new IllegalArgumentException(e);
-        }
-    }
-
     /**
      * Creates a XMLGregorianCalendar from a java.util.GregorianCalendar
      *
@@ -184,32 +164,6 @@ public class DateUtil {
             }
         }
         return null;
-    }
-
-    /**
-     * Creates a {@link Date} from a {@link String}
-     *
-     * @param input A {@link String} on the format "YYYYMMDD"
-     * @return A {@link Date} representation of date, with time set to 00:00:00
-     * set according to UTC timezone.
-     * @throws {@link NumberFormatException} when the input parameter isn't as
-     *                expected.
-     */
-    public static Date getTimeFromString(String input) {
-        if (input != null && !input.trim().isEmpty()) {
-            final String pattern = "(19|20){1}\\d{6}";
-            if (input.length() == 8 & input.matches(pattern)) {
-                DateTime time = new DateTime(new Integer(input.substring(0, 4)) // year
-                        , new Integer(input.substring(4, 6)) // month
-                        , new Integer(input.substring(6, 8)) // day
-                        , 0 // hour
-                        , 0 // minute
-                        , DateTimeZone.UTC);
-                time = time.withMillisOfDay(0);
-                return new Date(time.getMillis());
-            }
-        }
-        throw new NumberFormatException("Provided string is not parsable for a date. Received: " + input);
     }
 
     public static Date parsePositionTime(XMLGregorianCalendar positionTime) {
