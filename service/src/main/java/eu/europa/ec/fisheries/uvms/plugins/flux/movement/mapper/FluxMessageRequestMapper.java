@@ -117,15 +117,6 @@ public class FluxMessageRequestMapper {
         return msg;
     }
 
-    private FLUXGeographicalCoordinateType mapToFLUXGeographicalCoordinateType(MovementPoint position) throws PluginException {
-        FLUXGeographicalCoordinateType coordinate = new FLUXGeographicalCoordinateType();
-        if (position != null) {
-            coordinate.setLatitudeMeasure(mapToMeasureType(position.getLatitude()));
-            coordinate.setLongitudeMeasure(mapToMeasureType(position.getLongitude()));
-        }
-        return coordinate;
-    }
-
     private FLUXPartyType mapToFluxPartyType(String ad) {
         FLUXPartyType partyType = new FLUXPartyType();
         partyType.getIDS().add(mapToIdType(ad));
@@ -213,8 +204,12 @@ public class FluxMessageRequestMapper {
     private VesselPositionEventType mapToVesselPosition(MovementType movement) {
         VesselPositionEventType position = new VesselPositionEventType();
         position.setObtainedOccurrenceDateTime(getXmlGregorianTime(movement.getPositionTime()));
-        position.setCourseValueMeasure(mapToMeasureType(movement.getReportedCourse()));
-        position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed()));
+        if (movement.getReportedCourse() != null) {
+            position.setCourseValueMeasure(mapToMeasureType(movement.getReportedCourse()));
+        }
+        if (movement.getReportedSpeed() != null) {
+            position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed()));
+        }
         position.setTypeCode(mapToCodeType(FLUXVesselPositionType.fromInternal(movement.getMovementType())));
         position.setSpecifiedVesselGeographicalCoordinate(mapToGeoPos(movement.getPosition()));
         return position;
