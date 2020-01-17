@@ -99,7 +99,7 @@ public class FluxMessageResponseMapper {
         }
         setCourseAndSpeed(response, movement);
         movement.setComChannelType(MovementComChannelType.FLUX);
-        movement.setSource(MovementSourceType.OTHER);
+        movement.setSource(MovementSourceType.FLUX);
         return movement;
     }
 

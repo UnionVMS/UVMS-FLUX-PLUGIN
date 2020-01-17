@@ -41,7 +41,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import xeu.bridge_connector.v1.RequestType;
 
 /**
@@ -98,7 +98,7 @@ public class FluxMessageResponseMapperTest {
         Assert.assertEquals(MockConstants.ASSET_IRCS, movement.getIrcs());
         Assert.assertEquals(MockConstants.ASSET_FLAG_STATE, movement.getFlagState());
         Assert.assertEquals(MovementTypeType.POS, movement.getMovementType());
-        Assert.assertEquals(MovementSourceType.OTHER, movement.getSource());
+        Assert.assertEquals(MovementSourceType.FLUX, movement.getSource());
         
         Assert.assertEquals(MockConstants.REPORTED_SPEED, movement.getReportedSpeed());
         Assert.assertEquals(MockConstants.REPORTED_COURSE, movement.getReportedCourse());

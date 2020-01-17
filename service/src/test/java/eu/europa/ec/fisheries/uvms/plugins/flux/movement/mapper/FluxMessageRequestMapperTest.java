@@ -24,6 +24,7 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mockdata.MovementTypeMo
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.w3c.dom.Element;
 
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
@@ -102,7 +103,7 @@ public class FluxMessageRequestMapperTest {
     public void testMapToRequest() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
 
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, MockConstants.RECIPIENT, Collections.EMPTY_LIST);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, MockConstants.RECIPIENT, Collections.emptyList());
 
         assertNotNull(mapToRequest);
 
@@ -118,9 +119,29 @@ public class FluxMessageRequestMapperTest {
     @Test
     public void testMapToRequestRecipientNull() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.EMPTY_LIST);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
         assertNotNull(mapToRequest);
         assertEquals(MockConstants.AD, mapToRequest.getAD());
+    }
+    
+    @Test
+    public void testMapNullReportedCourse() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedCourse(null);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertNull(message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure());
+    }
+    
+    @Test
+    public void testMapNullReportedSpeed() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedSpeed(null);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertNull(message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure());
     }
 
     private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessage message) {
