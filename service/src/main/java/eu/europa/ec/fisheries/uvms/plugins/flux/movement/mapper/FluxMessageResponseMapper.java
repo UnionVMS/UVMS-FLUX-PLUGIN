@@ -38,10 +38,8 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVes
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVesselPositionType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.util.DateUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.Map.Entry;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -79,7 +77,7 @@ public class FluxMessageResponseMapper {
             movementType.setMovement(mapResponse(col, positionReport));
             movementType.setPluginType(PluginType.FLUX);
             movementType.setPluginName(registerClassName);
-            movementType.setTimestamp(DateUtil.createNowDate());
+            movementType.setTimestamp(new Date());
             movementList.add(movementType);
         }
         return movementList;
