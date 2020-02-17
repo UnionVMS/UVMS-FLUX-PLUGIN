@@ -57,9 +57,6 @@ public class PluginAckEventBusListener implements MessageListener {
     @EJB
     private StartupBean startupService;
 
-    @EJB
-    private PluginService fluxService;
-
     @Override
     public void onMessage(Message inMessage) {
         LOG.info("Eventbus listener for movement at selector: {} got a message", startupService.getPluginResponseSubscriptionName());
