@@ -15,7 +15,7 @@
     <description>FLUX Movement Plugin</description>
 
     <properties>
-        <uvms.common.version>4.1.1</uvms.common.version>
+        <uvms.common.version>4.1.2</uvms.common.version>
         <exchange.model.version>5.2.1-UVMS</exchange.model.version>
         <connector-bridge.client.version>2.0.1</connector-bridge.client.version>
         <bridge-connector.client.version>2.0.1</bridge-connector.client.version>
