@@ -29,7 +29,6 @@ import eu.europa.ec.fisheries.schema.exchange.registry.v1.UnregisterServiceRespo
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.PluginService;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 
 import javax.ejb.*;
@@ -41,11 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-@MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
-        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR, propertyValue = MessageConstants.CONNECTION_TYPE),
+@MessageDriven(activationConfig = {
         @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_DURABILITY_STR, propertyValue = MessageConstants.DURABLE_CONNECTION),
         @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR, propertyValue = MessageConstants.DESTINATION_TYPE_TOPIC),
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.EVENT_BUS_TOPIC_NAME),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.EVENT_BUS_TOPIC),
         @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_NAME_STR, propertyValue = MovementPluginConstants.SUBSCRIPTION_NAME_AC),
         @ActivationConfigProperty(propertyName = MessageConstants.CLIENT_ID_STR, propertyValue = MovementPluginConstants.CLIENT_ID_AC),
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGE_SELECTOR_STR, propertyValue = MovementPluginConstants.MESSAGE_SELECTOR_AC)
