@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -133,7 +134,7 @@ public class FluxMessageRequestMapperTest {
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertNull(message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure());
     }
-    
+
     @Test
     public void testMapNullReportedSpeed() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
@@ -142,6 +143,146 @@ public class FluxMessageRequestMapperTest {
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertNull(message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure());
+    }
+
+    @Test
+    public void testReportedSpeedNoRounding() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedSpeed(2d);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(2), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure().getValue());
+    }
+
+    @Test
+    public void testReportedSpeedRounding() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedSpeed(1.23456);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.23), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure().getValue());
+    }
+
+    @Test
+    public void testReportedSpeedRoundingUp() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedSpeed(1.23656);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.24), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure().getValue());
+    }
+
+    @Test
+    public void testReportedCourseNoRounding() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedCourse(2d);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(2), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure().getValue());
+    }
+
+    @Test
+    public void testReportedCourseRounding() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedCourse(1.23456);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.23), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure().getValue());
+    }
+
+    @Test
+    public void testReportedCourseRoundingUp() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setReportedCourse(1.23656);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.24), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure().getValue());
+    }
+
+    @Test
+    public void testLatitudeNoRounding() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLatitude(1.2345);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.2345), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testLatitudeRoundingAddDecimal() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLatitude(1.2);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(new BigDecimal("1.200"), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testLatitudeRoundingTruncateDecimal() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLatitude(1.2345234);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.234523), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testLatitudeRoundingDecimalUp() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLatitude(1.2345236);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.234524), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testLongitudeNoRounding() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLongitude(1.2345);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.2345), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testLongitudeRoundingAddDecimal() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLongitude(1.2);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(new BigDecimal("1.200"), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testLongitudeRoundingTruncateDecimal() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLongitude(1.2345234);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.234523), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testLongitudeRoundingDecimalUp() throws Exception {
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.getPosition().setLongitude(1.2345236);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        assertEquals(BigDecimal.valueOf(1.234524), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
     }
 
     private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessage message) {

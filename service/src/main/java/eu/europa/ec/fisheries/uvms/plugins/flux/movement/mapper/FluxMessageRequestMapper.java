@@ -58,6 +58,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -71,6 +73,19 @@ public class FluxMessageRequestMapper {
     private static final String PURPOSE_CODE = "9";
 
     private static final Logger LOG = LoggerFactory.getLogger(FluxMessageRequestMapper.class);
+
+    private static final NumberFormat decimalFormatter;
+    private static final NumberFormat coordFormatter;
+
+    static {
+        decimalFormatter = NumberFormat.getInstance(Locale.ENGLISH);
+        decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
+        decimalFormatter.setMaximumFractionDigits(2);
+        coordFormatter = NumberFormat.getInstance(Locale.ENGLISH);
+        coordFormatter.setRoundingMode(RoundingMode.HALF_UP);
+        coordFormatter.setMinimumFractionDigits(3);
+        coordFormatter.setMaximumFractionDigits(6);
+    }
 
     @EJB
     private StartupBean startupBean;
@@ -207,10 +222,10 @@ public class FluxMessageRequestMapper {
         VesselPositionEventType position = new VesselPositionEventType();
         position.setObtainedOccurrenceDateTime(getXmlGregorianTime(movement.getPositionTime()));
         if (movement.getReportedCourse() != null) {
-            position.setCourseValueMeasure(mapToMeasureType(movement.getReportedCourse()));
+            position.setCourseValueMeasure(mapToMeasureType(movement.getReportedCourse(), decimalFormatter));
         }
         if (movement.getReportedSpeed() != null) {
-            position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed()));
+            position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed(), decimalFormatter));
         }
         position.setTypeCode(mapToCodeType(FLUXVesselPositionType.fromInternal(movement.getMovementType())));
         position.setSpecifiedVesselGeographicalCoordinate(mapToGeoPos(movement.getPosition()));
@@ -229,9 +244,9 @@ public class FluxMessageRequestMapper {
         return dateTimeType;
     }
 
-    private MeasureType mapToMeasureType(Double measuredSpeed) {
+    private MeasureType mapToMeasureType(Double value, NumberFormat numberFormat) {
         MeasureType measureType = new MeasureType();
-        measureType.setValue(BigDecimal.valueOf(measuredSpeed));
+        measureType.setValue(new BigDecimal(numberFormat.format(value)));
         return measureType;
     }
 
@@ -249,11 +264,8 @@ public class FluxMessageRequestMapper {
 
     private VesselGeographicalCoordinateType mapToGeoPos(MovementPoint point) {
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
-        geoType.setLatitudeMeasure(mapToMeasureType(point.getLatitude()));
-        geoType.setLongitudeMeasure(mapToMeasureType(point.getLongitude()));
-        if (point.getAltitude() != null) {
-            geoType.setAltitudeMeasure(mapToMeasureType(point.getAltitude()));
-        }
+        geoType.setLatitudeMeasure(mapToMeasureType(point.getLatitude(), coordFormatter));
+        geoType.setLongitudeMeasure(mapToMeasureType(point.getLongitude(), coordFormatter));
         return geoType;
     }
 }
