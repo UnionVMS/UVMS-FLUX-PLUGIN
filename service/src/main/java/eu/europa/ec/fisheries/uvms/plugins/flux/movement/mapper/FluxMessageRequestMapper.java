@@ -104,8 +104,10 @@ public class FluxMessageRequestMapper {
     }
 
     private String getDataflow(List<RecipientInfoType> recipientInfo) {
-        if (!recipientInfo.isEmpty() && recipientInfo.get(0).getKey() != null) {
-            return recipientInfo.get(0).getKey();
+        for (RecipientInfoType info : recipientInfo) {
+            if (info.getKey().contains("FLUXVesselPositionMessage")) {
+                return info.getKey();
+            }
         }
         return startupBean.getSetting(MovementPluginConstants.FLUX_DATAFLOW);
     }
