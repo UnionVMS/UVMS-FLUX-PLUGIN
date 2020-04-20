@@ -10,7 +10,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
     <artifactId>flux-movement-plugin</artifactId>
-    <version>3.1.2-SNAPSHOT</version>
+    <version>3.1.2</version>
     <packaging>pom</packaging>
     <description>FLUX Movement Plugin</description>
 
@@ -81,7 +81,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-FLUX-PLUGIN.git</connection>
-        <tag>flux-movement-plugin-3.0.18</tag>
+        <tag>flux-movement-plugin-3.1.2</tag>
     </scm>
 
     <modules>
