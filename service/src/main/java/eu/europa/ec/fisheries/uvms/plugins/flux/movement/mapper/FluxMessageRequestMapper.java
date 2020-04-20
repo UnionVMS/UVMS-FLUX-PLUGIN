@@ -181,6 +181,9 @@ public class FluxMessageRequestMapper {
         if (ids.containsKey(AssetIdType.CFR)) {
             retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.CFR, ids.get(AssetIdType.CFR)));
         }
+        if (ids.containsKey(AssetIdType.IMO)) {
+            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.UVI, ids.get(AssetIdType.IMO)));
+        }
         //End handle Asset Id
         retVal.setRegistrationVesselCountry(mapToVesselCountry(movement.getFlagState()));
         retVal.getSpecifiedVesselPositionEvents().add(mapToVesselPosition(movement));

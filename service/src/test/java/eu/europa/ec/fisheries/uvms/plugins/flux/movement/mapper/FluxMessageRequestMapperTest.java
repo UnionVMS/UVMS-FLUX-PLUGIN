@@ -17,6 +17,8 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mockdata.MockConstants;
@@ -31,7 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -283,6 +285,22 @@ public class FluxMessageRequestMapperTest {
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.234524), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
+    }
+
+    @Test
+    public void testImoIdentifier() throws Exception {
+        String imo = "12345";
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        AssetIdList imoId = new AssetIdList();
+        imoId.setIdType(AssetIdType.IMO);
+        imoId.setValue(imo);
+        movement.getAssetId().getAssetIdList().add(imoId);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        Optional<IDType> uvi = message.getVesselTransportMeans().getIDS().stream().filter(i -> i.getSchemeID().equals("UVI")).findFirst();
+
+        assertEquals(imo, uvi.get().getValue());
     }
 
     private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessage message) {
