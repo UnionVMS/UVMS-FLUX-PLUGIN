@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @MessageDriven(activationConfig = {
         @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_DURABILITY_STR, propertyValue = MessageConstants.DURABLE_CONNECTION),
         @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR, propertyValue = MessageConstants.DESTINATION_TYPE_TOPIC),
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.EVENT_BUS_TOPIC),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_LOOKUP_STR, propertyValue = MessageConstants.EVENT_BUS_TOPIC),
         @ActivationConfigProperty(propertyName = MessageConstants.SUBSCRIPTION_NAME_STR, propertyValue = MovementPluginConstants.SUBSCRIPTION_NAME_AC),
         @ActivationConfigProperty(propertyName = MessageConstants.CLIENT_ID_STR, propertyValue = MovementPluginConstants.CLIENT_ID_AC),
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGE_SELECTOR_STR, propertyValue = MovementPluginConstants.MESSAGE_SELECTOR_AC)
