@@ -24,7 +24,6 @@
 
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.ws;
 
-import eu.europa.ec.fisheries.schema.exchange.module.v1.SetFLUXMovementReportRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
@@ -32,7 +31,6 @@ import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.ExchangeService;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageResponseMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -53,14 +51,11 @@ import java.util.Map;
 @Slf4j
 public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
 
-    private static final String FR = "FR";
-    private static final String USER = "USER";
-    private static final String AD = "AD";
-    private static final String TO = "TO";
-    private static final String TODT = "TODT";
-
-    @EJB
-    private ExchangeService exchange;
+    private static final QName FR = new QName("FR");
+    private static final QName USER = new QName("USER");
+    private static final QName AD = new QName("AD");
+    private static final QName TO = new QName("TO");
+    private static final QName TODT = new QName("TODT");
 
     @EJB
     private StartupBean startupBean;
@@ -77,19 +72,17 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
     protected void sendToExchange(RequestType rt) {
         try {
             log.info("Received a Movement message in Movement Plugin..");
-            SetFLUXMovementReportRequest request = new SetFLUXMovementReportRequest();
             Map<QName, String> attributes = rt.getOtherAttributes();
             FLUXVesselPositionMessage xmlMessage = FluxMessageResponseMapper.extractVesselPositionMessage(rt.getAny());
-            request.setRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage));
-            String requestStr = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(request.getRequest(), attributes.get(new QName(USER)), rt.getDF(),
-                    DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
-                    attributes.get(new QName(FR)), rt.getON(), FluxMessageResponseMapper.extractMessageGUID(rt), startupBean.getRegisterClassName(),
-                    attributes.get(new QName(AD)), attributes.get(new QName(TO)), attributes.get(new QName(TODT)));
+            String guid = FluxMessageResponseMapper.extractMessageGUID(xmlMessage);
+            String requestStr = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage), attributes.get(USER), rt.getDF(),
+                    DateUtils.nowUTC().toDate(), guid, PluginType.FLUX,
+                    attributes.get(FR), rt.getON(), guid, startupBean.getRegisterClassName(),
+                    attributes.get(AD), attributes.get(TO), attributes.get(TODT));
             pluginToExchangeProducer.sendModuleMessage(requestStr, null);
-            log.info("Movement message succesfully sent to Exchange..");
+            log.info("Movement message successfully sent to Exchange..");
         } catch (JAXBException | MessageException | PluginException e) {
             throw new RuntimeException("Couldn't transform Element to Source", e);
         }
     }
-
 }
