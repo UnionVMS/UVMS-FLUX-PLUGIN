@@ -43,6 +43,8 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.ws.RequestTypeWithTypedPayload;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -91,13 +93,33 @@ public class FluxMessageResponseMapper {
         return movementList;
     }
 
+    public static List<SetReportMovementType> mapToReportMovementTypes(RequestTypeWithTypedPayload rt, String registerClassName) throws PluginException {
+        FLUXVesselPositionMessage vessPosMessage;
+        try {
+            vessPosMessage = (FLUXVesselPositionMessage) rt.getAny();
+        } catch (Exception e) {
+            throw new PluginException("[ERROR] Error while trying to FluxMessageResponseMapper.vessPosMessage(rt.getAny())!");
+        }
+        VesselTransportMeansType positionReport = vessPosMessage.getVesselTransportMeans();
+        List<SetReportMovementType> movementList = new ArrayList<>();
+        for (VesselPositionEventType col : positionReport.getSpecifiedVesselPositionEvents()) {
+            SetReportMovementType movementType = new SetReportMovementType();
+            movementType.setMovement(mapResponse(col, positionReport));
+            movementType.setPluginType(PluginType.FLUX);
+            movementType.setPluginName(registerClassName);
+            movementType.setTimestamp(DateUtil.createNowDate());
+            movementList.add(movementType);
+        }
+        return movementList;
+    }
+
     private static MovementBaseType mapResponse(VesselPositionEventType response, VesselTransportMeansType report) {
         MovementBaseType movement = new MovementBaseType();
         HashMap<String, String> extractAssetIds = extractAssetIds(report.getIDS());
         movement.setAssetId(mapToAssetId(extractAssetIds));
         movement.setExternalMarking(extractAssetIds.get(ASSET_EXT_MARKING_CODE));
         movement.setIrcs(extractAssetIds.get(ASSET_IRCS_CODE));
-        movement.setMovementType(mapToMovementTypeFromPositionType(movement, response.getTypeCode()));
+        movement.setMovementType(mapToMovementTypeFromPositionType(response.getTypeCode()));
         setFlagState(movement, report.getRegistrationVesselCountry());
         movement.setPosition(mapToMovementPoint(response.getSpecifiedVesselGeographicalCoordinate()));
         if (response.getObtainedOccurrenceDateTime() != null) {
@@ -133,7 +155,7 @@ public class FluxMessageResponseMapper {
         }
     }
 
-    private static MovementTypeType mapToMovementTypeFromPositionType(MovementBaseType movement, CodeType vessPosTypeCode) {
+    private static MovementTypeType mapToMovementTypeFromPositionType(CodeType vessPosTypeCode) {
         MovementTypeType movType;
         if (vessPosTypeCode != null) {
             switch (vessPosTypeCode.getValue()) {
@@ -151,7 +173,7 @@ public class FluxMessageResponseMapper {
                     break;
                 default:
                     movType = null;
-                    log.error("[ERROR] Movement type couldn't be mapped", vessPosTypeCode.getValue());
+                    log.error("[ERROR] Movement type couldn't be mapped: {}", vessPosTypeCode.getValue());
             }
         } else {
             movType = MovementTypeType.POS;
@@ -231,16 +253,17 @@ public class FluxMessageResponseMapper {
             }
         } catch (Exception e) {
             log.error("[ Error when extracting correlation ID. ] {}", e.getMessage());
-            throw new PluginException("Error when extracting Correlation ID: " + e.getMessage());
+            throw new PluginException("Error when extracting Correlation ID: " + e.getMessage(), e);
         }
     }
 
-
-    public static String extractMessageGUID(RequestType rt) throws PluginException {
+    public static String extractMessageGUID(RequestTypeWithTypedPayload rt) throws PluginException {
         try {
-            return extractMessageGUID(extractVesselPositionMessage(rt.getAny()));
-        } catch (JAXBException e) {
-            throw new PluginException(e.getMessage());
+            return extractMessageGUID((FLUXVesselPositionMessage) rt.getAny());
+        } catch (PluginException pe) {
+            throw pe;
+        } catch (Exception e) {
+            throw new PluginException(e);
         }
     }
 
@@ -254,8 +277,6 @@ public class FluxMessageResponseMapper {
     public static FLUXVesselPositionMessage extractVesselPositionMessage(Element any) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        FLUXVesselPositionMessage xmlMessage = (FLUXVesselPositionMessage) unmarshaller.unmarshal(any);
-        return xmlMessage;
+        return (FLUXVesselPositionMessage) unmarshaller.unmarshal(any);
     }
-
 }

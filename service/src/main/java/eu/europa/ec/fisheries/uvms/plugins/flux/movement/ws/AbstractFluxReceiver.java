@@ -38,18 +38,22 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import lombok.extern.slf4j.Slf4j;
-import xeu.bridge_connector.v1.RequestType;
 import xeu.bridge_connector.v1.ResponseType;
-import xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType;
 
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.transform.TransformerException;
 
 @Slf4j
-public abstract class AbstractFluxReceiver implements BridgeConnectorPortType {
+public abstract class AbstractFluxReceiver implements BridgeConnectorPortTypeForTypedPayload {
 
     @Override
-    public ResponseType post(RequestType rt) {
+    public ResponseType post(RequestTypeWithTypedPayload rt) {
         ResponseType type = new ResponseType();
         if (!getStartupBean().isIsEnabled()) {
             type.setStatus("NOK");
@@ -67,8 +71,7 @@ public abstract class AbstractFluxReceiver implements BridgeConnectorPortType {
         }
     }
 
-    protected abstract void sendToExchange(RequestType rt) throws JAXBException, PluginException, ExchangeModelMarshallException, TransformerException;
+    protected abstract void sendToExchange(RequestTypeWithTypedPayload rt) throws JAXBException, PluginException, ExchangeModelMarshallException, TransformerException;
 
     protected abstract StartupBean getStartupBean();
-
 }
