@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import xeu.bridge_connector.v1.RequestType;
 
 @Stateless
-@WebService(serviceName = "MovementPositionService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
+@WebService(serviceName = "MovementPositionService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType")
 @WebContext(contextRoot = "/unionvms/movement-service")
 @Slf4j
 public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
@@ -45,7 +45,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
     private StartupBean startupBean;
 
     @Override
-    protected void sendToExchange(RequestType rt) throws PluginException {
+    protected void sendToExchange(RequestTypeWithTypedPayload rt) throws PluginException {
         try {
             List<SetReportMovementType> movements = FluxMessageResponseMapper.mapToReportMovementTypes(rt, startupBean.getRegisterClassName());
             log.info("Going to send [" + movements.size() + "] movements to exchange.");
