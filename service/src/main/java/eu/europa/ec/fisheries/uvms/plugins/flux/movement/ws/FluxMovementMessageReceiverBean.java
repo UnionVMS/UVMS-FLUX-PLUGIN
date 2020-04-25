@@ -36,7 +36,6 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageRespo
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.ws.api.annotation.WebContext;
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
-import xeu.bridge_connector.v1.RequestType;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -46,7 +45,7 @@ import javax.xml.namespace.QName;
 import java.util.Map;
 
 @Stateless
-@WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "xeu.bridge_connector.wsdl.v1.BridgeConnectorPortType")
+@WebService(serviceName = "MovementService", targetNamespace = "urn:xeu:bridge-connector:wsdl:v1", portName = "BridgeConnectorPortType", endpointInterface = "eu.europa.ec.fisheries.uvms.plugins.flux.movement.ws.BridgeConnectorPortTypeForTypedPayload")
 @WebContext(contextRoot = "/unionvms/movement-service")
 @Slf4j
 public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
@@ -69,15 +68,14 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
     }
 
     @Override
-    protected void sendToExchange(RequestType rt) {
+    protected void sendToExchange(RequestTypeWithTypedPayload rt) {
         try {
             log.info("Received a Movement message in Movement Plugin..");
             Map<QName, String> attributes = rt.getOtherAttributes();
-            FLUXVesselPositionMessage xmlMessage = FluxMessageResponseMapper.extractVesselPositionMessage(rt.getAny());
-            String guid = FluxMessageResponseMapper.extractMessageGUID(xmlMessage);
+            FLUXVesselPositionMessage xmlMessage = (FLUXVesselPositionMessage) rt.getAny();
             String requestStr = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage), attributes.get(USER), rt.getDF(),
-                    DateUtils.nowUTC().toDate(), guid, PluginType.FLUX,
-                    attributes.get(FR), rt.getON(), guid, startupBean.getRegisterClassName(),
+                    DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
+                    attributes.get(FR), rt.getON(), FluxMessageResponseMapper.extractMessageGUID(rt), startupBean.getRegisterClassName(),
                     attributes.get(AD), attributes.get(TO), attributes.get(TODT));
             pluginToExchangeProducer.sendModuleMessage(requestStr, null);
             log.info("Movement message successfully sent to Exchange..");
