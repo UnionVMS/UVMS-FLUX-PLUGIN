@@ -61,6 +61,7 @@ import xeu.bridge_connector.v1.RequestType;
 public class FluxMessageResponseMapper {
 
     private static final String ASSET_EXT_MARKING_CODE = "EXT_MARKING";
+    private static final String ASSET_EXT_MARKING = "EXT_MARK";
     private static final String ASSET_IRCS_CODE = "IRCS";
     private static final String ASSET_UVI_CODE = "UVI";
     private static final String ASSET_CFR_CODE = "CFR";
@@ -208,6 +209,9 @@ public class FluxMessageResponseMapper {
                         break;
                     case ASSET_UVI_CODE:
                         assetIdList.add(mapToVesselId(AssetIdType.IMO, vesselId.getValue()));
+                        break;
+                    case ASSET_EXT_MARKING:
+                    case ASSET_EXT_MARKING_CODE:
                         break;
                     default:
                         log.error("VesselId type not mapped {}", vesselId.getKey());
