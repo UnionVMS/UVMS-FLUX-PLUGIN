@@ -54,14 +54,19 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -99,9 +104,8 @@ public class FluxMessageRequestMapper {
         }
         message.setDF(getDataflow(recipientInfo));
         message.setID(messageId);
+        message.setTODT(getRecipentTODT(recipient));
         //Below does not need to be set because the bridge takes care of it
-        //Date timeInFuture = DateUtil.getTimeInFuture(1);
-        //message.setTODT(DateUtil.createXMLGregorianCalendar(timeInFuture, TimeZone.getTimeZone("UTC")));
         //message.setTO(2);
         //message.setDT(DateUtil.createXMLGregorianCalendar(new Date(), TimeZone.getTimeZone("UTC")));
         //If below is set you override the per-dataflow default set in Bridge
@@ -270,5 +274,18 @@ public class FluxMessageRequestMapper {
         geoType.setLatitudeMeasure(mapToMeasureType(point.getLatitude(), coordFormatter));
         geoType.setLongitudeMeasure(mapToMeasureType(point.getLongitude(), coordFormatter));
         return geoType;
+    }
+
+    private XMLGregorianCalendar getRecipentTODT(String recipient) {
+        try {
+            Map<String, String> todtMap = startupBean.getSettingsMap(MovementPluginConstants.TODT_MAP);
+            if (todtMap.containsKey(recipient)) {
+                Instant todt = Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(Long.parseLong(todtMap.get(recipient)), ChronoUnit.MINUTES);
+                return DatatypeFactory.newInstance().newXMLGregorianCalendar(todt.toString());
+            }
+        } catch (Exception e) {
+            LOG.error("Could not find custom TODT for recipient {}", recipient, e);
+        }
+        return null;
     }
 }

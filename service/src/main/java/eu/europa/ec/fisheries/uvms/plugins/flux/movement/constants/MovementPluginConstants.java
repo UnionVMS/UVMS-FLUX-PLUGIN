@@ -43,4 +43,5 @@ public final class MovementPluginConstants {
     public static final String FLUX_DATAFLOW = "FLUX_DATAFLOW";
     public static final String FLUX_DEFAULT_AD = "FLUX_DEFAULT_AD";
     public static final String OWNER_FLUX_PARTY = "OWNER_FLUX_PARTY";
+    public static final String TODT_MAP = "TODT_MAP";
 }
