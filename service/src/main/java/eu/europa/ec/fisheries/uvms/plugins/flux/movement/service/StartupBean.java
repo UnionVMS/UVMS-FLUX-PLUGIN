@@ -42,8 +42,9 @@ import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMa
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToEventBusTopicProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PluginDataHolder;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.ServiceMapper;
-
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.DependsOn;
@@ -174,6 +175,18 @@ public class StartupBean extends PluginDataHolder {
         } catch (Exception e) {
             LOG.error("[ERROR] Failed to getSetting for key: " + key, REGISTER_CLASS_NAME);
             return null;
+        }
+    }
+
+    public Map<String, String> getSettingsMap(String key) {
+        try {
+            String setting = super.getSettings().get(REGISTER_CLASS_NAME + "." + key);
+            return Stream.of(setting.split(";"))
+                .map(s -> s.split(":"))
+                .collect(Collectors.toMap(s -> s[0], s -> s[1]));
+        } catch (Exception e) {
+            LOG.error("[ERROR] Failed to getSettingsMap for key: " + key, REGISTER_CLASS_NAME);
+            return Map.of();
         }
     }
 
