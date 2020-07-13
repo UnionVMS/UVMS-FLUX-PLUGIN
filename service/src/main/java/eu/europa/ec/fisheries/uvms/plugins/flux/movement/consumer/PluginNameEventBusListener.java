@@ -29,9 +29,11 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.*;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangePluginRequestMapper;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangePluginResponseMapper;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.MappingException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.PluginService;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
@@ -42,6 +44,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 @MessageDriven(mappedName = MessageConstants.EVENT_BUS_TOPIC, activationConfig = {
         @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR,          propertyValue = MessageConstants.CONNECTION_TYPE),
@@ -90,6 +94,12 @@ public class PluginNameEventBusListener implements MessageListener {
                     AcknowledgeType setReportAck = ExchangePluginResponseMapper.mapToAcknowlegeType(textMessage.getJMSMessageID(), setReport);
                     responseMessage = ExchangePluginResponseMapper.mapToSetReportResponse(startup.getRegisterClassName(), setReportAck);
                     break;
+                case SEND_MOVEMENT_REPORT:
+                    SendFLUXMovementReportRequest sendFLUXMovementReportRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SendFLUXMovementReportRequest.class);
+                    AcknowledgeTypeType sendFLUXMovementReport = service.sendFluxMovementReport(sendFLUXMovementReportRequest);
+                    AcknowledgeType sendFLUXMovementReportAck = ExchangePluginResponseMapper.mapToAcknowlegeType(textMessage.getJMSMessageID(), sendFLUXMovementReport);
+                    responseMessage = ExchangePluginResponseMapper.mapToSendFluxMovementReportResponse(startup.getRegisterClassName(), sendFLUXMovementReportAck);
+                    break;
                 case START:
                     StartRequest startRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, StartRequest.class);
                     AcknowledgeTypeType start = service.start();
@@ -119,6 +129,8 @@ public class PluginNameEventBusListener implements MessageListener {
             log.error("[ Error when receiving message in movement " + startup.getRegisterClassName() + " ]", e);
         } catch (JMSException | MessageException ex) {
             log.error("[ Error when handling JMS message in movement " + startup.getRegisterClassName() + " ]", ex);
+        } catch (MappingException | JAXBException | DatatypeConfigurationException e) {
+            log.error("[ Error when handling JMS message in movement " + startup.getRegisterClassName() + " ]", e);
         }
     }
 }
