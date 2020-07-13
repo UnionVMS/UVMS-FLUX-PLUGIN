@@ -27,4 +27,8 @@ public class MappingException extends Exception {
         super(message);
     }
 
+    public MappingException(String message, Throwable root) {
+        super(message, root);
+    }
+
 }
