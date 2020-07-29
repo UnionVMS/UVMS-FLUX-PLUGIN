@@ -156,7 +156,9 @@ public class PluginService {
                 log.warn("Webservice needs to wait for the URL to be set up. Waiting for the {} time (MAX 60 Times)", waitingTimes);
                 Thread.sleep(1000);
                 waitingTimes--;
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new MappingException("Thread interrupted...",ie);
             }
         }
         BridgeConnectorPortType port = portInintiator.getPort();
