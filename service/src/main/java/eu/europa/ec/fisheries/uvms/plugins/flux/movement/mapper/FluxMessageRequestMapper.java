@@ -130,7 +130,7 @@ public class FluxMessageRequestMapper {
 
     private FLUXVesselPositionMessage mapToFluxMovement(MovementType movement, String fluxOwner) throws MappingException {
         FLUXVesselPositionMessage msg = new FLUXVesselPositionMessage();
-        msg.setFLUXReportDocument(mapToReportDocument(fluxOwner, movement.getInternalReferenceNumber()));
+        msg.setFLUXReportDocument(mapToReportDocument(fluxOwner));
         msg.setVesselTransportMeans(mapToVesselTransportMeans(movement));
         return msg;
     }
@@ -141,13 +141,9 @@ public class FluxMessageRequestMapper {
         return partyType;
     }
 
-    private FLUXReportDocumentType mapToReportDocument(String fluxOwner, String referenceNumber) {
+    private FLUXReportDocumentType mapToReportDocument(String fluxOwner) {
         FLUXReportDocumentType doc = new FLUXReportDocumentType();
-        if (referenceNumber == null) {
-            doc.getIDS().add(mapToGUIDIDType());
-        } else {
-            doc.getIDS().add(mapToIdType(referenceNumber));
-        }
+        doc.getIDS().add(mapToIdType(UUID.randomUUID().toString()));
         doc.setCreationDateTime(mapToNowDateTime());
         doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
         doc.setOwnerFLUXParty(mapToFluxPartyType(fluxOwner));
@@ -214,12 +210,6 @@ public class FluxMessageRequestMapper {
         IDType id = new IDType();
         id.setValue(value);
         return id;
-    }
-
-    private IDType mapToGUIDIDType() {
-        IDType idType = new IDType();
-        idType.setValue(UUID.randomUUID().toString());
-        return idType;
     }
 
     private VesselPositionEventType mapToVesselPosition(MovementType movement) {
