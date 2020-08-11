@@ -73,6 +73,11 @@ import java.util.Map.Entry;
 public class FluxMessageRequestMapper {
 
     private static final String PURPOSE_CODE = "9";
+    private static final String DOCUMENT_ID_SCHEME_ID = "UUID";
+    private static final String PURPOSE_CODE_LIST_ID = "FLUX_GP_PURPOSE";
+    private static final String FLUX_PARTY_SCHEME_ID = "FLUX_GP_PARTY";
+    private static final String VESSEL_COUNTRY_SCHEME_ID = "TERRITORY";
+    private static final String POSITION_TYPE_CODE_LIST_ID = "FLUX_VESSEL_POSITION_TYPE";
 
     private static final Logger LOG = LoggerFactory.getLogger(FluxMessageRequestMapper.class);
 
@@ -137,15 +142,15 @@ public class FluxMessageRequestMapper {
 
     private FLUXPartyType mapToFluxPartyType(String ad) {
         FLUXPartyType partyType = new FLUXPartyType();
-        partyType.getIDS().add(mapToIdType(ad));
+        partyType.getIDS().add(mapToIdType(ad, FLUX_PARTY_SCHEME_ID));
         return partyType;
     }
 
     private FLUXReportDocumentType mapToReportDocument(String fluxOwner) {
         FLUXReportDocumentType doc = new FLUXReportDocumentType();
-        doc.getIDS().add(mapToIdType(UUID.randomUUID().toString()));
+        doc.getIDS().add(mapToIdType(UUID.randomUUID().toString(), DOCUMENT_ID_SCHEME_ID));
         doc.setCreationDateTime(mapToNowDateTime());
-        doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
+        doc.setPurposeCode(mapToCodeType(PURPOSE_CODE, PURPOSE_CODE_LIST_ID));
         doc.setOwnerFLUXParty(mapToFluxPartyType(fluxOwner));
         return doc;
     }
@@ -187,8 +192,9 @@ public class FluxMessageRequestMapper {
         return retVal;
     }
 
-    private CodeType mapToCodeType(String value) {
+    private CodeType mapToCodeType(String value, String listId) {
         CodeType codeType = new CodeType();
+        codeType.setListID(listId);
         codeType.setValue(value);
         return codeType;
     }
@@ -202,12 +208,13 @@ public class FluxMessageRequestMapper {
 
     private VesselCountryType mapToVesselCountry(String countryCode) {
         VesselCountryType vesselCountry = new VesselCountryType();
-        vesselCountry.setID(mapToIdType(countryCode));
+        vesselCountry.setID(mapToIdType(countryCode, VESSEL_COUNTRY_SCHEME_ID));
         return vesselCountry;
     }
 
-    private IDType mapToIdType(String value) {
+    private IDType mapToIdType(String value, String schemeId) {
         IDType id = new IDType();
+        id.setSchemeID(schemeId);
         id.setValue(value);
         return id;
     }
@@ -221,7 +228,7 @@ public class FluxMessageRequestMapper {
         if (movement.getReportedSpeed() != null) {
             position.setSpeedValueMeasure(mapToMeasureType(movement.getReportedSpeed(), decimalFormatter));
         }
-        position.setTypeCode(mapToCodeType(FLUXVesselPositionType.fromInternal(movement.getMovementType())));
+        position.setTypeCode(mapToCodeType(FLUXVesselPositionType.fromInternal(movement.getMovementType()), POSITION_TYPE_CODE_LIST_ID));
         position.setSpecifiedVesselGeographicalCoordinate(mapToGeoPos(movement.getPosition()));
         return position;
     }
