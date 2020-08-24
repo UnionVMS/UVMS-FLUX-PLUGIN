@@ -126,11 +126,9 @@ public class PluginNameEventBusListener implements MessageListener {
                 log.warn("[WARN] ResponseMessage is null!! RespMessage : {} - JMSMessage : {}", responseMessage, textMessage);
             }
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            log.error("[ Error when receiving message in movement " + startup.getRegisterClassName() + " ]", e);
-        } catch (JMSException | MessageException ex) {
+            log.error("Error when receiving message in movement " + startup.getRegisterClassName() , e);
+        } catch (JMSException | MessageException | MappingException | JAXBException | DatatypeConfigurationException ex) {
             log.error("[ Error when handling JMS message in movement " + startup.getRegisterClassName() + " ]", ex);
-        } catch (MappingException | JAXBException | DatatypeConfigurationException e) {
-            log.error("[ Error when handling JMS message in movement " + startup.getRegisterClassName() + " ]", e);
         }
     }
 }

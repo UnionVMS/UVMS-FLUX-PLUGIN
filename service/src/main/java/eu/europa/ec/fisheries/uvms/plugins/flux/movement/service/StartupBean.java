@@ -144,7 +144,7 @@ public class StartupBean extends PluginDataHolder {
             String registerServiceRequest = ExchangeModuleRequestMapper.createRegisterServiceRequest(serviceType, capabilities, settingList);
             messageProducer.sendEventBusMessage(registerServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (MessageException | ExchangeModelMarshallException e) {
-            LOG.error("[ERROR] Failed to send registration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
+            LOG.error("[ERROR] Failed to send registration message to " + ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
             setWaitingForResponse(false);
         }
     }
@@ -155,7 +155,7 @@ public class StartupBean extends PluginDataHolder {
             String unregisterServiceRequest = ExchangeModuleRequestMapper.createUnregisterServiceRequest(serviceType);
             messageProducer.sendEventBusMessage(unregisterServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (MessageException | ExchangeModelMarshallException e) {
-            LOG.error("[ERROR] Failed to send unregistration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
+            LOG.error("[ERROR] Failed to send unregistration message to " + ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
         }
     }
 
@@ -163,7 +163,7 @@ public class StartupBean extends PluginDataHolder {
         try {
             return (String) super.getPluginApplicaitonProperties().get(key);
         } catch (Exception e) {
-            LOG.error("[ERROR] Failed to getSetting for key: " + key, getRegisterClassName());
+            LOG.error("[ERROR] Failed to getSetting for key: " + key + getRegisterClassName(),e);
             return null;
         }
     }
@@ -173,7 +173,7 @@ public class StartupBean extends PluginDataHolder {
             LOG.debug("[INFO] Trying to get setting {} ", REGISTER_CLASS_NAME + "." + key);
             return super.getSettings().get(REGISTER_CLASS_NAME + "." + key);
         } catch (Exception e) {
-            LOG.error("[ERROR] Failed to getSetting for key: " + key, REGISTER_CLASS_NAME);
+            LOG.error("[ERROR] Failed to getSetting for key: " + key + REGISTER_CLASS_NAME,e);
             return null;
         }
     }

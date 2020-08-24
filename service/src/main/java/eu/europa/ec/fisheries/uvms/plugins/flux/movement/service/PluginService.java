@@ -116,7 +116,7 @@ public class PluginService {
                 }
                 sender.sendMovement(movement, messageId, report.getRecipient());
             } catch (PluginException ex) {
-                log.debug("Error when setting report");
+                log.debug("Error when setting report",ex);
                 return AcknowledgeTypeType.NOK;
             }
         }
@@ -272,7 +272,7 @@ public class PluginService {
             }
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
-            log.error("Failed to set config in {}", startupBean.getRegisterClassName());
+            log.error("Failed to set config in " + startupBean.getRegisterClassName(),e);
             return AcknowledgeTypeType.NOK;
         }
 
@@ -290,7 +290,7 @@ public class PluginService {
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.FALSE);
-            log.error("Failed to start {}", startupBean.getRegisterClassName());
+            log.error("Failed to start " + startupBean.getRegisterClassName(),e);
             return AcknowledgeTypeType.NOK;
         }
 
@@ -308,7 +308,7 @@ public class PluginService {
             return AcknowledgeTypeType.OK;
         } catch (Exception e) {
             startupBean.setIsEnabled(Boolean.TRUE);
-            log.error("Failed to stop {}", startupBean.getRegisterClassName());
+            log.error("Failed to stop " + startupBean.getRegisterClassName(),e);
             return AcknowledgeTypeType.NOK;
         }
     }
