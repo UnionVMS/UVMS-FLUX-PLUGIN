@@ -65,7 +65,7 @@ public class DateUtil {
         try {
             dataTypeFactory = DatatypeFactory.newInstance();
         } catch (final DatatypeConfigurationException e) {
-            log.error("[ Error when instantiating a DatatypeFactory. ] {} {}", e.getMessage(), e.getStackTrace());
+            log.error("Error when instantiating a DatatypeFactory. " + e.getMessage(), e);
         }
     }
 
@@ -154,7 +154,6 @@ public class DateUtil {
     }
 
     public static Date parseToUTCDate(String dateString) throws IllegalArgumentException {
-        try {
             if (dateString != null) {
                 DateTimeFormatter formatter = DateTimeFormat.forPattern(FORMAT).withOffsetParsed();
                 DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
@@ -163,10 +162,7 @@ public class DateUtil {
             } else {
                 return null;
             }
-        } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
-            throw new IllegalArgumentException(e);
-        }
+
     }
 
     /**

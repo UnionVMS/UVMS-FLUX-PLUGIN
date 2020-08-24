@@ -106,7 +106,7 @@ public class PluginAckEventBusListener implements MessageListener {
                 }
             }
         } catch (ExchangeModelMarshallException | NullPointerException e) {
-            log.error("[ Error when receiving message in movement ]", e);
+            log.error("Error when receiving message in movement", e);
         }
     }
 
@@ -118,6 +118,7 @@ public class PluginAckEventBusListener implements MessageListener {
         try {
             return JAXBMarshaller.unmarshallTextMessage(textMessage, ExchangeRegistryBaseRequest.class);
         } catch (ExchangeModelMarshallException e) {
+            log.warn("Could not unmarshall message: " + textMessage,e);
             return null;
         }
     }
