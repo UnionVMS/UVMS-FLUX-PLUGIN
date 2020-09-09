@@ -45,6 +45,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +80,12 @@ public class PluginService {
     @Metric(name = "flux_outgoing", absolute = true)
     Counter fluxOutgoing;
 
-    public void sendToExchange(String requestStr) throws JMSException {
+    @Inject
+    MetricRegistry registry;
+
+    public void sendToExchange(String requestStr, String from) throws JMSException {
         pluginToExchangeProducer.sendMessageToSpecificQueueWithFunction(requestStr, pluginToExchangeProducer.getDestination(), null, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value(), null);
+        registry.counter("flux_incoming_from", new Tag("from", from)).inc();
         fluxIncoming.inc();
     }
 
@@ -100,8 +106,10 @@ public class PluginService {
                     messageId = movement.getGuid();
                 }
                 sender.sendMovement(movement, messageId, report.getRecipient(), report.getRecipientInfo());
+                registry.counter("flux_outgoing_to", new Tag("to", report.getRecipient())).inc();
                 fluxOutgoing.inc();
             } catch (PluginException ex) {
+                registry.counter("flux_outgoing_to_error", new Tag("to", report.getRecipient())).inc();
                 LOG.debug("Error when setting report");
                 return AcknowledgeTypeType.NOK;
             }
