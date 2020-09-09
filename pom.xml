@@ -29,16 +29,16 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.microprofile</groupId>
+            <artifactId>microprofile</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
         </dependency>
-        <dependency>
-		    <groupId>org.eclipse.microprofile.metrics</groupId>
-		    <artifactId>microprofile-metrics-api</artifactId>
-		    <version>2.3.2</version>
-		    <scope>provided</scope>
-		</dependency>
     </dependencies>
 
     <dependencyManagement>

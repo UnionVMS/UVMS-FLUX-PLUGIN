@@ -56,7 +56,7 @@ public class FluxMovementPositionReceiverBean extends AbstractFluxReceiver {
                 String requestStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(movement, attributes.getOrDefault(new QName(USER), PluginType.FLUX.value()), rt.getDF(),
                         Instant.now(), PluginType.FLUX,
                         attributes.get(new QName(FR)), rt.getON());
-                pluginService.sendToExchange(requestStr);
+                pluginService.sendToExchange(requestStr, attributes.get(new QName(FR)));
             }
             LOG.info("Finished sending all movements to exchange.");
         } catch (Exception e) {
