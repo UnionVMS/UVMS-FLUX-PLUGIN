@@ -52,7 +52,7 @@
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-test-deps</artifactId>
-				<version>3.3</version>
+				<version>3.4</version>
 				<type>pom</type>
 			</dependency>
 		</dependencies>
