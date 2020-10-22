@@ -16,7 +16,7 @@
 
     <properties>
         <uvms.common.version>4.1.8</uvms.common.version>
-        <exchange.model.version>5.3.11-UVMS</exchange.model.version>
+        <exchange.model.version>5.3.13-UVMS</exchange.model.version>
         <connector-bridge.client.version>2.0.1</connector-bridge.client.version>
         <bridge-connector.client.version>2.0.1</bridge-connector.client.version>
         <flux.movement.client.version>2.0.1</flux.movement.client.version>
