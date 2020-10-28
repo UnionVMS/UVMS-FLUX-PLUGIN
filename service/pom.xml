@@ -25,7 +25,7 @@
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.config</groupId>
             <artifactId>config-model</artifactId>
-            <version>4.0.11</version>
+            <version>${uvms.config.module.version}</version>
         </dependency>
     	<dependency>
 			<groupId>org.jboss.ws</groupId>
