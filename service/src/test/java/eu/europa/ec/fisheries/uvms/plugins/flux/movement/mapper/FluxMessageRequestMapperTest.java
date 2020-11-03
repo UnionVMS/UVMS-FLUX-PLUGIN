@@ -17,6 +17,7 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
@@ -301,6 +302,25 @@ public class FluxMessageRequestMapperTest {
         Optional<IDType> uvi = message.getVesselTransportMeans().getIDS().stream().filter(i -> i.getSchemeID().equals("UVI")).findFirst();
 
         assertEquals(imo, uvi.get().getValue());
+    }
+
+    @Test
+    public void testIrcsWithDash() throws Exception {
+        String ircs = "ABC-1234";
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setIrcs(ircs);
+        AssetId assetId = new AssetId();
+        AssetIdList assetIdList = new AssetIdList();
+        assetIdList.setIdType(AssetIdType.IRCS);
+        assetIdList.setValue(ircs);
+        assetId.getAssetIdList().add(assetIdList);
+        movement.setAssetId(assetId);
+        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        Optional<IDType> ircsId = message.getVesselTransportMeans().getIDS().stream().filter(i -> i.getSchemeID().equals("IRCS")).findFirst();
+
+        assertEquals("ABC1234", ircsId.get().getValue());
     }
 
     private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessage message) {

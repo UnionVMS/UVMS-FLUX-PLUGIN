@@ -175,7 +175,7 @@ public class FluxMessageRequestMapper {
             throw new MappingException("Asset IRCS does not match when mapping AssetID ( There are 2 ways of getting Ircs in this object! :( and they do not match ) " + movement.getIrcs() + ":" +ids.get(AssetIdType.IRCS));
         }
         if (movement.getIrcs() != null) {
-            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.IRCS, movement.getIrcs()));
+            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.IRCS, movement.getIrcs().replace("-", "")));
         }
         if (movement.getExternalMarking() != null) {
             retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.EXT_MARK, movement.getExternalMarking()));
