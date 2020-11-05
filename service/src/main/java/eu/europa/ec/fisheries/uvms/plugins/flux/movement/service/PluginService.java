@@ -34,8 +34,6 @@ import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginExcepti
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PortInitiator;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.message.FluxMessageSenderBean;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -45,7 +43,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -188,11 +185,6 @@ public class PluginService {
         PostMsgType postMsgType = new PostMsgType();
         postMsgType.setAD(request.getDestination());
         postMsgType.setDF(request.getFluxDataFlow());
-        postMsgType.setAR(true);
-        postMsgType.setTO(1234);
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(new Date());
-        postMsgType.setTODT(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
         String response;
         if (MovementPluginType.SEND_MOVEMENT_REPORT.equals(msgType)) {
             response = ((SendFLUXMovementReportRequest) request).getReport();
