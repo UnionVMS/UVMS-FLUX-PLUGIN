@@ -24,13 +24,11 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mockdata.MockConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mockdata.MovementTypeMock;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,17 +37,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.w3c.dom.Element;
 
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
@@ -59,44 +47,7 @@ import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentit
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.IDType;
 import xeu.connector_bridge.v1.PostMsgType;
 
-/**
- *
- * @author jojoha
- */
-@RunWith(MockitoJUnitRunner.class)
 public class FluxMessageRequestMapperTest {
-
-    FluxMessageResponseMapper responseMapper;
-
-    @Mock
-    StartupBean settings;
-
-    @InjectMocks
-    FluxMessageRequestMapper requestMapper;
-
-    public FluxMessageRequestMapperTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(settings.getSetting("FLUX_DEFAULT_AD")).thenReturn(MockConstants.AD);
-        Mockito.when(settings.getSetting("FLUX_DATAFLOW")).thenReturn(MockConstants.FLUX_DATA_FLOW);
-        Mockito.when(settings.getSetting("OWNER_FLUX_PARTY")).thenReturn(MockConstants.OWNER_FLUX_PARTY);
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of mapToRequest method, of class FluxMessageRequestMapper.
@@ -107,7 +58,8 @@ public class FluxMessageRequestMapperTest {
     public void testMapToRequest() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
 
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, MockConstants.RECIPIENT, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, MockConstants.OWNER_FLUX_PARTY);
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, MockConstants.RECIPIENT, null, null, null);
 
         assertNotNull(mapToRequest);
 
@@ -123,7 +75,8 @@ public class FluxMessageRequestMapperTest {
     @Test
     public void testMapToRequestRecipientNull() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, MockConstants.AD, null, null, null);
         assertNotNull(mapToRequest);
         assertEquals(MockConstants.AD, mapToRequest.getAD());
     }
@@ -132,7 +85,8 @@ public class FluxMessageRequestMapperTest {
     public void testMapNullReportedCourse() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedCourse(null);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertNull(message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure());
@@ -142,7 +96,8 @@ public class FluxMessageRequestMapperTest {
     public void testMapNullReportedSpeed() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedSpeed(null);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertNull(message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure());
@@ -152,7 +107,8 @@ public class FluxMessageRequestMapperTest {
     public void testReportedSpeedNoRounding() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedSpeed(2d);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(2), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure().getValue());
@@ -162,7 +118,8 @@ public class FluxMessageRequestMapperTest {
     public void testReportedSpeedRounding() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedSpeed(1.23456);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.23), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure().getValue());
@@ -172,7 +129,8 @@ public class FluxMessageRequestMapperTest {
     public void testReportedSpeedRoundingUp() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedSpeed(1.23656);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.24), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpeedValueMeasure().getValue());
@@ -182,7 +140,8 @@ public class FluxMessageRequestMapperTest {
     public void testReportedCourseNoRounding() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedCourse(2d);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(2), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure().getValue());
@@ -192,7 +151,8 @@ public class FluxMessageRequestMapperTest {
     public void testReportedCourseRounding() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedCourse(1.23456);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.23), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure().getValue());
@@ -202,7 +162,8 @@ public class FluxMessageRequestMapperTest {
     public void testReportedCourseRoundingUp() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.setReportedCourse(1.23656);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.24), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getCourseValueMeasure().getValue());
@@ -212,7 +173,8 @@ public class FluxMessageRequestMapperTest {
     public void testLatitudeNoRounding() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLatitude(1.2345);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.2345), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
@@ -222,7 +184,8 @@ public class FluxMessageRequestMapperTest {
     public void testLatitudeRoundingAddDecimal() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLatitude(1.2);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(new BigDecimal("1.200"), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
@@ -232,7 +195,8 @@ public class FluxMessageRequestMapperTest {
     public void testLatitudeRoundingTruncateDecimal() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLatitude(1.2345234);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.234523), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
@@ -242,7 +206,8 @@ public class FluxMessageRequestMapperTest {
     public void testLatitudeRoundingDecimalUp() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLatitude(1.2345236);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.234524), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLatitudeMeasure().getValue());
@@ -252,7 +217,8 @@ public class FluxMessageRequestMapperTest {
     public void testLongitudeNoRounding() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLongitude(1.2345);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.2345), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
@@ -262,7 +228,8 @@ public class FluxMessageRequestMapperTest {
     public void testLongitudeRoundingAddDecimal() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLongitude(1.2);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(new BigDecimal("1.200"), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
@@ -272,7 +239,8 @@ public class FluxMessageRequestMapperTest {
     public void testLongitudeRoundingTruncateDecimal() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLongitude(1.2345234);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.234523), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
@@ -282,7 +250,8 @@ public class FluxMessageRequestMapperTest {
     public void testLongitudeRoundingDecimalUp() throws Exception {
         MovementType movement = MovementTypeMock.maptoMovementType();
         movement.getPosition().setLongitude(1.2345236);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         assertEquals(BigDecimal.valueOf(1.234524), message.getVesselTransportMeans().getSpecifiedVesselPositionEvents().get(0).getSpecifiedVesselGeographicalCoordinate().getLongitudeMeasure().getValue());
@@ -296,7 +265,8 @@ public class FluxMessageRequestMapperTest {
         imoId.setIdType(AssetIdType.IMO);
         imoId.setValue(imo);
         movement.getAssetId().getAssetIdList().add(imoId);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         Optional<IDType> uvi = message.getVesselTransportMeans().getIDS().stream().filter(i -> i.getSchemeID().equals("UVI")).findFirst();
@@ -315,7 +285,8 @@ public class FluxMessageRequestMapperTest {
         assetIdList.setValue(ircs);
         assetId.getAssetIdList().add(assetIdList);
         movement.setAssetId(assetId);
-        PostMsgType mapToRequest = requestMapper.mapToRequest(movement, MockConstants.GUID, null, Collections.emptyList());
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
         assertNotNull(mapToRequest);
         FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
         Optional<IDType> ircsId = message.getVesselTransportMeans().getIDS().stream().filter(i -> i.getSchemeID().equals("IRCS")).findFirst();

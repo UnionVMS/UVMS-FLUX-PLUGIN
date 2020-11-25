@@ -27,12 +27,9 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.RecipientInfoType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVesselPositionType;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.MappingException;
-import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -45,9 +42,6 @@ import un.unece.uncefact.data.standard.unqualifieddatatype._18.IDType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.MeasureType;
 import xeu.connector_bridge.v1.PostMsgType;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -60,16 +54,9 @@ import javax.xml.ws.handler.MessageContext;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
 
-/**
- *
- */
-@LocalBean
-@Stateless
 public class FluxMessageRequestMapper {
 
     private static final String PURPOSE_CODE = "9";
@@ -94,19 +81,18 @@ public class FluxMessageRequestMapper {
         coordFormatter.setMaximumFractionDigits(6);
     }
 
-    @EJB
-    private StartupBean startupBean;
+    private FluxMessageRequestMapper() {}
 
-    public PostMsgType mapToRequest(MovementType movement, String messageId, String recipient, List<RecipientInfoType> recipientInfo) throws JAXBException, MappingException {
+    public static PostMsgType mapToRequest(FLUXVesselPositionMessage vesselPositionMessage, String messageId, String recipient, String dataflow, XMLGregorianCalendar todt, String defaultAd) throws JAXBException {
         PostMsgType message = new PostMsgType();
         if (recipient == null || recipient.isEmpty()) {
-            message.setAD(startupBean.getSetting(MovementPluginConstants.FLUX_DEFAULT_AD));
+            message.setAD(defaultAd);
         } else {
             message.setAD(recipient);
         }
-        message.setDF(getDataflow(recipientInfo));
+        message.setDF(dataflow);
         message.setID(messageId);
-        message.setTODT(getRecipentTODT(recipient));
+        message.setTODT(todt);
         //Below does not need to be set because the bridge takes care of it
         //message.setTO(2);
         //message.setDT(DateUtil.createXMLGregorianCalendar(new Date(), TimeZone.getTimeZone("UTC")));
@@ -114,39 +100,29 @@ public class FluxMessageRequestMapper {
         //message.setVB(VerbosityType.ERROR);
         //message.setAR(false);
         //message.setTS(true);
-        FLUXVesselPositionMessage attr = mapToFluxMovement(movement, startupBean.getSetting(MovementPluginConstants.OWNER_FLUX_PARTY));
         JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Marshaller marshaller = context.createMarshaller();
         DOMResult res = new DOMResult();
-        marshaller.marshal(attr, res);
+        marshaller.marshal(vesselPositionMessage, res);
         Element elt = ((Document) res.getNode()).getDocumentElement();
         message.setAny(elt);
         return message;
     }
 
-    private String getDataflow(List<RecipientInfoType> recipientInfo) {
-        for (RecipientInfoType info : recipientInfo) {
-            if (info.getKey().contains("FLUXVesselPositionMessage")) {
-                return info.getKey();
-            }
-        }
-        return startupBean.getSetting(MovementPluginConstants.FLUX_DATAFLOW);
-    }
-
-    private FLUXVesselPositionMessage mapToFluxMovement(MovementType movement, String fluxOwner) throws MappingException {
+    public static FLUXVesselPositionMessage mapToFluxMovement(MovementType movement, String ownerFluxParty) throws MappingException {
         FLUXVesselPositionMessage msg = new FLUXVesselPositionMessage();
-        msg.setFLUXReportDocument(mapToReportDocument(fluxOwner));
+        msg.setFLUXReportDocument(mapToReportDocument(ownerFluxParty));
         msg.setVesselTransportMeans(mapToVesselTransportMeans(movement));
         return msg;
     }
 
-    private FLUXPartyType mapToFluxPartyType(String ad) {
+    private static FLUXPartyType mapToFluxPartyType(String ad) {
         FLUXPartyType partyType = new FLUXPartyType();
         partyType.getIDS().add(mapToIdType(ad, FLUX_PARTY_SCHEME_ID));
         return partyType;
     }
 
-    private FLUXReportDocumentType mapToReportDocument(String fluxOwner) {
+    private static FLUXReportDocumentType mapToReportDocument(String fluxOwner) {
         FLUXReportDocumentType doc = new FLUXReportDocumentType();
         doc.getIDS().add(mapToIdType(UUID.randomUUID().toString(), DOCUMENT_ID_SCHEME_ID));
         doc.setCreationDateTime(mapToNowDateTime());
@@ -155,7 +131,7 @@ public class FluxMessageRequestMapper {
         return doc;
     }
 
-    public void addHeaderValueToRequest(Object port, final Map<String, String> values) {
+    public static void addHeaderValueToRequest(Object port, final Map<String, String> values) {
         BindingProvider bp = (BindingProvider) port;
         Map<String, List<String>> headers = new HashMap<>();
         for (Entry<String, String> entry : values.entrySet()) {
@@ -164,7 +140,7 @@ public class FluxMessageRequestMapper {
         bp.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, headers);
     }
 
-    private VesselTransportMeansType mapToVesselTransportMeans(MovementType movement) throws MappingException {
+    private static VesselTransportMeansType mapToVesselTransportMeans(MovementType movement) throws MappingException {
         VesselTransportMeansType retVal = new VesselTransportMeansType();
         //Handle Asset ID
         Map<AssetIdType, String> ids = new HashMap<>();
@@ -192,34 +168,34 @@ public class FluxMessageRequestMapper {
         return retVal;
     }
 
-    private CodeType mapToCodeType(String value, String listId) {
+    private static CodeType mapToCodeType(String value, String listId) {
         CodeType codeType = new CodeType();
         codeType.setListID(listId);
         codeType.setValue(value);
         return codeType;
     }
 
-    private IDType mapToVesselIDType(Codes.FLUXVesselIDType vesselIdType, String value) {
+    private static IDType mapToVesselIDType(Codes.FLUXVesselIDType vesselIdType, String value) {
         IDType idType = new IDType();
         idType.setSchemeID(vesselIdType.name());
         idType.setValue(value);
         return idType;
     }
 
-    private VesselCountryType mapToVesselCountry(String countryCode) {
+    private static VesselCountryType mapToVesselCountry(String countryCode) {
         VesselCountryType vesselCountry = new VesselCountryType();
         vesselCountry.setID(mapToIdType(countryCode, VESSEL_COUNTRY_SCHEME_ID));
         return vesselCountry;
     }
 
-    private IDType mapToIdType(String value, String schemeId) {
+    private static IDType mapToIdType(String value, String schemeId) {
         IDType id = new IDType();
         id.setSchemeID(schemeId);
         id.setValue(value);
         return id;
     }
 
-    private VesselPositionEventType mapToVesselPosition(MovementType movement) {
+    private static VesselPositionEventType mapToVesselPosition(MovementType movement) {
         VesselPositionEventType position = new VesselPositionEventType();
         position.setObtainedOccurrenceDateTime(getXmlGregorianTime(movement.getPositionTime()));
         if (movement.getReportedCourse() != null) {
@@ -233,7 +209,7 @@ public class FluxMessageRequestMapper {
         return position;
     }
 
-    private DateTimeType getXmlGregorianTime(Date date) {
+    private static DateTimeType getXmlGregorianTime(Date date) {
         DateTimeType dateTimeType = new DateTimeType();
         try {
             GregorianCalendar c = new GregorianCalendar();
@@ -245,13 +221,13 @@ public class FluxMessageRequestMapper {
         return dateTimeType;
     }
 
-    private MeasureType mapToMeasureType(Double value, NumberFormat numberFormat) {
+    private static MeasureType mapToMeasureType(Double value, NumberFormat numberFormat) {
         MeasureType measureType = new MeasureType();
         measureType.setValue(new BigDecimal(numberFormat.format(value)));
         return measureType;
     }
 
-    private DateTimeType mapToNowDateTime() {
+    private static DateTimeType mapToNowDateTime() {
         try {
             DateTimeType date = new DateTimeType();
             GregorianCalendar c = new GregorianCalendar();
@@ -263,23 +239,10 @@ public class FluxMessageRequestMapper {
         }
     }
 
-    private VesselGeographicalCoordinateType mapToGeoPos(MovementPoint point) {
+    private static VesselGeographicalCoordinateType mapToGeoPos(MovementPoint point) {
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
         geoType.setLatitudeMeasure(mapToMeasureType(point.getLatitude(), coordFormatter));
         geoType.setLongitudeMeasure(mapToMeasureType(point.getLongitude(), coordFormatter));
         return geoType;
-    }
-
-    private XMLGregorianCalendar getRecipentTODT(String recipient) {
-        try {
-            Map<String, String> todtMap = startupBean.getSettingsMap(MovementPluginConstants.TODT_MAP);
-            if (todtMap.containsKey(recipient)) {
-                Instant todt = Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(Long.parseLong(todtMap.get(recipient)), ChronoUnit.MINUTES);
-                return DatatypeFactory.newInstance().newXMLGregorianCalendar(todt.toString());
-            }
-        } catch (Exception e) {
-            LOG.error("Could not find custom TODT for recipient {}", recipient, e);
-        }
-        return null;
     }
 }

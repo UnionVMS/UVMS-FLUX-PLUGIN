@@ -27,6 +27,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.RecipientInfoType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.StartupBean;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PortInitiator;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper.FluxMessageRequestMapper;
@@ -35,18 +36,18 @@ import xeu.connector_bridge.v1.PostMsgType;
 import xeu.connector_bridge.wsdl.v1.BridgeConnectorPortType;
 
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-/**
- *
- */
-@LocalBean
 @Stateless
 public class FluxMessageSenderBean {
 
@@ -56,15 +57,16 @@ public class FluxMessageSenderBean {
     private PortInitiator port;
 
     @EJB
-    private FluxMessageRequestMapper mapper;
-
-    @EJB
     private StartupBean startupBean;
 
-    public String sendMovement(MovementType movement, String messageId, String recipient, List<RecipientInfoType> recipientInfo) throws PluginException {
+    public FLUXVesselPositionMessage sendMovement(MovementType movement, String recipient, List<RecipientInfoType> recipientInfo) throws PluginException {
         try {
+            String messageId = UUID.randomUUID().toString();
+            if (movement.getGuid() != null) {
+                messageId = movement.getGuid();
+            }
 
-            LOG.info("Sending message to EU [ {} ] with messageID: {} ", messageId);
+            LOG.info("Sending message to recipient {} with messageID: {} ", recipient, messageId);
 
             BridgeConnectorPortType portType = port.getPort();
 
@@ -74,27 +76,49 @@ public class FluxMessageSenderBean {
             String headerValue = startupBean.getSetting(MovementPluginConstants.CLIENT_HEADER_VALUE);
 
             headerValues.put(headerKey, headerValue + "-" + recipient);
-            mapper.addHeaderValueToRequest(portType, headerValues);
+            FluxMessageRequestMapper.addHeaderValueToRequest(portType, headerValues);
 
-            PostMsgType request = mapper.mapToRequest(movement, messageId, recipient, recipientInfo);
+            // Find custom attributes for recipient
+            String dataflow = getDataflow(recipientInfo);
+            XMLGregorianCalendar todt = getRecipentTODT(recipient);
+
+            FLUXVesselPositionMessage vesselPosition = FluxMessageRequestMapper.mapToFluxMovement(movement, startupBean.getSetting(MovementPluginConstants.OWNER_FLUX_PARTY));
+            PostMsgType request = FluxMessageRequestMapper.mapToRequest(vesselPosition, messageId, recipient, dataflow, todt, startupBean.getSetting(MovementPluginConstants.FLUX_DEFAULT_AD));
             PostMsgOutType resp = portType.post(request);
 
             if (resp.getAssignedON() == null) {
-                LOG.info("Failed to send to movement Recipient {}, Mesageid {} Should corralate with Movement GUID", recipient, messageId);
+                LOG.info("Failed to send report to recipient {}, response assignedOn is empty", recipient);
+                throw new PluginException("Failed to send report to recipient");
             } else {
-                LOG.info("Success when sending to movement MessageId {} ( Should corralate with Movement GUID ) Recipient {} ", messageId, recipient);
+                LOG.info("Success when sending report with messageId {} to recipient {} ", request.getID(), recipient);
             }
 
-            if (request.getID() != null && !request.getID().isEmpty()) {
-                return request.getID();
-            } else {
-                throw new PluginException("No MessageID in request, MessageID must be set!");
-            }
-
+            return vesselPosition;
         } catch (Exception e) {
-            LOG.error("[ Error when sending movement to FLUX. ]", e);
+            LOG.error("Error when sending movement to FLUX.", e);
             throw new PluginException(e.getMessage());
         }
     }
 
+    private String getDataflow(List<RecipientInfoType> recipientInfo) {
+        for (RecipientInfoType info : recipientInfo) {
+            if (info.getKey().contains("FLUXVesselPositionMessage")) {
+                return info.getKey();
+            }
+        }
+        return startupBean.getSetting(MovementPluginConstants.FLUX_DATAFLOW);
+    }
+
+    private XMLGregorianCalendar getRecipentTODT(String recipient) {
+        try {
+            Map<String, String> todtMap = startupBean.getSettingsMap(MovementPluginConstants.TODT_MAP);
+            if (todtMap.containsKey(recipient)) {
+                Instant todt = Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(Long.parseLong(todtMap.get(recipient)), ChronoUnit.MINUTES);
+                return DatatypeFactory.newInstance().newXMLGregorianCalendar(todt.toString());
+            }
+        } catch (Exception e) {
+            LOG.error("Could not find custom TODT for recipient {}", recipient, e);
+        }
+        return null;
+    }
 }

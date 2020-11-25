@@ -33,6 +33,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVesselIDType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.Codes.FLUXVesselPositionType;
@@ -65,8 +66,10 @@ public class FluxMessageResponseMapper {
 
     public static List<SetReportMovementType> mapToReportMovementTypes(RequestType rt, String registerClassName) throws PluginException {
         FLUXVesselPositionMessage vessPosMessage;
+        String originalMessage = null;
         try {
             vessPosMessage = extractVesselPositionMessage(rt.getAny());
+            originalMessage = JAXBMarshaller.marshallJaxBObjectToString(vessPosMessage);
         } catch (JAXBException e) {
             throw new PluginException("[ERROR] Error while trying to FluxMessageResponseMapper.vessPosMessage(rt.getAny())!");
         }
@@ -78,6 +81,7 @@ public class FluxMessageResponseMapper {
             movementType.setPluginType(PluginType.FLUX);
             movementType.setPluginName(registerClassName);
             movementType.setTimestamp(new Date());
+            movementType.setOriginalIncomingMessage(originalMessage);
             movementList.add(movementType);
         }
         return movementList;
