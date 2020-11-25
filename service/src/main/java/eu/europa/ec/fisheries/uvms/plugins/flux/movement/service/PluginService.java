@@ -23,6 +23,7 @@
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.service;
 
+import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeTypeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandTypeType;
@@ -35,9 +36,12 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.PluginException;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangePluginResponseMapper;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.PortInitiator;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.message.FluxMessageSenderBean;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -89,32 +93,25 @@ public class PluginService {
         fluxIncoming.inc();
     }
 
-    /**
-     * TODO implement
-     *
-     * @param report
-     * @return
-     */
-    public AcknowledgeTypeType setReport(ReportType report) {
+    public AcknowledgeType setReport(ReportType report) {
+        AcknowledgeTypeType ackType = AcknowledgeTypeType.OK;
         LOG.info(startupBean.getRegisterClassName() + ".report(" + report.getType().name() + ")");
         LOG.debug("timestamp: " + report.getTimestamp());
+        String sentMessage = null;
         MovementType movement = report.getMovement();
         if (movement != null && ReportTypeType.MOVEMENT.equals(report.getType())) {
             try {
-                String messageId = UUID.randomUUID().toString();
-                if (movement.getGuid() != null) {
-                    messageId = movement.getGuid();
-                }
-                sender.sendMovement(movement, messageId, report.getRecipient(), report.getRecipientInfo());
+                FLUXVesselPositionMessage reportSent = sender.sendMovement(movement, report.getRecipient(), report.getRecipientInfo());
+                sentMessage = JAXBMarshaller.marshallJaxBObjectToString(reportSent);
                 registry.counter("flux_outgoing_to", new Tag("to", report.getRecipient())).inc();
                 fluxOutgoing.inc();
             } catch (PluginException ex) {
                 registry.counter("flux_outgoing_to_error", new Tag("to", report.getRecipient())).inc();
-                LOG.debug("Error when setting report");
-                return AcknowledgeTypeType.NOK;
+                LOG.debug("Error when sending report");
+                ackType =  AcknowledgeTypeType.NOK;
             }
         }
-        return AcknowledgeTypeType.OK;
+        return ExchangePluginResponseMapper.mapToAcknowledgeType(report.getLogId(), report.getUnsentMessageGuid(), ackType, sentMessage);
     }
 
     /**
