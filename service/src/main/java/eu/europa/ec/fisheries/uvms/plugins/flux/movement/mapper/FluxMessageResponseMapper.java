@@ -1,25 +1,12 @@
 /*
  * ﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
- * © European Union, 2015-2016.
- *
- * This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
- * redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
- * the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
- * copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- ﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
- © European Union, 2015-2016.
-
- This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
- redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
- the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
- copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+ * © European Union, 2015-2016. This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM
+ * Suite is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should
+ * have received a copy of the GNU General Public License along with the IFDM Suite. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper;
 
@@ -91,7 +78,11 @@ public class FluxMessageResponseMapper {
         MovementBaseType movement = new MovementBaseType();
         HashMap<Codes.FLUXVesselIDType, String> extractAssetIds = extractAssetIds(report.getIDS());
         movement.setAssetId(mapToAssetId(extractAssetIds));
-        movement.setExternalMarking(extractAssetIds.get(FLUXVesselIDType.EXT_MARK));
+        if (extractAssetIds.containsKey(FLUXVesselIDType.EXT_MARK)) {
+            movement.setExternalMarking(extractAssetIds.get(FLUXVesselIDType.EXT_MARK));
+        } else if (extractAssetIds.containsKey(FLUXVesselIDType.EXT_MARKING)) {
+            movement.setExternalMarking(extractAssetIds.get(FLUXVesselIDType.EXT_MARKING));
+        }
         movement.setIrcs(extractAssetIds.get(FLUXVesselIDType.IRCS));
         movement.setMovementType(mapToMovementTypeFromPositionType(movement, response.getTypeCode()));
         setFlagState(movement, report.getRegistrationVesselCountry());
@@ -169,7 +160,11 @@ public class FluxMessageResponseMapper {
         HashMap<FLUXVesselIDType, String> ids = new HashMap<>();
         if (CollectionUtils.isNotEmpty(vesselIds)) {
             for (IDType vesselId : vesselIds) {
-                ids.put(FLUXVesselIDType.valueOf(vesselId.getSchemeID()), vesselId.getValue());
+                try {
+                    ids.put(FLUXVesselIDType.valueOf(vesselId.getSchemeID()), vesselId.getValue());
+                } catch (Exception e) {
+                    LOG.warn("Unknown schemeId: ", vesselId.getSchemeID());
+                }
             }
         }
         return ids;
@@ -191,6 +186,7 @@ public class FluxMessageResponseMapper {
                         assetIdList.add(mapToVesselId(AssetIdType.IMO, vesselId.getValue()));
                         break;
                     case EXT_MARK:
+                    case EXT_MARKING:
                         break;
                     default:
                         LOG.error("VesselId type not mapped {}", vesselId.getKey());
@@ -213,7 +209,6 @@ public class FluxMessageResponseMapper {
             throw new PluginException("Error when extracting Correlation ID: " + e.getMessage());
         }
     }
-
 
     public static String extractMessageGUID(RequestType rt) throws PluginException {
         try {

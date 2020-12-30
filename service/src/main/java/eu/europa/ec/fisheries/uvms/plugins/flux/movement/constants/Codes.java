@@ -18,6 +18,7 @@ public interface Codes {
     enum FLUXVesselIDType {
         CFR,
         EXT_MARK,
+        EXT_MARKING,
         IRCS,
         UVI,
         MMSI;
