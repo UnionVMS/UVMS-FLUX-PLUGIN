@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.plugins.flux.movement.mapper;
 import static org.junit.Assert.assertThat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -76,6 +77,46 @@ public class FluxMessageResponseMapperTest {
         Assert.assertEquals("The size of List<SetReportMovementType> is incorrect ", 1, mapToMovementType.size());
         assertSetReportMovementType(mapToMovementType.get(0));
         assertMovement(mapToMovementType.get(0).getMovement());
+    }
+
+    @Test
+    public void testFluxMessageResponseMapperExtMarkSchemeId() throws JAXBException, PluginException {
+        String extMark = FluxReportMock.randomIntegers(5);
+        FLUXVesselPositionMessage message = FluxReportMock.mapToFLUXReportDocumentType();
+        List<IDType> filteredIds = message.getVesselTransportMeans().getIDS()
+            .stream()
+            .filter(id -> !id.getSchemeID().equals(Codes.FLUXVesselIDType.EXT_MARK.toString()))
+            .collect(Collectors.toList());
+        message.getVesselTransportMeans().getIDS().clear();
+        message.getVesselTransportMeans().getIDS().addAll(filteredIds);
+        IDType extMarkIdType = FluxReportMock.mapToIDType(Codes.FLUXVesselIDType.EXT_MARK.toString(), extMark);
+        message.getVesselTransportMeans().getIDS().add(extMarkIdType);
+
+        RequestType responseType = FluxReportMock.mapToResponseType(message);
+        List<SetReportMovementType> mapToMovementType = FluxMessageResponseMapper.mapToReportMovementTypes(responseType, MockConstants.REGISTER_CLASSNAME);
+
+        assertThat(mapToMovementType.size(), CoreMatchers.is(1));
+        assertThat(mapToMovementType.get(0).getMovement().getExternalMarking(), CoreMatchers.is(extMark));
+    }
+
+    @Test
+    public void testFluxMessageResponseMapperExtMarkingSchemeId() throws JAXBException, PluginException {
+        String extMarking = FluxReportMock.randomIntegers(5);
+        FLUXVesselPositionMessage message = FluxReportMock.mapToFLUXReportDocumentType();
+        List<IDType> filteredIds = message.getVesselTransportMeans().getIDS()
+                .stream()
+                .filter(id -> !id.getSchemeID().equals(Codes.FLUXVesselIDType.EXT_MARK.toString()))
+                .collect(Collectors.toList());
+        message.getVesselTransportMeans().getIDS().clear();
+        message.getVesselTransportMeans().getIDS().addAll(filteredIds);
+        IDType extMarkingIdType = FluxReportMock.mapToIDType(Codes.FLUXVesselIDType.EXT_MARKING.toString(), extMarking);
+        message.getVesselTransportMeans().getIDS().add(extMarkingIdType);
+
+        RequestType responseType = FluxReportMock.mapToResponseType(message);
+        List<SetReportMovementType> mapToMovementType = FluxMessageResponseMapper.mapToReportMovementTypes(responseType, MockConstants.REGISTER_CLASSNAME);
+
+        assertThat(mapToMovementType.size(), CoreMatchers.is(1));
+        assertThat(mapToMovementType.get(0).getMovement().getExternalMarking(), CoreMatchers.is(extMarking));
     }
 
     private void assertSetReportMovementType(SetReportMovementType movement) {
