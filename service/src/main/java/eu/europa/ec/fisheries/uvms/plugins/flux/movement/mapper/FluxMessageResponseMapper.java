@@ -84,6 +84,7 @@ public class FluxMessageResponseMapper {
             movement.setExternalMarking(extractAssetIds.get(FLUXVesselIDType.EXT_MARKING));
         }
         movement.setIrcs(extractAssetIds.get(FLUXVesselIDType.IRCS));
+        movement.setMmsi(extractAssetIds.get(FLUXVesselIDType.MMSI));
         movement.setMovementType(mapToMovementTypeFromPositionType(movement, response.getTypeCode()));
         setFlagState(movement, report.getRegistrationVesselCountry());
         movement.setPosition(mapToMovementPoint(response.getSpecifiedVesselGeographicalCoordinate()));
@@ -163,7 +164,7 @@ public class FluxMessageResponseMapper {
                 try {
                     ids.put(FLUXVesselIDType.valueOf(vesselId.getSchemeID()), vesselId.getValue());
                 } catch (Exception e) {
-                    LOG.warn("Unknown schemeId: ", vesselId.getSchemeID());
+                    LOG.warn("Unknown ID schemeId: {}", vesselId.getSchemeID());
                 }
             }
         }
@@ -184,6 +185,9 @@ public class FluxMessageResponseMapper {
                         break;
                     case UVI:
                         assetIdList.add(mapToVesselId(AssetIdType.IMO, vesselId.getValue()));
+                        break;
+                    case MMSI:
+                        assetIdList.add(mapToVesselId(AssetIdType.MMSI, vesselId.getValue()));
                         break;
                     case EXT_MARK:
                     case EXT_MARKING:
