@@ -56,6 +56,8 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
     private static final QName TO = new QName("TO");
     private static final QName TODT = new QName("TODT");
 
+    private static final String PLUGIN_ID = "FLUX_VP_PLUGIN_WS";
+
     @EJB
     private StartupBean startupBean;
 
@@ -72,10 +74,11 @@ public class FluxMovementMessageReceiverBean extends AbstractFluxReceiver {
         try {
             log.info("Received a Movement message in Movement Plugin..");
             Map<QName, String> attributes = rt.getOtherAttributes();
-            FLUXVesselPositionMessage xmlMessage = (FLUXVesselPositionMessage) rt.getAny();
-            String requestStr = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(JAXBUtils.marshallJaxBObjectToString(xmlMessage), attributes.get(USER), rt.getDF(),
-                    DateUtils.nowUTC().toDate(), FluxMessageResponseMapper.extractMessageGUID(xmlMessage), PluginType.FLUX,
-                    attributes.get(FR), rt.getON(), FluxMessageResponseMapper.extractMessageGUID(rt), startupBean.getRegisterClassName(),
+            FLUXVesselPositionMessage message = (FLUXVesselPositionMessage) rt.getAny();
+            String guid = FluxMessageResponseMapper.extractMessageGUID(message);
+            String requestStr = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(JAXBUtils.marshallJaxBObjectToString(message), PLUGIN_ID, rt.getDF(),
+                    DateUtils.nowUTC().toDate(), guid, PluginType.FLUX,
+                    attributes.get(FR), rt.getON(), guid, startupBean.getRegisterClassName(),
                     attributes.get(AD), attributes.get(TO), attributes.get(TODT));
             pluginToExchangeProducer.sendModuleMessage(requestStr, null);
             log.info("Movement message successfully sent to Exchange..");
