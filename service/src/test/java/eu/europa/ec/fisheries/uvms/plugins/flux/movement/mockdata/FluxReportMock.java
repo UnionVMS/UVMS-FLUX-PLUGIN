@@ -18,6 +18,8 @@
 package eu.europa.ec.fisheries.uvms.plugins.flux.movement.mockdata;
 
 import java.math.BigDecimal;
+import java.util.Random;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -38,28 +40,28 @@ import un.unece.uncefact.data.standard.unqualifieddatatype._18.MeasureType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.TextType;
 import xeu.bridge_connector.v1.RequestType;
 
-/**
- *
- * @author jojoha
- */
 public class FluxReportMock {
 
     public static RequestType mapToResponseType() throws JAXBException {
+        FLUXVesselPositionMessage message = mapToFLUXReportDocumentType();
+        return mapToResponseType(message);
+    }
+
+    public static RequestType mapToResponseType(FLUXVesselPositionMessage message) throws JAXBException {
         RequestType responseType = new RequestType();
-        responseType.setAny(mapToElement());
+        responseType.setAny(mapToElement(message));
         return responseType;
     }
 
-    private static Element mapToElement() throws JAXBException {
-        FLUXVesselPositionMessage attr = mapToFLUXReportDocumentType();
+    private static Element mapToElement(FLUXVesselPositionMessage message) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(FLUXVesselPositionMessage.class);
         Marshaller marshaller = context.createMarshaller();
         DOMResult res = new DOMResult();
-        marshaller.marshal(attr, res);
+        marshaller.marshal(message, res);
         return ((Document) res.getNode()).getDocumentElement();
     }
 
-    private static FLUXVesselPositionMessage mapToFLUXReportDocumentType() {
+    public static FLUXVesselPositionMessage mapToFLUXReportDocumentType() {
         FLUXVesselPositionMessage message = new FLUXVesselPositionMessage();
         message.setFLUXReportDocument(mapToFluxDocumentType());
         message.setVesselTransportMeans(mapToVesselTransportMeans());
@@ -145,11 +147,17 @@ public class FluxReportMock {
         return ct;
     }
 
-    private static IDType mapToIDType(String key, String value) {
+    public static IDType mapToIDType(String key, String value) {
         IDType type = new IDType();
         type.setSchemeID(key);
         type.setValue(value);
         return type;
     }
 
+    public static String randomIntegers(int amount) {
+        return new Random()
+                .ints(amount, 0, 10)
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
+    }
 }
