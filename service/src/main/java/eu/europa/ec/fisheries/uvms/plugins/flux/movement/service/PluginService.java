@@ -156,22 +156,19 @@ public class PluginService {
                 log.warn("Webservice needs to wait for the URL to be set up. Waiting for the {} time (MAX 60 Times)", waitingTimes);
                 Thread.sleep(1000);
                 waitingTimes--;
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new MappingException("Thread interrupted...",ie);
             }
         }
         BridgeConnectorPortType port = portInintiator.getPort();
-        BindingProvider bp = (BindingProvider) port;
-        // todo check why there is no setting for fluxmovement plugin client id! from front end config tab
-        // so we hardwire it
-        startupBean.getSettings().put(startupBean.getRegisterClassName() + "." + CLIENT_ID, "flux-movement-plugin");
-        bp.getRequestContext().put(CONNECTOR_ID, startupBean.getSetting(CLIENT_ID));
         String endPoint = ((BindingProvider) port).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY).toString();
         try {
             PostMsgOutType post = port.post(postMsgType);
             List<AssignedONType> assignedON = post.getAssignedON();
             upgradeResponseWithOnMessage(assignedON, request.getResponseLogGuid());
             log.info("[INFO] Outgoing message ({}) with ON :[{}] send to [{}]", type, request.getOnValue(), endPoint);
-        } catch (WebServiceException | NullPointerException ex) {
+        } catch (NullPointerException ex) {
             log.error("[ERROR] Couldn't send message to {}", endPoint, ex.getCause());
         }
     }

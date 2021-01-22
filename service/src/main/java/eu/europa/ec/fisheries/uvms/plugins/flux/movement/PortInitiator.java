@@ -21,6 +21,8 @@ import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -30,6 +32,9 @@ import java.util.Map;
 @Singleton
 @Startup
 public class PortInitiator {
+
+    private static final String CLIENT_ID = "CLIENT_ID";
+    private static final String CONNECTOR_ID = "connectorID";
 
     @EJB
     private StartupBean startupBean;
@@ -61,7 +66,7 @@ public class PortInitiator {
         BindingProvider bp = (BindingProvider) port;
         Map<String, Object> context = bp.getRequestContext();
         context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, startupBean.getSetting("FLUX_ENDPOINT"));
-        //context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, startupBean.getSetting("LOCAL_ENDPOINT"));
+        bp.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, Collections.singletonMap(CONNECTOR_ID, Collections.singletonList(startupBean.getSetting(CLIENT_ID))));
         return port;
     }
 }
