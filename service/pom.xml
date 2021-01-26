@@ -17,9 +17,18 @@
         <application.responseTopicName>PLUGIN_RESPONSE</application.responseTopicName> 
         <application.groupid>${project.parent.groupId}</application.groupid> 
         <application.version>${project.parent.version}</application.version>
-        <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
-        <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log</application.error.logfile>
+        <application.logfile>${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
+        <application.logfile.message.pattern>%replace(%rEx){'[\r\n]+', '~~'}%nopex %n</application.logfile.message.pattern>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>multilineLog</id>
+            <properties>
+                <application.logfile.message.pattern>%n</application.logfile.message.pattern>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -108,6 +117,19 @@
     
     <build>
         <finalName>${project.name}-${project.version}</finalName>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>flux.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
              <!-- Unpack the jar into target directory -->
