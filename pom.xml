@@ -25,7 +25,6 @@
         
         <jodatime.version>2.9.9</jodatime.version>
         <project.scm.id>github</project.scm.id>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
         <lombok.version>1.16.18</lombok.version>
         <javaee.version>8.0</javaee.version>
     </properties>
@@ -64,6 +63,17 @@
             <url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>fish.focus.uvms.maven</groupId>
+                <artifactId>uvms-pom-logging-deps</artifactId>
+                <version>1.21</version>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-FLUX-PLUGIN.git</connection>
