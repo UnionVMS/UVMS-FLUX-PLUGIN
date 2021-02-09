@@ -245,11 +245,11 @@ public class FluxMessageResponseMapper {
 
     public static String extractMessageGUID(FLUXVesselPositionMessage attribute) throws PluginException {
         try {
-            if (attribute != null) {
+            if (attribute != null && !attribute.getFLUXReportDocument().getIDS().isEmpty()) {
                 IDType messageID = attribute.getFLUXReportDocument().getIDS().get(0);
                 return messageID.getValue();
             } else {
-                throw new PluginException("Error when extracting Correlation ID: BasicAttribute is null");
+                return null;
             }
         } catch (Exception e) {
             log.error("[ Error when extracting correlation ID. ] {}", e.getMessage());
