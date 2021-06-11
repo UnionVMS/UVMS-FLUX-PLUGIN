@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>${project.parent.artifactId}-service</artifactId>
@@ -13,20 +14,55 @@
     </parent>
 
     <properties>
-        <application.name>${project.parent.artifactId}</application.name> 
-        <application.responseTopicName>PLUGIN_RESPONSE</application.responseTopicName> 
-        <application.groupid>${project.parent.groupId}</application.groupid> 
+        <application.name>${project.parent.artifactId}</application.name>
+        <application.responseTopicName>PLUGIN_RESPONSE</application.responseTopicName>
+        <application.groupid>${project.parent.groupId}</application.groupid>
         <application.version>${project.parent.version}</application.version>
         <application.logfile>${project.parent.artifactId}.log</application.logfile>
-        <application.logfile.message.pattern>%replace(%rEx){'[\r\n]+', '~~'}%nopex %n</application.logfile.message.pattern>
+        <application.logfile.message.pattern>%replace(%rEx){'[\r\n]+', '~~'}%nopex %n
+        </application.logfile.message.pattern>
     </properties>
 
     <profiles>
         <profile>
-            <id>multilineLog</id>
-            <properties>
-                <application.logfile.message.pattern>%n</application.logfile.message.pattern>
-            </properties>
+            <id>logging-default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <filtering>true</filtering>
+                        <directory>src/main/logging/default</directory>
+                        <targetPath>${project.build.outputDirectory}</targetPath>
+                        <includes>
+                            <include>logback.xml</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+        <profile>
+            <id>logging-cloud</id>
+            <build>
+                <resources>
+                    <resource>
+                        <filtering>true</filtering>
+                        <directory>src/main/logging/cloud</directory>
+                        <targetPath>${project.build.outputDirectory}</targetPath>
+                        <includes>
+                            <include>logback.xml</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.j256.cloudwatchlogbackappender</groupId>
+                    <artifactId>cloudwatchlogbackappender</artifactId>
+                    <version>2.0</version>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
@@ -36,12 +72,12 @@
             <artifactId>config-model</artifactId>
             <version>${uvms.config.module.version}</version>
         </dependency>
-    	<dependency>
-			<groupId>org.jboss.ws</groupId>
-			<artifactId>jbossws-api</artifactId>
-			<version>1.0.2.Final</version>
-			<scope>provided</scope>
-		</dependency>    	
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-api</artifactId>
+            <version>1.0.2.Final</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
@@ -62,7 +98,7 @@
             <groupId>eu.europa.ec.fisheries.uvms.service.client</groupId>
             <artifactId>bridge-connector-client</artifactId>
             <version>${bridge-connector.client.version}</version>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
@@ -74,32 +110,32 @@
             <version>${uvms.commons.version}</version>
             <scope>provided</scope>
         </dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-databind</artifactId>
-		    <version>2.7.9.1</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-annotations</artifactId>
-		    <version>2.7.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-core</artifactId>
-		    <version>2.7.9</version>
-		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.7.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.7.9</version>
+        </dependency>
+        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>1.1.0.Final</version>
@@ -115,48 +151,41 @@
             <version>${lombok.version}</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <finalName>${project.name}-${project.version}</finalName>
         <resources>
             <resource>
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>flux.properties</include>
-                </includes>
-            </resource>
-            <resource>
-                <filtering>false</filtering>
-                <directory>src/main/resources</directory>
             </resource>
         </resources>
         <plugins>
             <plugin>
-             <!-- Unpack the jar into target directory -->
-              <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-dependency-plugin</artifactId>
-                                <version>2.7</version>
-                                <executions>
-                                    <execution>
-                                        <id>unpack</id>
-                                        <phase>validate</phase>
-                                        <goals>
-                                            <goal>unpack-dependencies</goal>
-                                        </goals>
-                                        <configuration>
-                                            <type>jar</type>
-                                            <outputDirectory>${project.build.directory}/classes/xsd</outputDirectory>
-                                            <includes>**/*.xsd</includes>
-                                            <overWriteIfNewer>true</overWriteIfNewer>
-                                            <includeGroupIds>eu.europa.ec.fisheries.uvms.activity</includeGroupIds>
-                                            <includeArtifactIds>activity-model</includeArtifactIds>
-                                            <includes>**/*.xsd</includes>
-                                            <excludes>**/*.class/**</excludes>
-                                        </configuration>
-                                    </execution>
-                                </executions>
-                            </plugin>
+                <!-- Unpack the jar into target directory -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <type>jar</type>
+                            <outputDirectory>${project.build.directory}/classes/xsd</outputDirectory>
+                            <includes>**/*.xsd</includes>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <includeGroupIds>eu.europa.ec.fisheries.uvms.activity</includeGroupIds>
+                            <includeArtifactIds>activity-model</includeArtifactIds>
+                            <includes>**/*.xsd</includes>
+                            <excludes>**/*.class/**</excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <!-- Unpack the jar into target directory -->
                 <groupId>org.apache.maven.plugins</groupId>
