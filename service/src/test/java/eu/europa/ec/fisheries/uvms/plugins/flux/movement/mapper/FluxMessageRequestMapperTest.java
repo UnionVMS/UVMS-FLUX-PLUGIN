@@ -294,6 +294,20 @@ public class FluxMessageRequestMapperTest {
         assertEquals("ABC1234", ircsId.get().getValue());
     }
 
+    @Test
+    public void testExternalMarkingWithDash() throws Exception {
+        String externalMarking = "ABC-1234";
+        MovementType movement = MovementTypeMock.maptoMovementType();
+        movement.setExternalMarking(externalMarking);
+        FLUXVesselPositionMessage fluxMovement = FluxMessageRequestMapper.mapToFluxMovement(movement, "TEST");
+        PostMsgType mapToRequest = FluxMessageRequestMapper.mapToRequest(fluxMovement, MockConstants.GUID, null, null, null, null);
+        assertNotNull(mapToRequest);
+        FLUXVesselPositionMessage message = extractVesselPositionMessage(mapToRequest.getAny());
+        Optional<IDType> extMarkId = message.getVesselTransportMeans().getIDS().stream().filter(i -> i.getSchemeID().equals("EXT_MARK")).findFirst();
+
+        assertEquals("ABC1234", extMarkId.get().getValue());
+    }
+
     private void assertFLUXVesselPositionMessage(FLUXVesselPositionMessage message) {
         assertNotNull("FLUXVesselPositionMessage is NULL", message);
         assertNotNull("FLUXReportDocumentType is NULL", message.getFLUXReportDocument());
