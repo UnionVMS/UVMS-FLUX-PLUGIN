@@ -35,6 +35,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>fish.focus.uvms.maven</groupId>
+            <artifactId>uvms-pom-java11-deps</artifactId>
+            <type>pom</type>
+            <version>3.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
