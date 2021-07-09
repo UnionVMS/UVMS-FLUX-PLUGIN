@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -159,7 +157,7 @@ public class FluxMessageResponseMapper {
 
     private static HashMap<FLUXVesselIDType, String> extractAssetIds(List<IDType> vesselIds) {
         HashMap<FLUXVesselIDType, String> ids = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(vesselIds)) {
+        if (vesselIds != null && !vesselIds.isEmpty()) {
             for (IDType vesselId : vesselIds) {
                 try {
                     ids.put(FLUXVesselIDType.valueOf(vesselId.getSchemeID()), vesselId.getValue());
@@ -174,7 +172,7 @@ public class FluxMessageResponseMapper {
     private static AssetId mapToAssetId(Map<FLUXVesselIDType, String> vesselIds) {
         AssetId idType = new AssetId();
         List<AssetIdList> assetIdList = idType.getAssetIdList();
-        if (MapUtils.isNotEmpty(vesselIds)) {
+        if (vesselIds != null && !vesselIds.isEmpty()) {
             for (Entry<FLUXVesselIDType, String> vesselId : vesselIds.entrySet()) {
                 switch (vesselId.getKey()) {
                     case IRCS:
