@@ -154,7 +154,7 @@ public class FluxMessageRequestMapper {
             retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.IRCS, movement.getIrcs().replace("-", "")));
         }
         if (movement.getExternalMarking() != null) {
-            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.EXT_MARK, movement.getExternalMarking()));
+            retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.EXT_MARK, movement.getExternalMarking().replace("-", "")));
         }
         if (ids.containsKey(AssetIdType.CFR)) {
             retVal.getIDS().add(mapToVesselIDType(Codes.FLUXVesselIDType.CFR, ids.get(AssetIdType.CFR)));
