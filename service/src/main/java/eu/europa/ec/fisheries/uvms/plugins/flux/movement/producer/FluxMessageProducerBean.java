@@ -12,6 +12,7 @@ package eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SendFLUXMovementReportRequest;
+import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SendFLUXMovementRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
@@ -46,6 +47,9 @@ public class FluxMessageProducerBean extends AbstractProducer {
         String xmlMessage;
         if (MovementPluginType.SEND_MOVEMENT_REPORT.equals(msgType)){
             xmlMessage = ((SendFLUXMovementReportRequest) request).getReport();
+        } else
+        if (MovementPluginType.SEND_MOVEMENT.equals(msgType)){
+            xmlMessage = ((SendFLUXMovementRequest) request).getReport();
         } else {
             throw new IllegalArgumentException("The message forwarded from Exchange cannot be handeled by th system");
         }

@@ -23,6 +23,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.EmailType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PollType;
+import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SendFLUXMovementRequest;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
@@ -123,17 +124,17 @@ public class PluginService {
     /**
      * TODO implement
      *
-     * @param report
+     * @param request
      * @return
      */
-    public AcknowledgeTypeType sendFluxMovementReport(SendFLUXMovementReportRequest report) throws MappingException, JAXBException, DatatypeConfigurationException {
+    public AcknowledgeTypeType sendFluxMovementReport(PluginBaseRequest request,MovementPluginType movementPluginType) throws MappingException, JAXBException, DatatypeConfigurationException {
         log.info(startupBean.getRegisterClassName() + ".report(" + "forward position report" + ")");
-        if (report != null) {
+        if (request != null) {
             try {
                 if (portInintiator.isWsSetup()) {
-                    sendMessageThroughWs(report, MovementPluginType.SEND_MOVEMENT_REPORT);
+                    sendMessageThroughWs(request, movementPluginType);
                 } else {
-                    sendMessageThroughJms(report, MovementPluginType.SEND_MOVEMENT_REPORT);
+                    sendMessageThroughJms(request, movementPluginType);
                 }
             } catch (MessageException ex) {
                 log.debug("Error when sending flux movement report");
@@ -143,8 +144,8 @@ public class PluginService {
         return AcknowledgeTypeType.OK;
     }
 
-    private void sendMessageThroughJms(SendFLUXMovementReportRequest report, MovementPluginType type) throws MessageException {
-        producer.sendMessageToBridgeQueue(report, type);
+    private void sendMessageThroughJms(PluginBaseRequest request, MovementPluginType type) throws MessageException {
+        producer.sendMessageToBridgeQueue(request, type);
     }
 
     private void sendMessageThroughWs(PluginBaseRequest request, MovementPluginType type) throws JAXBException, DatatypeConfigurationException, MappingException {
@@ -190,6 +191,10 @@ public class PluginService {
         String response;
         if (MovementPluginType.SEND_MOVEMENT_REPORT.equals(msgType)) {
             response = ((SendFLUXMovementReportRequest) request).getReport();
+            postMsgType.setAny(marshalToDOM(JAXBUtils.unMarshallMessage(response, FLUXVesselPositionMessage.class)));
+        }
+        if (MovementPluginType.SEND_MOVEMENT.equals(msgType)) {
+            response = ((SendFLUXMovementRequest) request).getReport();
             postMsgType.setAny(marshalToDOM(JAXBUtils.unMarshallMessage(response, FLUXVesselPositionMessage.class)));
         }
         return postMsgType;
