@@ -13,5 +13,6 @@ package eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants;
 
 public enum MovementPluginType {
     SEND_MOVEMENT_REPORT,
+    SEND_MOVEMENT,
     UNKNOWN
 }

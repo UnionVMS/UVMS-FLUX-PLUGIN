@@ -29,10 +29,10 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.v1.*;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangePluginRequestMapper;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangePluginResponseMapper;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginConstants;
+import eu.europa.ec.fisheries.uvms.plugins.flux.movement.constants.MovementPluginType;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.exception.MappingException;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.producer.PluginToExchangeProducer;
 import eu.europa.ec.fisheries.uvms.plugins.flux.movement.service.PluginService;
@@ -96,9 +96,15 @@ public class PluginNameEventBusListener implements MessageListener {
                     break;
                 case SEND_MOVEMENT_REPORT:
                     SendFLUXMovementReportRequest sendFLUXMovementReportRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SendFLUXMovementReportRequest.class);
-                    AcknowledgeTypeType sendFLUXMovementReport = service.sendFluxMovementReport(sendFLUXMovementReportRequest);
+                    AcknowledgeTypeType sendFLUXMovementReport = service.sendFluxMovementReport(sendFLUXMovementReportRequest, MovementPluginType.SEND_MOVEMENT_REPORT);
                     AcknowledgeType sendFLUXMovementReportAck = ExchangePluginResponseMapper.mapToAcknowlegeType(textMessage.getJMSMessageID(), sendFLUXMovementReport);
                     responseMessage = ExchangePluginResponseMapper.mapToSendFluxMovementReportResponse(startup.getRegisterClassName(), sendFLUXMovementReportAck);
+                    break;
+                case SEND_MOVEMENT:
+                    SendFLUXMovementRequest sendFLUXMovementRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, SendFLUXMovementRequest.class);
+                    AcknowledgeTypeType sendFLUXMovement = service.sendFluxMovementReport(sendFLUXMovementRequest,MovementPluginType.SEND_MOVEMENT);
+                    AcknowledgeType sendFLUXMovementAck = ExchangePluginResponseMapper.mapToAcknowlegeType(textMessage.getJMSMessageID(), sendFLUXMovement);
+                    responseMessage = ExchangePluginResponseMapper.mapToSendFluxMovementReportResponse(startup.getRegisterClassName(), sendFLUXMovementAck);
                     break;
                 case START:
                     StartRequest startRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, StartRequest.class);
