@@ -17,6 +17,7 @@ import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandTypeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.KeyValueType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.ReportType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.ReportTypeType;
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponseBatch;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.PluginBaseRequest;
 import eu.europa.ec.fisheries.schema.exchange.plugin.v1.SendFLUXMovementReportRequest;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
@@ -195,7 +196,7 @@ public class PluginService {
         }
         if (MovementPluginType.SEND_MOVEMENT.equals(msgType)) {
             response = ((SendFLUXMovementRequest) request).getReport();
-            postMsgType.setAny(marshalToDOM(JAXBUtils.unMarshallMessage(response, FLUXVesselPositionMessage.class)));
+            postMsgType.setAny(marshalToDOM(JAXBUtils.unMarshallMessage(response, ProcessedMovementResponseBatch.class)));
         }
         return postMsgType;
     }
